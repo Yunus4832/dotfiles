@@ -6,5 +6,5 @@
     name = yunus0712
     email = 2794914797@qq.com
 [core]
-	pager = bat
+    pager = bat
     autocrlf = input
