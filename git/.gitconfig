@@ -1,0 +1,10 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+#	name = root
+#	email = root@localhost.localdomain
+    name = yunus0712
+    email = 2794914797@qq.com
+[core]
+	pager = bat
+    autocrlf = input

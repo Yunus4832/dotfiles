@@ -1,0 +1,130 @@
+" ESC 按键映射
+imap jj <esc>
+imap kk <esc>
+
+" 设置Leader为空格键
+let mapleader=" "
+
+" vim 与系统共用剪切板
+set clipboard=unnamed
+set clipboard+=ideaput
+
+" 设置 '-' 也是单词的一部分
+set iskeyword+=-
+
+" 通用配置
+set nu
+set relativenumber
+set incsearch
+set showcmd
+set ic
+set hls
+set vb t_vb=
+
+" 开启 NERDTree 插件
+set NERDTree
+
+" 启用 easymotion
+Plug 'easymotion/vim-easymotion'
+
+" vim 设置自动滚动上下限
+set scrolloff=5
+
+" 兼容 vim 和 idea 之间的跳转差异
+nmap <C-i> <Action>(Forward)
+nmap <C-o> <Action>(Back)
+
+" vim 通用按键映射
+map <leader>cc <Action>(CommentByLineComment)
+map <leader>cu <Action>(CommentByLineComment)
+nmap <leader>f  <Action>(ActivateProjectToolWindow)
+nmap <leader>t  <Action>(ActivateTerminalToolWindow)
+
+" 缓冲区设置
+nmap <leader>bb :b#<CR>
+nmap <leader>b<tab> <Action>(Switcher)
+nmap <leader>bn :bn<CR>
+nmap <leader>bp :bp<CR>
+nmap <leader>bd :bd<CR>
+
+" 窗口跳转
+nmap <leader>w <C-w>
+
+" debug 按键映射
+nmap <leader>dr <Action>(Run)
+nmap <leader>db <Action>(ToggleLineBreakpoint)
+nmap <leader>dd <Action>(Debug)
+nmap <leader>do <Action>(StepOver)
+nmap <leader>di <Action>(StepInto)
+nmap <leader>dt <Action>(StepOut)
+nmap <leader>ds <Action>(Stop)
+nmap <leader>dc <Action>(CompileProject)
+
+" idea 特殊配置
+nmap <leader>;; <Action>(ToggleFullScreen)
+nmap <leader>;s <Action>(SearchEverywhere)
+nmap <leader>;a <Action>(Annotate)
+nmap <leader>;e <Action>(RecentChangedFiles)
+nmap <leader>;f <Action>(ReformatCode)
+xmap <leader>;f <Action>(ReformatCode)
+nmap <leader>;c <Action>(CloseProject)
+
+" 跳转命令
+nmap <silent> gi <Action>(GotoImplementation)
+nmap <silent> go <Action>(OverrideMethods)
+nmap <silent> gp <Action>(GotoSuperMethod)
+nmap <silent> gt <Action>(GotoNextError)
+nmap <silent> gr <Action>(ShowErrorDescription)
+nmap <silent> gu <Action>(GotoDeclaration)
+nmap <silent> gh <Action>(QuickJavaDoc)
+
+" 版本控制
+nmap <leader>vu <Action>(Vcs.UpdateProject)
+nmap <leader>vs <Action>(Vcs.Push)
+nmap <leader>vr <Action>(Vcs.RollbackChangedLines)
+nmap <leader>vb <Action>(Vcs.QuickListPopupAction)
+nmap <leader>vp <Action>(VcsShowPrevChangeMarker)
+nmap [c <Action>(VcsShowPrevChangeMarker)
+nmap <leader>vn <Action>(VcsShowNextChangeMarker)
+nmap ]c <Action>(VcsShowNextChangeMarker)
+nmap <leader>vl <Action>(Vcs.Show.Log)
+
+" 错误相关
+" 快速修复
+nmap <leader>ef <Action>(ShowIntentionActions)
+
+" 设置
+nmap <leader>,, <Action>(ShowSettings)
+nmap <leader>,h :nohls<CR>
+nmap <leader>,i :set ic!<CR>
+
+" idea 和 vim 的按键绑定
+sethandler <C-S-2> a:vim
+sethandler <C-S-6> a:vim
+sethandler <C-A> a:vim
+sethandler <C-B> a:vim
+sethandler <C-C> a:vim
+sethandler <C-D> a:vim
+sethandler <C-E> a:vim
+sethandler <C-F> a:vim
+sethandler <C-G> a:vim
+sethandler <C-H> a:vim
+sethandler <C-I> a:vim
+sethandler <C-J> a:vim
+sethandler <C-K> a:vim
+sethandler <C-L> a:vim
+sethandler <C-M> a:vim
+sethandler <C-N> a:vim
+sethandler <C-O> a:vim
+sethandler <C-P> a:vim
+sethandler <C-Q> a:vim
+sethandler <C-R> a:vim
+sethandler <C-S> a:vim
+sethandler <C-T> a:vim
+sethandler <C-U> a:vim
+sethandler <C-V> a:vim
+sethandler <C-W> a:vim
+sethandler <C-X> a:vim
+sethandler <C-Y> a:vim
+sethandler <C-[> a:vim
+sethandler <C-]> a:vim

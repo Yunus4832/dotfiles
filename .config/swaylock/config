@@ -1,0 +1,7 @@
+ignore-empty-password
+
+daemonize
+
+show-failed-attempts
+
+indicator-caps-lock

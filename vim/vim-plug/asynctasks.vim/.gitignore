@@ -1,0 +1,10 @@
+.vscode
+.git
+.svn
+
+*.dll
+*.exe
+*.bak
+*.old
+
+/update.cmd
