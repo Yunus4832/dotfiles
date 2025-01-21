@@ -1,6 +1,5 @@
 " ESC 按键映射
 imap jj <esc>
-imap kk <esc>
 
 " 设置Leader为空格键
 let mapleader=" "

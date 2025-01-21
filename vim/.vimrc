@@ -495,7 +495,6 @@ endif
 
 " 快速退出插入模式
 imap jj <Esc>
-imap kk <Esc>
 
 " F1-12 功能键映射
 " 运行单个文件
