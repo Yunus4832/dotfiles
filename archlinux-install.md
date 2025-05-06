@@ -75,3 +75,12 @@ fcitx5-material-color
 python -- 通用脚本语言
 nodejs -- node 环境，用于运行语言服务器
 ```
+
+## 其他注意事项
+
+1. Java GUI 程序对于 Wayland 环境需要设置特殊的环境变量运行
+
+   ```bash
+   sudo flatpak override --env=GTK_IM_MODULE=fcitx --env=QT_IM_MODULE=fcitx --env=XMODIFIERS=@im=fcitx
+   ```
+
