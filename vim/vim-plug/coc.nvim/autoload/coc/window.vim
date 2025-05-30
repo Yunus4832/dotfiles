@@ -18,11 +18,9 @@ function! coc#window#get_cursor(winid) abort
   if exists('*nvim_win_get_cursor')
     return nvim_win_get_cursor(a:winid)
   endif
-  if has('patch-8.2.1727')
-    let pos = getcurpos(a:winid)
-    return [pos[1], pos[2] - 1]
-  endif
-  return coc#api#exec('win_get_cursor', [a:winid])
+
+  let pos = getcurpos(a:winid)
+  return [pos[1], pos[2] - 1]
 endfunction
 
 " Check if winid visible on current tabpage
@@ -59,7 +57,11 @@ function! coc#window#get_var(winid, name, ...) abort
   if !s:is_vim
     try
       if a:name =~# '^&'
-        return nvim_win_get_option(a:winid, a:name[1:])
+        if has('nvim-0.10')
+          return nvim_get_option_value(a:name[1:], {'win': a:winid})
+        else
+          return nvim_win_get_option(a:winid, a:name[1:])
+        endif
       else
         return nvim_win_get_var(a:winid, a:name)
       endif
@@ -80,7 +82,11 @@ function! coc#window#set_var(winid, name, value) abort
   try
     if !s:is_vim
       if a:name =~# '^&'
-        call nvim_win_set_option(a:winid, a:name[1:], a:value)
+        if has('nvim-0.10')
+          call nvim_set_option_value(a:name[1:], a:value, {'win': a:winid})
+        else
+          call nvim_win_set_option(a:winid, a:name[1:], a:value)
+        endif
       else
         call nvim_win_set_var(a:winid, a:name, a:value)
       endif
@@ -170,6 +176,16 @@ function! coc#window#bufnrs() abort
   return uniq(map(winids, 'winbufnr(v:val)'))
 endfunction
 
+function! coc#window#buf_winid(bufnr) abort
+  let winids = map(getwininfo(), 'v:val["winid"]')
+  for winid in winids
+    if winbufnr(winid) == a:bufnr
+      return winid
+    endif
+  endfor
+  return -1
+endfunction
+
 " Avoid errors
 function! coc#window#close(winid) abort
   if empty(a:winid) || a:winid == -1
@@ -188,9 +204,9 @@ function! coc#window#close(winid) abort
   endif
 endfunction
 
-function! coc#window#visible_range(bufnr) abort
-  let winid = bufwinid(a:bufnr)
-  if winid == -1
+function! coc#window#visible_range() abort
+  let winid = win_getid()
+  if winid == 0
     return v:null
   endif
   let info = getwininfo(winid)[0]

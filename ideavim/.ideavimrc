@@ -1,5 +1,6 @@
 " ESC 按键映射
 imap jj <esc>
+imap kk <esc>
 
 " 设置Leader为空格键
 let mapleader=" "
@@ -37,7 +38,7 @@ nmap <C-o> <Action>(Back)
 map <leader>cc <Action>(CommentByLineComment)
 map <leader>cu <Action>(CommentByLineComment)
 nmap <leader>f  <Action>(ActivateProjectToolWindow)
-nmap <leader>t  <Action>(ActivateTerminalToolWindow)
+"nmap <leader>t  <Action>(ActivateTerminalToolWindow)
 
 " 缓冲区设置
 nmap <leader>bb :b#<CR>
@@ -53,11 +54,12 @@ nmap <leader>w <C-w>
 nmap <leader>dr <Action>(Run)
 nmap <leader>db <Action>(ToggleLineBreakpoint)
 nmap <leader>dd <Action>(Debug)
-nmap <leader>do <Action>(StepOver)
+nmap <leader>dn <Action>(StepOver)
 nmap <leader>di <Action>(StepInto)
-nmap <leader>dt <Action>(StepOut)
+nmap <leader>do <Action>(StepOut)
 nmap <leader>ds <Action>(Stop)
 nmap <leader>dc <Action>(CompileProject)
+nmap <leader>dp <Action>(BuildSolutionAction)
 
 " idea 特殊配置
 nmap <leader>;; <Action>(ToggleFullScreen)
@@ -67,6 +69,7 @@ nmap <leader>;e <Action>(RecentChangedFiles)
 nmap <leader>;f <Action>(ReformatCode)
 xmap <leader>;f <Action>(ReformatCode)
 nmap <leader>;c <Action>(CloseProject)
+nmap <leader>;r <Action>(RenameElement)
 
 " 跳转命令
 nmap <silent> gi <Action>(GotoImplementation)
@@ -77,11 +80,15 @@ nmap <silent> gr <Action>(ShowErrorDescription)
 nmap <silent> gu <Action>(GotoDeclaration)
 nmap <silent> gh <Action>(QuickJavaDoc)
 
+nmap <silent> [g <Action>(GotoPreviousError)
+nmap <silent> ]g <Action>(GotoNextError)
+
 " 版本控制
+nmap <leader>vv <Action>(Vcs.QuickListPopupAction)
+nmap <leader>vc <Action>(Vcs.QuickListPopupAction)
 nmap <leader>vu <Action>(Vcs.UpdateProject)
 nmap <leader>vs <Action>(Vcs.Push)
 nmap <leader>vr <Action>(Vcs.RollbackChangedLines)
-nmap <leader>vb <Action>(Vcs.QuickListPopupAction)
 nmap <leader>vp <Action>(VcsShowPrevChangeMarker)
 nmap [c <Action>(VcsShowPrevChangeMarker)
 nmap <leader>vn <Action>(VcsShowNextChangeMarker)
