@@ -1,20 +1,104 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Common Global Variable 通用全局变量                                      "
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"=====================================================================
+" Common Global Variable 通用全局变量                                =
+"=====================================================================
 
 " 操作系统类型
-let g:os_type = substitute(system('echo $OSTYPE'), '[\n ]\+', '', 'g')
+let g:os_type = $OSTYPE
+if empty(g:os_type)
+    let g:os_type = substitute(system('echo $OSTYPE'), '[\n ]\+', '', 'g')
+endif
 
 " 配置文件
 let g:my_vimrc = substitute(expand('<sfile>'), '\\', '/', 'g')
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Plugin List 插件列表                                                     "
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " 插件存储目录
-call plug#begin($HOME . '/vim-configuration/vim-plug/')
+let g:my_plug_dir = ""
+
+" 版本是否大于 901
+let g:my_version_901 = 0
+if v:version >= 901
+    let g:my_version_901 = 1
+endif
+
+" 是否启用了 tagbar, 依赖 ctags
+let g:my_tagbar_enable = 0
+if executable('ctags')
+    let g:my_tagbar_enable = 1
+endif
+
+" 是否启用了 git 扩展, 依赖 git
+let g:my_git_extension_enable = 0
+if executable('git')
+    let g:my_git_extension_enable = 1
+endif
+
+" 是否启用了 fzf, 依赖 fzf
+let g:my_fzf_enable = 0
+" 是否启用了 scope
+let g:my_scope_enable = 0
+" 是否启用了 ctrlp
+let g:ctrlp_enable = 0
+
+" 默认使用 fzf，如果 fzf 不可用，并且版本大于 901 则使用 scope，否则使用 ctrlp
+if executable('fzf')
+    let g:my_fzf_enable = 1
+elseif g:my_version_901 
+    let g:my_scope_enable = 1
+else
+    let g:ctrlp_enable = 1
+endif
+
+
+" 是否启用了 neoformat, 依赖 astyle
+let g:my_neoformat_enable = 0
+if executable('astyle')
+    let g:my_neoformat_enable = 1
+endif
+
+" 是否启用了 http 扩展, 依赖 curl 和 jq
+let g:my_http_extionsion_enable = 0
+if executable('curl') && executable('jq')
+    let g:my_http_extionsion_enable = 1
+endif
+
+" 是否启用了 javap 扩展
+let g:my_javap_extension_enable = 0
+if executable('javap')
+    let g:my_javap_extension_enable = 1
+endif
+
+" 是否启用了 vimsuggest
+let g:my_vimsuggest_enable = 0
+if g:my_version_901
+    let g:my_vimsuggest_enable = 1
+endif
+
+" 是否启用了 vimcomplete
+let g:my_vimcomplete_enable = 0
+
+" 是否启用了 AutoComplPop
+let g:my_auto_compl_pop_enable = 0
+
+" 是否启用了 coc.nvim
+" Msys2 或 Cygwin 上使用 coc.nvim 性能太差, 所以关闭了，
+" 可以设置 OSTYPE=linux-gun 环境变量启用 coc.nvim，依赖 node
+let g:my_coc_enable = 0
+" 优先使用 coc 如果 coc 不可用，则使用 vim9 的补全插件，最后使用低版本兼容插件
+if executable('node') && !(g:os_type ==# "msys") && !(g:os_type ==# "cygwin")
+    let g:my_coc_enable = 1
+elseif g:my_version_901
+    let g:my_vimcomplete_enable = 1
+else
+    let g:my_auto_compl_pop_enable = 1
+endif
+
+
+"=====================================================================
+" Plugin List 插件列表                                               =
+"=====================================================================
+
+" 注册插件
+call plug#begin(g:my_plug_dir)
 
 " 美化
 " 主题切换
@@ -33,13 +117,15 @@ Plug 'mhinz/vim-startify'
 Plug 'tomasr/molokai'
 Plug 'morhetz/gruvbox'
 
-" 文件结构索引, 依赖 ctags
-if executable('ctags')
+" 文件结构索引
+if g:my_tagbar_enable
     Plug 'majutsushi/tagbar'
 endif
 
 " 项目目录树
 Plug 'scrooloose/nerdtree'
+" 项目目录树显示 git 状态
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " 光标移动跳转
 Plug 'easymotion/vim-easymotion'
@@ -51,18 +137,19 @@ Plug 'jiangmiao/auto-pairs'
 " \cc注释当前行 \cu 撤销注释当前行 \cs sexily注释 \cA 行尾注释，切换成输入模式
 Plug 'scrooloose/nerdcommenter'
 
-" Git 增强插件, 依赖 git
-if executable('git') 
+" Git 增强插件
+if g:my_git_extension_enable
     Plug 'tpope/vim-fugitive'
     Plug 'airblade/vim-gitgutter'
 endif
 
-" 自动补全, Msys2 上使用 coc.nvim 性能太差, 所以关闭了
-if executable('node') && !(g:os_type ==# "msys")
-    " 语言服务器, 附带补全功能, 依赖 node, 如果没有 node, 使用其他插件替代
+" Coc 自动补全 
+if g:my_coc_enable
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
-else
-    " 自动补全
+endif
+
+" AutoComplPop 自动补全
+if g:my_auto_compl_pop_enable
     Plug 'vim-scripts/AutoComplPop'
 endif
 
@@ -92,37 +179,67 @@ Plug 'mtdl9/vim-log-highlighting'
 Plug 'matze/vim-move'
 
 " 代码格式化插件, 依赖 astyle
-if executable('astyle')
+if g:my_neoformat_enable
     Plug 'sbdchd/neoformat'
 endif
 
-" 模糊搜索
-Plug 'ctrlpvim/ctrlp.vim'
-
-" 图标美化, 只在 tmux 终端开启图标美化
-if expand('$TERM') == 'tmux-256color'
-    Plug 'ryanoasis/vim-devicons'
+" fzf 模糊搜索
+if g:my_fzf_enable
+    Plug 'junegunn/fzf'
+    Plug 'junegunn/fzf.vim'
 endif
 
-" Http 客户端，依赖 curl, jq
-if executable('curl') && executable('jq')
+" ctrlp 模糊搜索
+if g:ctrlp_enable
+    Plug 'ctrlpvim/ctrlp.vim'
+    let g:ctrlp_enable = 1
+endif
+
+" 图标美化, 忽略终端环境
+Plug 'ryanoasis/vim-devicons'
+
+" Http 客户端
+if g:my_http_extionsion_enable
     Plug 'nicwest/vim-http'
 endif
 
-" java 字节码工具, 依赖 javap
-if executable('javap')
+" java 字节码工具
+if g:my_javap_extension_enable
     Plug 'udalov/javap-vim'
-endif 
+    let g:my_javap_extension_enable = 1
+endif
 
 " Markdown 文档折叠
 Plug 'masukomi/vim-markdown-folding'
 
+" Markdown 表格支持
+Plug 'dhruvasagar/vim-table-mode'
+
+" vim9script 插件
+if g:my_version_901
+
+    " 命令模式自动补全
+    if g:my_vimsuggest_enable
+        Plug 'girishji/vimsuggest'
+    endif
+
+    " 文本自动补全
+    if g:my_vimcomplete_enable
+        Plug 'girishji/vimcomplete'
+    endif
+
+    if g:my_scope_enable
+        Plug 'girishji/scope.vim'
+    endif
+
+endif
+
 call plug#end()
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Common Setting 通用设置                                                  "
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"=====================================================================
+" Common Setting 通用设置                                            =
+"=====================================================================
 
 " 设置 leader 键
 let mapleader = "\<Space>"
@@ -148,13 +265,13 @@ set nocompatible
 set wildmenu
 
 " 设置当文件在外部被修改，自动更新该文件
-set autoread         
+set autoread
 
 " 设置自动保存文件
 set autowriteall
 
 " 设置不生成备份文件
-set nobackup   
+set nobackup
 
 " 将制表符扩展为空格
 set expandtab
@@ -168,6 +285,9 @@ set showcmd
 " 显示行号
 set number
 
+" 开启相对行号
+set relativenumber
+
 " 不自动折行
 set nowrap
 
@@ -176,9 +296,6 @@ set hls
 
 " 开启渐进式搜索
 set incsearch
-
-" 开启相对行号
-set relativenumber
 
 " 设置自动缩进
 set autoindent
@@ -197,9 +314,9 @@ set hidden
 " Vim 与系统剪切板共享
 set clipboard=unnamed
 
-" 取消菜单栏和导航栏  
-set guioptions-=m  
-set guioptions-=T  
+" 取消菜单栏和导航栏
+set guioptions-=m
+set guioptions-=T
 
 " 去除左右两边滚动条
 set go-=r
@@ -209,7 +326,7 @@ set go-=L
 set laststatus=2
 
 " 在光标接近底端或顶端时，自动下滚或上滚
-set scrolloff=10     
+set scrolloff=10
 set tenc=utf-8
 set encoding=utf-8
 set fileencodings=utf-8,chinese,latin-1
@@ -223,10 +340,10 @@ set shiftwidth=4
 " 让 vim 把连续数量的空格视为一个制表符
 set softtabstop=4
 
-"退格键不能用问题
+" 退格键不能用问题
 set backspace=indent,eol,start
 
-"关闭警告音
+" 关闭警告音
 set vb t_vb=
 
 " 没有八进制
@@ -238,6 +355,20 @@ set updatetime=100
 " 设置启用标号
 set signcolumn=yes
 
+" 自动语法折叠
+set nofoldenable
+set foldlevel=0
+set foldnestmax=10
+set foldmethod=syntax
+
+" 设置 '-' 也是单词部分
+set iskeyword+=-
+
+" 默认启用ê显示空白字符，并设置 tab 和空格的显示内容
+set list lcs=lead:.,tab:-->,trail:.
+
+" 补全菜单配置
+set completeopt=menuone,noinsert
 
 " 初始化插件系统
 " 自适应不同语言的智能缩进
@@ -249,22 +380,13 @@ filetype plugin indent on
 syntax on
 syntax enable
 
-" 自动语法折叠
-set nofoldenable
-set foldlevel=0
-set foldnestmax=10
-set foldmethod=syntax
-
-" 设置 '-' 也是单词部分
-set iskeyword+=-
-
 " 配色方案
 colorscheme Monokai
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Plugin Settings 插件设置                                                 "
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"=====================================================================
+" Plugin Settings 插件设置                                           =
+"=====================================================================
 
 " 加强版状态栏
 let g:airline_theme = 'dark_minimal'
@@ -302,6 +424,12 @@ let NERDTreeQuitOnOpen = 1
 " 当只有一个窗口时自动退出 NERDTree
 "autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
+" Nerdtree-git-plugin 配置
+" 删除多余的箭头标识文件夹
+let g:NERDTreeDirArrowExpandable = ' '
+let g:NERDTreeDirArrowCollapsible = ' '
+let g:NERDTreeGitStatusUseNerdFonts = 1
+
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
@@ -322,23 +450,20 @@ let g:airline_symbols.linenr = ''
 let g:airline_symbols.readonly = ''
 
 " tagbar 配置信息
-" tagbar 依赖 ctags 插件
- let g:tagbar_ctags_bin = 'ctags'
-" 让 tagbar 在页面左侧显示，默认右边
-"let g:tagbar_left = 1
-" 设置 tagbar 的宽度为 40 列，默认 40
- let g:tagbar_width = 40
-" 这是 tagbar 一打开，光标即在 tagbar 页面内，默认在 vim 打开的文件内
- let g:tagbar_autofocus = 1
-" 设置标签不排序，默认排序
- let g:tagbar_sort = 0
-
-" pangu.vim 配置
-let g:pangu_rule_date = 1
+if g:my_tagbar_enable
+    let g:tagbar_ctags_bin = 'ctags'
+    " 让 tagbar 在页面左侧显示，默认右边
+    "let g:tagbar_left = 1
+    " 设置 tagbar 的宽度为 40 列，默认 40
+    let g:tagbar_width = 40
+    " 这是 tagbar 一打开，光标即在 tagbar 页面内，默认在 vim 打开的文件内
+    let g:tagbar_autofocus = 1
+    " 设置标签不排序，默认排序
+    let g:tagbar_sort = 0
+endif
 
 " terminal-help 配置
 let g:terminal_height = 20
-
 
 " 异步任务系统窗口大小配置
 let g:asyncrun_open = 6
@@ -346,17 +471,19 @@ let g:asyncrun_open = 6
 " 设置执行任务的方式
 let g:asynctasks_term_pos = 'bottom'
 
-" gitgutter 状态颜色设置
-let g:gitgutter_sign_added = '▋'
-let g:gitgutter_sign_modified = '▋'
-let g:gitgutter_sign_removed = '▋'
-let g:gitgutter_sign_modified_removed = '▋' 
-let g:gitgutter_sign_removed_first_line = '▋'
-let g:gitgutter_sign_removed_above_and_below = '▋'
+if g:my_git_extension_enable
+    " gitgutter 状态颜色设置
+    let g:gitgutter_sign_added = '▋'
+    let g:gitgutter_sign_modified = '▋'
+    let g:gitgutter_sign_removed = '▋'
+    let g:gitgutter_sign_modified_removed = '▋'
+    let g:gitgutter_sign_removed_first_line = '▋'
+    let g:gitgutter_sign_removed_above_and_below = '▋'
+endif
 
 " rooter 识别项目目录配置
 let g:rooter_targets = '/,*'
-let g:rooter_patterns = ['.git']
+let g:rooter_patterns = ['.git', '.svg']
 let g:rooter_change_directory_for_non_project_files = 'current'
 let g:rooter_silent_chdir = 1
 
@@ -364,42 +491,109 @@ let g:rooter_silent_chdir = 1
 " 进入文件时自动切换到项目根目录
 let g:startify_change_to_vcs_root = 1
 
+" fzf 搜索配置
+if g:my_fzf_enable
+    " fzf.vim 配置
+    " fzf 默认 option
+    let $FZF_DEFAULT_OPTS = '--layout=reverse --border'
+    " 配置字典
+    let g:fzf_vim = {}
+    " 关闭预览窗口
+    let g:fzf_vim.preview_window = []
+    " 弹窗居中显示
+    let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6, 'relative': v:true } }
+endif 
+
 " ctrlp 配置
-" 显示隐藏文件
-let g:ctrlp_show_hidden = 1
-" 最大搜索深度
-let g:ctrlp_max_depth = 5
-" 扫描文件的最大数量
-let g:ctrlp_max_files = 300
-" 延迟更新
-let g:ctrlp_lazy_update = 1
-" 没有内容时 <BS> 退出 
-let g:ctrlp_brief_prompt = 1
-" 固定窗口大小，从上到下排序
-let g:ctrlp_match_window = 'bottom,order:ttb,min:10,max:10,results:10'
+if g:ctrlp_enable
+    " 显示隐藏文件
+    let g:ctrlp_show_hidden = 1
+    " 最大搜索深度
+    let g:ctrlp_max_depth = 5
+    " 扫描文件的最大数量
+    let g:ctrlp_max_files = 300
+    " 延迟更新
+    let g:ctrlp_lazy_update = 1
+    " 没有内容时 <BS> 退出
+    let g:ctrlp_brief_prompt = 1
+    " 固定窗口大小，从上到下排序
+    let g:ctrlp_match_window = 'bottom,order:ttb,min:10,max:10,results:10'
+endif
 
 " Http 客户端配置
-if executable('curl') && executable('jq')
+if g:my_http_extionsion_enable
     " 设置响应显示位置
     let g:vim_http_split_vertically = 1
-    let g:vim_http_tempbuffer = 1 
+    let g:vim_http_tempbuffer = 1
     let g:vim_http_right_below = 1
 endif
 
-
 " coc 配置
-if executable('node') && !(g:os_type ==# "msys")
+if g:my_coc_enable
     " 映射 coc 的补全快捷键为 <CR>
     inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm(): "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+    " 设置配置目录和数据目录
+    let g:coc_config_home = '~/.config/coc-config'
+    let g:coc_data_home = '~/.config/coc'
+    " 关闭启动时vim 或 node 版本低的警告
+    let g:coc_disable_startup_warning = 1
     " 退出时自动关闭 lsp
     autocmd VimLeavePre * :call coc#rpc#kill()
     autocmd VimLeave * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -' . g:coc_process_pid) | endif
 endif
 
+" vim9script 插件配置
+" VimSuggest 配置
+if g:my_vimsuggest_enable
+    let s:vim_suggest = {}
+    let s:vim_suggest.cmd = {
+        \ 'enable': v:true,
+        \ 'pum': v:true,
+        \ 'exclude': [],
+        \ 'onspace': ['b\%[uffer]','colo\%[rscheme]'],
+        \ 'alwayson': v:true,
+        \ 'popupattrs': {},
+        \ 'wildignore': v:true,
+        \ 'addons': v:true,
+        \ 'trigger': 't',
+        \ 'reverse': v:false,
+        \ 'prefixlen': 4,
+    \ }
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Mapping 按键映射                                                         "
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " 配置弹窗外观
+    let s:vim_suggest.cmd.popupattrs = {
+        \ 'borderchars': ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
+        \ 'borderhighlight': ['Normal'],
+        \ 'highlight': 'Normal',
+        \ 'border': [1, 1, 1, 1],
+        \ 'maxheight': 20,
+        \ }
+
+    " 应用配置
+    autocmd VimEnter * call g:VimSuggestSetOptions(s:vim_suggest)
+
+    " 自定义配色
+    hi VimSuggestMatch ctermfg=Green guifg=#00FF00
+    hi VimSuggestMatchSel cterm=bold gui=bold ctermfg=Green guifg=#00FF00
+    hi VimSuggestMute ctermfg=Gray guifg=#808080
+
+endif
+
+" vimcomplete 配置
+if g:my_vimcomplete_enable
+
+    let s:vcoptions = {
+        \ 'completor': {'triggerWordLen': 2, 'noNewlineInCompletionEver': v:true, 'setCompleteOpt': v:false }
+        \ }
+
+    autocmd VimEnter * call g:VimCompleteOptionsSet(s:vcoptions)
+
+endif
+
+
+"=====================================================================
+" Mapping 按键映射                                                   =
+"=====================================================================
 
 " 跳转窗口
 nmap <leader>w <C-w>
@@ -408,64 +602,91 @@ nmap <leader>w <C-w>
 " 切换最近的缓冲区
 nmap <leader>bb :silent b#<CR>
 " tab 选择缓冲区
-nmap <leader>b<tab> :b 
+nmap <leader>b<tab> :b
 " 下一个缓冲区
 nmap <leader>bn :silent bn<CR>
 " 上一个缓冲区
 nmap <leader>bp :silent bp<CR>
 " 关闭当前缓冲区
 nmap <leader>bd :silent bd<CR>
+" 缓冲区列表
+if g:my_fzf_enable
+    nmap <leader>bl :Buffers<CR>
+elseif g:my_scope_enable
+    nmap <leader>bl :call g:scope#fuzzy#Buffer()<CR>
+else
+    nmap <leader>bl :ls!<CR>
+endif
 
 " 使用 NERDTree 插件查看工程文件。
-if g:os_type ==# "msys" 
-    " VCS 在 Msys2 上太慢了, 所有退而去其次
+if g:os_type ==# "msys" || g:os_type ==# "cygwin"
+    " VCS 在 Msys2 和 Cygwin 上太慢了, 所有退而去其次
     nmap <leader>f :NERDTreeToggle<CR>
-else 
+else
     nmap <leader>f :NERDTreeToggleVCS<CR>
 endif
 
 " 终端
 " 打开终端
-nmap <leader>t :call TerminalToggle()<CR>
+"nmap <leader>t :call TerminalToggle()<CR>
 tnoremap <silent> <esc> <C-_>:call TerminalToggle()<CR>
 
 " IDE 功能
-" 打开 Startify
-nmap <leader>;e :silent Startify<CR>
+" 最近打开的文件
+if g:my_fzf_enable 
+    nmap <leader>;e :History<CR>
+elseif g:my_scope_enable
+    nmap <leader>;e :call g:scope#fuzzy#MRU()<CR>
+else
+    " 否则使用 Startify
+    nmap <leader>;e :silent Startify<CR>
+endif
 
 " Git Blame
-nmap <leader>;a :call ToggleGitBlame()<CR>
+nmap <leader>;a :call OpenGitBlame()<CR>
 
 " 模糊搜索文件
-nmap <leader>;s <Plug>(ctrlp)
+if g:my_fzf_enable 
+    nmap <leader>;s :Files<CR>
+elseif g:my_scope_enable
+    nmap <leader>;s :call g:scope#fuzzy#File()<CR>
+else
+    nmap <leader>;s <Plug>(ctrlp)
+endif
 
 " 格式化代码
-if executable('astyle')
+if g:my_neoformat_enable 
     nmap <leader>;f :Neoformat<CR>
     xmap <leader>;f :Neoformat<CR>
 endif
 
 " 运行异步任务
-nmap <leader>;t :AsyncTask 
+nmap <leader>;t :AsyncTask
 
 " 变量重命名
 " nmap <leader>;r NONE
 
 " 版本控制
-" 回滚当前行的修改
-nmap <leader>vr :GitGutterUndoHunk<CR>
-" 跳转到下一个修改的地方
-nmap <leader>vp :GitGutterPrevHunk<CR>
-" 跳转到下一个修改的地方
-nmap <leader>vn :GitGutterNextHunk<CR>
-" 从远端拉取代码
-nmap <leader>vu :Git pull<CR>
-" 推送代码到远端
-nmap <leader>vs :Git push<CR>
-" 提交代码
-nmap <leader>vb :call CommitCode()<CR>
-" 提交历史
-nmap <leader>vl :call OpenGitLog()<CR>
+if g:my_git_extension_enable
+    " 打开 Git 工具窗口
+    nmap <leader>vv :call OpenGit()<CR>
+    " 回滚当前行的修改
+    nmap <leader>vr :GitGutterUndoHunk<CR>
+    " 跳转到下一个修改的地方
+    nmap <leader>vp :GitGutterPrevHunk<CR>
+    " 跳转到下一个修改的地方
+    nmap <leader>vn :GitGutterNextHunk<CR>
+    " 从远端拉取代码
+    nmap <leader>vu :Git pull<CR>
+    " 推送代码到远端
+    nmap <leader>vs :Git push<CR>
+    " 提交代码
+    nmap <leader>vc :call CommitCode()<CR>
+    " 新增所有改动并提交代码
+    nmap <leader>vC :call AddAllCommitCode()<CR>
+    " 提交历史
+    nmap <leader>vl :call OpenGitLog()<CR>
+endif
 
 " 设置
 " 打开配置文件
@@ -477,9 +698,20 @@ nmap <leader>,i :set ic!<CR>
 " 临时切换折行
 nmap <leader>,w :set wrap!<CR>
 
+" 临时切换是否显示空白字符
+nmap <leader>,l :set list!<CR>
+
+" 临时切换是否显示行号
+nmap <leader>,n :set nu!<CR>:set rnu!<CR>
+
 " 错误或警告
 " 快速修复当行的错误
-" nmap <leader>ef NONE 
+" nmap <leader>ef NONE
+" 跳转到上一个错误或下一个错误
+nmap ]g :cn<CR>
+nmap [g :cp<CR>
+" 跳转到下一个错误
+nmap gt :cn<CR>
 
 " Debug 相关
 " 运行项目
@@ -488,13 +720,14 @@ nmap <leader>dr :AsyncTask project-run<CR>
 nmap <leader>dc :AsyncTask project-build<CR>
 
 " 按 Alt + 7即可打开tagbar界面
-if executable('ctags')
+if g:my_tagbar_enable
     nmap <M-7> :TagbarToggle<CR>
 endif
 
 
 " 快速退出插入模式
 imap jj <Esc>
+imap kk <Esc>
 
 " F1-12 功能键映射
 " 运行单个文件
@@ -508,28 +741,31 @@ nmap <silent><f6> :AsyncTask project-run<CR>
 nmap <silent><f7> :AsyncTask project-build<CR>
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Coc Mapping Coc 相关映射                                                 "
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"=====================================================================
+" Coc Mapping Coc 相关映射                                           =
+"=====================================================================
 
 " 如果 coc 可用，并且它有更好的实现，上面的映射会被覆盖
-if executable('node') && !(g:os_type == "msys")
+if g:my_coc_enable
 
     " IDE 功能
     " 变量重命名
     nmap <leader>;r <Plug>(coc-rename)
-    
+
     " 格式化代码
     nmap <leader>;f :call CocActionAsync('format')<CR>
     xmap <leader>;f <Plug>(coc-format-selected)
 
     " 错误或警告
     " 快速修复当行的错误
-    nmap <leader>ef <Plug>(coc-fix-current) 
+    nmap <leader>ef <Plug>(coc-fix-current)
 
     " 代码跳转
+    " 错误诊断跳转
+    nmap <silent><nowait> [g <Plug>(coc-diagnostic-prev)
+    nmap <silent><nowait> ]g <Plug>(coc-diagnostic-next)
     " 跳转到下一个错误
-    " nmap <silent> gt NONE
+    nmap <silent>gt <Plug>(coc-diagnostic-next)
     " 跳转到定义
     nmap <silent> gd <Plug>(coc-definition)
     " 跳转到引用的地方
@@ -538,19 +774,22 @@ if executable('node') && !(g:os_type == "msys")
     nmap <silent> gi <Plug>(coc-inplementation)
     " 跳转到文档
     nmap <silent> gh :call ShowDocumentation()<CR>
+    nmap <silent> K :call ShowDocumentation<CR>
 
     function ShowDocumentation()
         if CocAction('hasProvider', 'hover')
             call CocActionAsync('doHover')
+        else 
+            call feedkeys("K", "in")
         endif
     endfunction
 
 endif
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Independent Autocmd 独立的自动命令                                       "
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+"=====================================================================
+" Independent Autocmd 独立的自动命令                                 =
+"=====================================================================
 
 " Perl TT2 模板文件自动高亮设置
 autocmd BufNewFile,BufRead *.tt2 setf tt2
@@ -566,7 +805,7 @@ augroup end
 " 保存时自动更新 vim 配置
 augroup AutoReloadConfig
     autocmd!
-    exe 'autocmd BufWritePost ' . g:my_vimrc . ' source ' . g:my_vimrc ' | AirlineTheme dark_minimal' 
+    exe 'autocmd BufWritePost ' . g:my_vimrc . ' source ' . g:my_vimrc ' | AirlineTheme dark_minimal'
 augroup end
 
 " 部分窗口不显示标号
@@ -575,10 +814,13 @@ autocmd FileType tagbar,nerdtree setlocal signcolumn=no
 " 离开 Vim 之前保存所有文件，包括挂起
 autocmd VimLeavePre * silent! wall
 
+" q 自动退出 quickfix 窗口
+autocmd FileType qf nmap <buffer> <silent> q :q<CR>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Highlight 高亮相关                                                       "
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+
+"=====================================================================
+" Highlight 高亮相关                                                 =
+"=====================================================================
 
 " 主题颜色自定义配置
 hi Error ctermbg=NONE guibg=NONE
@@ -594,11 +836,13 @@ hi CursorColumn ctermbg=236
 hi Conceal ctermbg=NONE guibg=NONE
 hi NonText ctermbg=NONE guibg=NONE
 hi Normal ctermbg=NONE guibg=NONE
+hi Search ctermbg=64 ctermfg=231 guibg=NONE
+hi SpecialKey ctermbg=NONE ctermfg=59 guifg=#49483e guibg=NONE
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Custom Functions 自定义函数                                              "
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+"=====================================================================
+" Custom Functions 自定义函数                                        =
+"=====================================================================
 
 " 关闭编辑器时自动退出终端
 function! WipeoutTerminals()
@@ -625,41 +869,48 @@ function! CloseBuffersMatched(pattern)
     call airline#update_tabline()
 endfunction
 
-" 切换 GitBlame
-let g:has_blame_buff = 0
-function! ToggleGitBlame()
-    if g:has_blame_buff == 0
+if g:my_git_extension_enable
+    " 打开 GitBlame
+    function! OpenGitBlame()
         exe "Git blame --date=short"
-        exe "wincmd l"
-        let g:has_blame_buff = 1
-    else
-        call CloseBuffersMatched('fugitive')
-        let g:has_blame_buff = 0
-    endif
-endfunction
+        nmap <buffer> <silent> q :q<CR>
+    endfunction
 
-" 打开 GitLog
-function! OpenGitLog()
-    exe "belowright Git log --oneline --graph"
-    nmap <buffer> <silent> q :q<CR>
-endfunction
+    " 打开 Git
+    function! OpenGit()
+        exe "belowright Git"
+        nmap <buffer> <silent> q :q<CR>
+    endfunction
 
-" 提交代码
-function! CommitCode()
-    " 使用 :Git add -A 来添加所有改动
-    exe "Git add -A"
+    " 打开 GitLog
+    function! OpenGitLog()
+        exe "belowright Git log --oneline --graph"
+        nmap <buffer> <silent> q :q<CR>
+    endfunction
 
-    " 等待命令执行完毕
-    redraw!
+    " 提交代码
+    function! CommitCode()
+        " 分屏执行提交代码
+        exe "belowright Git commit"
+    endfunction
 
-    " 分屏执行提交代码
-    exe "belowright Git commit"
-endfunction
+    " 保存所有改动并提交代码
+    function! AddAllCommitCode()
+        " 使用 :Git add -A 来添加所有改动
+        exe "Git add -A"
+
+        " 等待命令执行完毕
+        redraw!
+
+        " 分屏执行提交代码
+        exe "belowright Git commit"
+    endfunction
+endif
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Custom Command 自定义命令                                                "
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+"=====================================================================
+" Custom Command 自定义命令                                          =
+"=====================================================================
 
 " 查看编辑前的改动
 if !exists(":DiffOrig")
@@ -667,17 +918,26 @@ if !exists(":DiffOrig")
 endif
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" Compatible 兼容相关                                                      "
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+"=====================================================================
+" Compatible 兼容相关                                                =
+"=====================================================================
+
+" 在 wayland 显示协议下，剪切板工具现在需要特殊配置
+if executable('wl-copy')
+    augroup wl-clipboard
+        autocmd!
+        autocmd FocusLost * :call system('wl-copy --trim-newline', @0)
+        autocmd FocusGained * :let @0 = system('wl-paste -n')
+        autocmd FocusGained * :let @" = system('wl-paste -n')
+    augroup END
+endif
 
 " 如果 Vim 版本高于 901, 加载 vim9 相关配置
-if v:version >= 901 
+if v:version >= 901
     if filereadable(g:my_vimrc . '9')
         exe 'source' g:my_vimrc . '9'
     elseif filereadable($HOME . '/.vimrc9')
         exe 'source' $HOME . '/.vimrc9'
     endif
-endif 
-
+endif
 

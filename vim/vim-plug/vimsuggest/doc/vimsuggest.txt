@@ -1,0 +1,392 @@
+*vimsuggest.txt*  For Vim version 9.1  Last change: 2024 October 13
+
+                        VimSuggest User Manual~
+
+==============================================================================
+CONTENTS                                                *vimsuggest-contents*
+
+    1. Introduction ........................... |vimsuggest-intro|
+    2. Requirements ........................... |vimsuggest-requirements|
+    3. Installation ........................... |vimsuggest-installation|
+    4. Configuration .......................... |vimsuggest-configuration|
+    5. Key Bindings ........................... |vimsuggest-key-bindings|
+    6. Addons ................................. |vimsuggest-addons|
+    7. Other Plugins .......................... |vimsuggest-other-plugins|
+    8. Contributing ........................... |vimsuggest-contributing|
+
+==============================================================================
+1. Introduction                                           *vimsuggest-intro*
+
+VimSuggest is the ultimate auto-completion plugin that transforms your Vim
+command-line experience. It offers command auto-completion and search
+suggestions. Optionally, it provides commands to do fuzzy search of files,
+buffers, and other Vim artifacts, live grep, regex search of files, buffer
+content, included files, etc.
+
+==============================================================================
+2. Requirements                                   *vimsuggest-requirements*
+
+- Vim version 9.1 or higher
+
+==============================================================================
+3. Installation                                   *vimsuggest-installation*
+
+Install using Vim's built-in package manager:~
+>
+    mkdir -p $HOME/.vim/pack/downloads/opt
+    cd $HOME/.vim/pack/downloads/opt
+    git clone https://github.com/girishji/vimsuggest.git
+<
+Then add this line to your .vimrc file:
+>
+    packadd vimsuggest
+<
+
+==============================================================================
+4. Configuration                                 *vimsuggest-configuration*
+
+VimSuggest offers extensive customization options for both command completion
+and search completion.
+
+Command Completion Configuration:~
+>
+    let s:vim_suggest = {}
+    let s:vim_suggest.cmd = {
+        \ 'enable': v:true,
+        \ 'pum': v:true,
+        \ 'exclude': [],
+        \ 'onspace': ['b\%[uffer]','colo\%[rscheme]'],
+        \ 'alwayson': v:true,
+        \ 'popupattrs': {},
+        \ 'wildignore': v:true,
+        \ 'addons': v:true,
+        \ 'trigger': 't',
+        \ 'reverse': v:false,
+    \ }
+<
+s:vim_suggest.cmd is a dictionary containing the following options:
+
+    'enable'    Enable/disable command completion
+                Default: v:true
+
+    'pum'       Use stacked popup menu (v:false for flat)
+                Default: v:true
+
+    'exclude'   Regex patterns to exclude from completion
+                Default: []
+
+    'onspace'   Commands (regex) that trigger completion after space
+                Use '.*' for all
+                Default: ['b\%[uffer]','colo\%[rscheme]']
+
+    'alwayson'  Auto-open popup ('v:false' to open with <Tab>/<C-d>)
+                Default: v:true
+
+    'popupattrs' Arguments passed to popup_create()
+                Default: {}
+
+    'wildignore' Respect 'wildignore' during file completion
+                Default: v:true
+
+    'addons'    Enable addons (:VSxxx commands)
+                Default: v:true
+
+    'trigger'  't' enables <Tab>/<S-Tab> as trigger characters, while 'n'
+                enables <C-n>/<C-p> and <Up>/<Down>.
+                Default: 't'
+
+    'reverse'   Reverse-sorted menu, with the most relevant item at the bottom
+                Only when 'pum' is 'true'
+                Default: v:false
+
+    'auto_first' Auto-select first menu item on <Enter> if none chosen (Does
+                not affect 'addons' which always use first item)
+                Default: v:false
+
+    'prefixlen' The minimum prefix length before the completion menu is displayed
+                Default: 1
+
+    'complete_sg' Enables word completion (from the buffer) for the `:substitute` 
+                 (`:s`) and `:global` (`:g`) commands
+                Default: v:true
+
+Search Completion Configuration:~
+>
+     let s:vim_suggest.search = {
+         \ 'enable': v:true,
+         \ 'pum': v:true,
+         \ 'fuzzy': v:false,
+         \ 'alwayson': v:true,
+         \ 'popupattrs': {
+         \   'maxheight': 12
+         \ },
+         \ 'range': 100,
+         \ 'timeout': 200,
+         \ 'async': v:true,
+         \ 'async_timeout': 3000,
+         \ 'async_minlines': 1000,
+         \ 'highlight': v:true,
+         \ 'trigger': 't',
+         \ 'reverse': v:false,
+     \ }
+
+s:vim_suggest.search is a dictionary containing the following options:
+
+    'enable'    Enable/disable search completion
+                Default: v:true
+
+    'pum'       Use flat menu (v:true for stacked)
+                Default: v:true
+
+    'fuzzy'     Enable fuzzy completion
+                Default: v:false
+
+    'alwayson'  Auto-open popup ('v:false' to open with <Tab>/<C-d>)
+                Default: v:true
+
+    'popupattrs' Arguments passed to popup_create()
+                Default: {'maxheight': 12}
+
+    'range'     Lines to search in each batch
+                Default: 100
+
+    'timeout'   Non-async search timeout (ms)
+                Default: 200
+
+    'async'     Use asynchronous searching
+                Default: v:true
+
+    'async_timeout'
+                Async search timeout (ms)
+                Default: 3000
+
+    'async_minlines'
+                Min lines to trigger async search
+                Default: 1000
+
+    'highlight' 'false' to disable menu highlighting (for performance)
+                Default: v:true
+
+    'trigger'  't' enables <Tab>/<S-Tab> as trigger characters, while 'n'
+                enables <C-n>/<C-p> and <Up>/<Down>.
+                Default: 't'
+
+    'prefixlen' The minimum prefix length before the completion menu is displayed
+                Default: 1
+
+    'reverse'   Reverse-sorted menu, with the most relevant item at the bottom
+                Only when 'pum' is 'true'
+                Default: v:false
+
+Apply Configuration:~
+>
+    call g:VimSuggestSetOptions(g:VimSuggest)
+<
+
+Global Enable/Disable:~
+>
+    :VimSuggestEnable   " Enable VimSuggest
+    :VimSuggestDisable  " Disable VimSuggest
+<
+
+Highlighting:~
+VimSuggest uses custom highlight groups:
+- `VimSuggestMatch`: Highlights matched portion of the text.
+- `VimSuggestMatchSel`: Highlights matched text in the selected item.
+- `VimSuggestMute`: Highlights passive text, like line numbers in grep output.
+
+Customization Example:~
+>
+    let g:VimSuggest = get(g:, 'VimSuggest', {})
+    let g:VimSuggest.cmd = get(g:VimSuggest, 'cmd', {})
+
+    " Customize popup window appearance
+    let g:VimSuggest.cmd.popupattrs = {
+        \ 'borderchars': ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
+        \ 'borderhighlight': ['Normal'],
+        \ 'highlight': 'Normal',
+        \ 'border': [1, 1, 1, 1],
+        \ 'padding': [0, 1, 0, 1]
+        \ }
+
+    " Exclude specific patterns from completion
+    "   To exclude :[N]b[uffer][!] and :[N]sb[uffer][!] do:
+    let g:VimSuggest.cmd.exclude = [
+        \ '^\s*\d*\s*b\%[uffer]!\?\s\+',
+        \ '^\s*\d*\s*sb\%[uffer]!\?\s\+'
+        \ ]
+
+    " Optional: Customize highlight groups
+    highlight VimSuggestMatch ctermfg=Green guifg=#00FF00
+    highlight VimSuggestMute ctermfg=Gray guifg=#808080
+
+    " Apply the configuration
+    call g:VimSuggestSetOptions(g:VimSuggest)
+<
+
+==============================================================================
+5. Key Bindings                                   *vimsuggest-key-bindings*
+
+When the popup window is open, you can use the following key mappings:
+
+    <PageDown>   Scroll down one page
+    <Shift-Down> Scroll down one page
+    <PageUp>     Scroll up one page
+    <Shift-Up>   Scroll up one page
+    <Tab>        Move to next item
+    <Shift-Tab>  Move to previous item
+    <Esc>        Dismiss popup
+    <C-[>        Dismiss popup
+    <C-c>        Dismiss popup
+    <C-s>        Dismiss auto-completion and revert to default Vim behavior
+    <C-e>        Dismiss auto-completion popup temporarily
+    <Enter>      Confirm selection
+    <C-d>        Open popup menu (override 'exclude' list)
+    <C-j>        Open file selection in a split window
+    <C-v>        Open file selection in a vertical split
+    <C-t>        Open file selection in a new tab
+    <C-q>        Send items (grep lines or file paths) to the quickfix list
+    <C-l>        Send items (file paths) to the argument list
+    <C-g>        Copy items to system clipboard (`+` register)
+
+Note: Keys used in command-line editing (:h cmdline-editing) remain unmodified.
+
+You can remap the following keys by configuring the option as shown below:
+>
+    let s:vim_suggest.keymap = {
+        \ 'page_up': ["\<PageUp>", "\<S-Up>"],
+        \ 'page_down': ["\<PageDown>", "\<S-Down>"],
+        \ 'hide': "\<C-e>",
+        \ 'dismiss': "\<C-s>",
+        \ 'send_to_qflist': "\<C-q>",
+        \ 'send_to_arglist': "\<C-l>",
+        \ 'send_to_clipboard': "\<C-g>",
+        \ 'split_open': "\<C-j>",
+        \ 'vsplit_open': "\<C-v>",
+        \ 'tab_open': "\<C-t>",
+    \ }
+<
+
+Apply the configuration as follows:
+>
+    call g:VimSuggestSetOptions(s:vim_suggest)
+<
+==============================================================================
+6. Addons                                                 *vimsuggest-addons*
+
+When the `addons` option is set to `v:true`, the following commands become
+available:
+
+1. Fuzzy Find Files~
+   :VSFind [dirpath] [fuzzy_pattern]
+
+   This runs the `find` command asynchronously to gather files for fuzzy
+   searching. The optional first argument is the directory to search within.
+
+   Example key mappings:
+>
+   nnoremap <key> :VSFind<space>
+   nnoremap <key> :VSFind ~/.vim<space>
+   nnoremap <key> :VSFind $VIMRUNTIME<space>
+<
+   The 'find' program can be specified through the `g:vimsuggest_fzfindprg`
+   variable. If this variable is not defined, a default command is used (that
+   ignores hidden files and directories). The placeholder "$*" is allowed to
+   specify where the optional directory argument will be included. If
+   placeholder is not specifed, directory name is included at the end.
+   Environment variables and tilde are expanded for directory names.
+>
+   let g:vimsuggest_fzfindprg = 'fd --type f'
+<
+2. Fuzzy Search Buffers and Other Vim Artifacts~
+>
+   :VSBuffer [fuzzy_pattern]
+   :VSMru [fuzzy_pattern]
+   :VSKeymap [fuzzy_pattern]
+   :VSMark [fuzzy_pattern]
+   :VSRegister [fuzzy_pattern]
+   :VSChangelist [fuzzy_pattern]
+   :VSGitFind [dir] [fuzzy_pattern]
+<
+   `VSBuffer`: Search and switch between currently open buffers
+      - Displays matching buffers as you type
+   `VSGitFind`: Smart file search with Git awareness
+      - In Git repositories: Searches tracked files
+      - Outside Git or if 'dir' is given: Falls back to regular file
+          search (like `VSFind`)
+   `VSMru`: Access recently used files
+      - Lists files from Vim's `v:oldfiles` history
+      - Example: Quickly return to files you edited yesterday
+   `VSKeymap`: Navigate to keymap definitions
+      - Opens the source file containing the definition of keymap
+   `VSMark`: Quick mark navigation
+      - Jump to any mark location in your files
+   `VSRegister`: Register content access
+      - Paste the content of register
+   `VSChangelist`: Navigate through changes
+      - Jump to any point in the file's change history
+      - See `:help changelist` for details
+
+3. Live Grep Search~
+   :VSGrep {pattern} [directory]
+
+   Executes a `grep` command live, showing results as you type. `{pattern}` is
+   given directly to `grep` command, and it's best to enclose it in quotes to
+   handle special characters. You can also specify an optional directory.
+
+   Example key mappings:
+>
+   nnoremap <key> :VSGrep ""<left>
+   nnoremap <key> :VSGrep "<c-r>=expand('<cword>')<cr>"<left>
+<
+   The grep program is taken from `g:vimsuggest_grepprg` variable or the `:h
+   'grepprg'` option. If it contains `$*`, it gets replaced by the command-line
+   arguments. Otherwise, arguments are appended to the end of the command.
+>
+   let g:vimsuggest_grepprg = 'rg --vimgrep --smart-case $* .'
+   let g:vimsuggest_grepprg = 'ag --vimgrep'
+<
+4. Live File Search~
+   :VSFindL {pattern} [directory]
+
+   This command runs `find` live, showing results as you type. `{pattern}` is a
+   glob (or regex) pattern that should be enclosed in quotes if it contains
+   wildcards. The `find` command is customized via `g:vimsuggest_findprg`
+   (similar to `g:vimsuggest_fzfindprg`).
+
+5. In-Buffer Search (:h :global)~
+   :VSGlobal {regex_pattern}
+
+   Use this for a powerful in-buffer search with Vim's regex. For example, to
+   list all functions in a Python file and search quickly:
+>
+   nnoremap <buffer> <key> :VSGlobal \v(^\|\s)(def\|class).{-}
+<
+6. Search in Included Files (:h include-search)~
+   :VSInclSearch {regex_pattern}
+
+   Similar to `VSGlobal`, but searches for symbols (ignoring comments) in both
+   the current buffer and included files. The results are gathered using the
+   `:ilist` command.
+
+   Example key mapping:
+>
+   nnoremap <key> :VSInclSearch<space>
+<
+7. Execute Shell Command~
+   :VSExec {shell_command}
+
+   This command runs any shell command using your `$SHELL` environment,
+   allowing features like brace expansion and globbing. Errors are ignored.
+   However, `:VSGrep` and `VSFindL` commands are less clunky.
+
+   Example key mapping:
+>
+   nnoremap <key> :VSExec grep -IHins "" **/*<c-left><left><left>
+<
+NOTE: External programs are executed directly if `g:vimsuggest_shell` is
+`v:false`. Otherwise, they are executed through shell as specified in `shell`
+option (`:h 'shell'`).
+
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:

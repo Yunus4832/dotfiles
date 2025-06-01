@@ -62,6 +62,7 @@ swaybg -- 窗口管理器背景图
 swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 swayimg -- 查看图片
 flatpak -- 软件沙盒环境
+foot -- 终端模拟器
 
 wl-clipboard -- wayland 协议的剪切板
 
