@@ -59,7 +59,7 @@ dvtm -- 另一个轻量级的终端平铺窗口工具
 
 sway -- 窗口管理器
 swaybg -- 窗口管理器背景图
-swaylock -- 窗口管理器锁屏
+swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 swayimg -- 查看图片
 flatpak -- 软件沙盒环境
 
