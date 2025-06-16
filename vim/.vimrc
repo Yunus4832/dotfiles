@@ -364,7 +364,7 @@ set foldmethod=syntax
 " 设置 '-' 也是单词部分
 set iskeyword+=-
 
-" 默认启用ê显示空白字符，并设置 tab 和空格的显示内容
+" 默认启用显示空白字符，并设置 tab 和空格的显示内容
 set list lcs=lead:.,tab:-->,trail:.
 
 " 补全菜单配置
