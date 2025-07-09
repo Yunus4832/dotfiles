@@ -57,12 +57,20 @@ tmux -- 终端复用工具
 dtash -- 另一个更轻量级的终端复用工具
 dvtm -- 另一个轻量级的终端平铺窗口工具
 
-sway -- 窗口管理器
+font -- 中文字体
+
+plasma -- KDE 桌面环境，优先使用 KDE
+ark -- KDE 环境解压缩工具
+dolphin -- KDE 环境文件管理器
+konsole -- KDE 环境终端模拟器
+flatpak -- 软件沙盒环境
+
+sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多难以解决的小问题，例如输入法配置等等
 swaybg -- 窗口管理器背景图
 swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 swayimg -- 查看图片
-flatpak -- 软件沙盒环境
 foot -- 终端模拟器
+rofi -- 程序启动器
 
 wl-clipboard -- wayland 协议的剪切板
 
@@ -71,17 +79,31 @@ fcitx5-chinese-addons -- 输入法中文扩展
 fcitx5-cn-meta
 fcitx5-qt
 fcitx5-gtk
-fcitx5-material-color
+fcitx5-configtool -- 输入法配置工具，如果使用 KDE 可不安装
 
 python -- 通用脚本语言
 nodejs -- node 环境，用于运行语言服务器
+
+chrome -- 浏览器
+
+clash-meta -- 代理工具内核
+clash-verge-rev -- 代理工具
 ```
 
 ## 其他注意事项
 
 1. Java GUI 程序对于 Wayland 环境需要设置特殊的环境变量运行
 
-   ```bash
-   sudo flatpak override --env=GTK_IM_MODULE=fcitx --env=QT_IM_MODULE=fcitx --env=XMODIFIERS=@im=fcitx
-   ```
+2. 安装 chrome 浏览器
 
+3. 安装 clash-verge-rev 代理工具
+
+4. 解决无法打开 clash-verge 的 tun 虚拟网卡模式
+
+5. 解决 Chrome 在 wayland 会话下显示模糊的问题
+
+   打开 Chrome, 地址栏输入 `chrome://flags` 进入 Chrome 的实验室功能，搜索 `Preferred Ozone platform` 选择 `Auto` 即可
+
+6. GRUB 识别 window 系统
+
+7. GRUB 美化
