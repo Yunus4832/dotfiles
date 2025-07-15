@@ -105,7 +105,7 @@ nmap <leader>,h :nohls<CR>
 nmap <leader>,i :set ic!<CR>
 
 " 设置 easymotion 启动快捷键
-nmap <leader><leader> <Plug>(easymotion-prefix)f
+nmap <leader><leader>s <Plug>(easymotion-prefix)s
 
 " idea 和 vim 的按键绑定
 sethandler <C-S-2> a:vim
