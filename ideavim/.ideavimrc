@@ -62,7 +62,7 @@ nmap <leader>dc <Action>(CompileProject)
 nmap <leader>dp <Action>(BuildSolutionAction)
 
 " idea 特殊配置
-nmap <leader>;; <Action>(ToggleFullScreen)
+nmap <leader>;; <Action>(MainMenu)
 nmap <leader>;s <Action>(SearchEverywhere)
 nmap <leader>;a <Action>(Annotate)
 nmap <leader>;e <Action>(RecentChangedFiles)
