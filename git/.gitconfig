@@ -1,6 +1,8 @@
 [user]
-    name = yunus0712
-    email = 2794914797@qq.com
+	name = yunus0712
+	email = 2794914797@qq.com
 [core]
-    #pager = bat
-    autocrlf = input
+	#pager = bat
+	autocrlf = input
+[pull]
+	rebase = true
