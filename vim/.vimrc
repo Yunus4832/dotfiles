@@ -817,6 +817,20 @@ autocmd VimLeavePre * silent! wall
 " q 自动退出 quickfix 窗口
 autocmd FileType qf nmap <buffer> <silent> q :q<CR>
 
+" 保存文件时，如果文件夹不存在则自动创建
+augroup VimAutoMkdir
+    autocmd!
+    autocmd BufWritePre * call s:auto_mkdir(expand('<afile>:p:h'), v:cmdbang)
+    function! s:auto_mkdir(dir, force)
+        if !isdirectory(a:dir)
+                    \ && (a:force
+                    \ || input("'" . a:dir . "' does not exist. Create? [y/N]") =~? '^y\%[es]$')
+            call mkdir(iconv(a:dir, &encoding, &termencoding), 'p')
+        endif
+    endfunction
+augroup end
+
+
 
 "=====================================================================
 " Highlight 高亮相关                                                 =
