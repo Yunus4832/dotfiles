@@ -2,7 +2,10 @@
 	name = yunus0712
 	email = 2794914797@qq.com
 [core]
-	#pager = bat
+	pager = more
 	autocrlf = input
 [pull]
 	rebase = true
+[diff]
+	tool = vimdiff
+

@@ -69,8 +69,10 @@ sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多�
 swaybg -- 窗口管理器背景图
 swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 swayimg -- 查看图片
-foot -- 终端模拟器
+foot -- 终端模拟器, 可选，konsole 也能用，资源占用更低
+
 rofi -- 程序启动器
+waybar -- 状态栏显示
 
 wl-clipboard -- wayland 协议的剪切板
 

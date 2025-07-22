@@ -108,6 +108,11 @@ if [ -n "$SSH_CONNECTION" ]; then
     PS1="%F{red}<ssh>%f $PS1"
 fi
 
+# load .profile
+if [ -f ~/.profile ]; then
+    source ~/.profile
+fi
+
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
