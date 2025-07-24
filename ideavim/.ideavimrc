@@ -23,6 +23,11 @@ set vb t_vb=
 
 " 开启 NERDTree 插件
 set NERDTree
+let g:NERDTreeMapJumpRoot = 'gg'
+let g:NERDTreeMapJumpLastChild = 'G'
+let g:NERDTreeMapPreview = 'u'
+let g:NERDTreeMapPreviewSplit = ''
+let g:NERDTreeMapPreviewVSplit = ''
 
 " 启用 easymotion
 Plug 'easymotion/vim-easymotion'
@@ -105,6 +110,7 @@ nmap <leader>,h :nohls<CR>
 nmap <leader>,i :set ic!<CR>
 
 " 设置 easymotion 启动快捷键
+nmap <leader><leader> <Space><Space>
 nmap <leader><leader>s <Plug>(easymotion-prefix)s
 
 " idea 和 vim 的按键绑定
