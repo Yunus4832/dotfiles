@@ -51,6 +51,7 @@ astyle -- 格式化代码
 jq -- json 格式化工具
 ranger -- 文件管理器
 vifm -- 另一个简单的文件管理器
+more/less -- 分页查看文本文档，类似 cat
 bat -- cat 的上位替代
 zsh -- 更好用的 shell
 tmux -- 终端复用工具
@@ -90,17 +91,46 @@ chrome -- 浏览器
 
 clash-meta -- 代理工具内核
 clash-verge-rev -- 代理工具
+
+yay -- AUR 用户软件仓库包管理器
 ```
 
 ## 其他注意事项
 
 1. Java GUI 程序对于 Wayland 环境需要设置特殊的环境变量运行
 
+   ```environment
+   # /etc/environment
+   # 增加如下行
+   _JAVA_AWT_WM_NONREPARENTING=1
+   ```
+
 2. 安装 chrome 浏览器
+
+   ```bash
+   # 使用 AUR 软件包
+   yay -S google-chrome
+   # 使用 flatpak 软件包
+   flatpak install com.google.Chrome
+   ```
 
 3. 安装 clash-verge-rev 代理工具
 
+   ```bash
+   sudo pacman -S clash-meta-rev
+   ```
+
 4. 解决无法打开 clash-verge 的 tun 虚拟网卡模式
+
+  - 可能是之前安装了旧版本的 clash-verge 导致服务配置指向的 clash-verge-service 路径错误， 编辑
+   `/usr/lib/systemd/system/clash-verge-service.service` 中的可执行文件，一般指向 `/usr/bin/clash-verge-service`
+
+  - 可能是每一个相关 linux 能力导致的，执行如下命令可以修复
+
+   ```bash
+   sudo setcap cap_net_bind_service,cap_net_admin=+ep /usr/bin/clash-meta
+   sudo setcap cap_net_bind_service,cap_net_admin=+ep /usr/bin/clash-verge
+   ```
 
 5. 解决 Chrome 在 wayland 会话下显示模糊的问题
 
