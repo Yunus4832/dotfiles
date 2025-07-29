@@ -72,7 +72,7 @@ swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 swayimg -- 查看图片
 foot -- 终端模拟器, 可选，konsole 也能用，资源占用更低
 
-rofi -- 程序启动器
+rofi-wayland -- 程序启动器 rofi 的 Wayland 版本
 waybar -- 状态栏显示
 
 wl-clipboard -- wayland 协议的剪切板
