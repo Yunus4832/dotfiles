@@ -940,8 +940,7 @@ endif
 if executable('wl-copy')
     augroup wl-clipboard
         autocmd!
-        autocmd FocusLost * :call system('wl-copy --trim-newline', @0)
-        autocmd FocusGained * :let @0 = system('wl-paste -n')
+        autocmd TextYankPost * silent! call system('wl-copy --trim-newline', @")
         autocmd FocusGained * :let @" = system('wl-paste -n')
     augroup END
 endif
