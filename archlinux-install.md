@@ -60,18 +60,20 @@ dvtm -- 另一个轻量级的终端平铺窗口工具
 
 font -- 中文字体
 
-plasma -- KDE 桌面环境，优先使用 KDE
+plasma -- KDE 桌面环境，可选，也可使用窗口管理器
 ark -- KDE 环境解压缩工具
 dolphin -- KDE 环境文件管理器
 konsole -- KDE 环境终端模拟器
 flatpak -- 软件沙盒环境
 
-sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多难以解决的小问题，例如输入法配置等等
+sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多 xwayland 应用难以解决的小问题，例如输入法配置, 字体模糊等
+river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口，问题同 Sway
+hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
+
 swaybg -- 窗口管理器背景图
 swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 swayimg -- 查看图片
 foot -- 终端模拟器, 可选，konsole 也能用，资源占用更低
-
 rofi-wayland -- 程序启动器 rofi 的 Wayland 版本
 waybar -- 状态栏显示
 
