@@ -159,6 +159,7 @@ rivertile -view-padding 6 -outer-padding 6 &
 riverctl spawn "fcitx5 --replace -d"
 riverctl spawn "waybar -c ~/.config/waybar/config-river"
 riverctl spawn "swaybg -i ~/.config/wallpapers/wallpaper.png -m fill"
+riverctl spawn "clash-verge"
 
 source ~/.config/river/custom.sh
 

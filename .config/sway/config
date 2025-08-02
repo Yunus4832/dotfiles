@@ -233,6 +233,7 @@ bindsym $mod+r mode "resize"
 
 exec "waybar -c ~/.config/waybar/config-sway"
 exec --no-startup-id "fcitx5 -d"
+exec clash-verge
 
 # sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
 # See FS#63021
