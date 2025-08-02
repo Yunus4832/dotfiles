@@ -75,6 +75,66 @@ if command -v vim &> /dev/null; then
     echo done
 fi
 
+#-----------------------------------------------------
+# sway 配置                                          -
+#-----------------------------------------------------
+
+if command -v sway &> /dev/null; then
+    echo "Copy sway config to $HOME/.config/sway..."
+    cp -r $DOTFILES_DIR/.config/sway $HOME/.config
+    echo done
+fi
+
+#-----------------------------------------------------
+# river 配置                                         -
+#-----------------------------------------------------
+
+if command -v river &> /dev/null; then
+    echo "Copy river config to $HOME/.config/river..."
+    cp -r $DOTFILES_DIR/.config/river $HOME/.config
+    echo done
+fi
+
+#-----------------------------------------------------
+# river 配置                                         -
+#-----------------------------------------------------
+
+if command -v hyprland &> /dev/null; then
+    echo "Copy hyprland config to $HOME/.config/hypr..."
+    cp -r $DOTFILES_DIR/.config/hypr $HOME/.config
+    echo done
+fi
+
+#-----------------------------------------------------
+# waybar 配置                                        -
+#-----------------------------------------------------
+
+if command -v waybar &> /dev/null; then
+    echo "Copy waybar config to $HOME/.config/waybar..."
+    cp -r $DOTFILES_DIR/.config/waybar $HOME/.config
+    echo done
+fi
+
+#-----------------------------------------------------
+# wallpaper 配置                                     -
+#-----------------------------------------------------
+
+if command -v swaybg &> /dev/null; then
+    echo "Copy wallpapers config to $HOME/.config/wallpapers..."
+    cp -r $DOTFILES_DIR/.config/wallpapers $HOME/.config
+    echo done
+fi
+
+#-----------------------------------------------------
+# rofi 配置                                          -
+#-----------------------------------------------------
+
+if command -v rofi &> /dev/null; then
+    echo "Copy rofi config to $HOME/.config/rofi..."
+    cp -r $DOTFILES_DIR/.config/rofi $HOME/.config
+    echo done
+fi
+
 echo config done
 
 
