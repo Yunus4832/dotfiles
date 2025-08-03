@@ -225,7 +225,8 @@ bindsym $mod+r mode "resize"
     #status_command waybar
 #}
 
-# default_border none
+default_border pixel
+gaps inner 10
 
 exec "waybar -c ~/.config/waybar/config-sway"
 exec --no-startup-id "fcitx5 -d"
