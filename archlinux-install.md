@@ -71,6 +71,7 @@ river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组�
 hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
 
 swaybg -- 窗口管理器背景图
+swayidle -- 电源管理
 swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 swayimg -- 查看图片
 foot -- 终端模拟器, 可选，konsole 也能用，资源占用更低
