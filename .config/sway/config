@@ -1,252 +1,167 @@
-# Default config for sway
-#
-# Copy this to ~/.config/sway/config and edit it to your liking.
-#
-# Read `man 5 sway` for a complete reference.
-
-### Variables
-#
-# Logo key. Use Mod1 for Alt.
+# ModKey
 set $mod Mod4
-# Home row direction keys, like vim
+
+# 移动键，类似 vim
 set $left h
 set $down j
 set $up k
 set $right l
-# Your preferred terminal emulator
+
+# 默认终端模拟器
 set $term foot
-# Your preferred application launcher
+# 默认程序启动噐
 set $menu rofi -show drun
+# 文件管理器
+set $fileManager dolphin
 
-### Output configuration
-
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+# 默认壁纸
 output * bg ~/.config/wallpapers/wallpaper.png fill
 
-# Example configuration:
-#
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
+# 输入配置
+input type:touchpad {
+    tap enabled # 开启触控板单击支持
+    tap_button_map lrm
+    dwt enabled
+    dwtp enabled
+    natural_scroll enabled # 开启触控板自然滚动支持
+}
 
-### Idle configuration
-#
-# Example configuration:
-#
-exec swayidle -w timeout 1800 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2'
+# 按键绑定
+# 启动终端
+bindsym $mod+Return exec $term
+bindsym $mod+q exec $term
 
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
+# 关闭窗口
+bindsym $mod+c kill
 
-### Input configuration
-#
-# Example configuration:
-#
-#   input "2:14:SynPS/2_Synaptics_TouchPad" {
-#       dwt enabled
-#       tap enabled
-#       natural_scroll enabled
-#       middle_emulation enabled
-#   }
-#
-# You can get the names of your inputs by running: swaymsg -t get_inputs
-# Read `man 5 sway-input` for more information about this section.
+# 启动程序启动噐
+bindsym $mod+d exec $menu
 
-    input type:touchpad {
-        tap enabled # enables click-on-tap
-        tap_button_map lrm # tap with 1 finger = left click, 2 finger = right click, 3 finger = middle click
-        dwt enabled # disable touchpad while typing
-        dwtp enabled # disable touchpad while track pointing
-        natural_scroll enabled # enable natural scroll
-    }
+# 文件管理器
+bindsym $mod+e exec $fileManager
 
-### Key bindings
-#
-# Basics:
-#
-    # Start a terminal
-    bindsym $mod+Return exec $term
-    bindsym $mod+q exec $term
+# 重新加载配置文件
+bindsym $mod+Shift+c reload
 
-    # Kill focused window
-    bindsym $mod+c kill
+# 退出 Sway 会话
+bindsym $mod+m exec 'swaymsg exit'
 
-    # Start your launcher
-    bindsym $mod+d exec $menu
+# 锁定桌面
+bindsym $mod+shift+q exec 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000'
 
-    # Drag floating windows by holding down $mod and left mouse button.
-    # Resize them with right mouse button + $mod.
-    # Despite the name, also works for non-floating windows.
-    # Change normal to inverse to use left mouse button for resizing and right
-    # mouse button for dragging.
-    floating_modifier $mod normal
+# 移动窗口焦点
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
 
-    # Reload the configuration file
-    bindsym $mod+Shift+c reload
+bindsym $mod+left focus left
+bindsym $mod+down focus down
+bindsym $mod+up focus up
+bindsym $mod+right focus right
 
-    # Exit sway (logs you out of your Wayland session)
-    #bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. do you really want to exit sway? this will end your wayland session.' -b 'yes, exit sway' 'swaymsg exit'
-    bindsym $mod+m exec 'swaymsg exit'
+# 移动窗口
+bindsym $mod+shift+$left move left
+bindsym $mod+shift+$down move down
+bindsym $mod+shift+$up move up
+bindsym $mod+shift+$right move right
 
-    # lock computer
-    bindsym $mod+shift+q exec 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000'
-#
-# moving around:
-#
-    # move your focus around
-    bindsym $mod+$left focus left
-    bindsym $mod+$down focus down
-    bindsym $mod+$up focus up
-    bindsym $mod+$right focus right
-    # or use $mod+[up|down|left|right]
-    bindsym $mod+left focus left
-    bindsym $mod+down focus down
-    bindsym $mod+up focus up
-    bindsym $mod+right focus right
+bindsym $mod+shift+left move left
+bindsym $mod+shift+down move down
+bindsym $mod+shift+up move up
+bindsym $mod+shift+right move right
 
-    # move the focused window with the same, but add shift
-    bindsym $mod+shift+$left move left
-    bindsym $mod+shift+$down move down
-    bindsym $mod+shift+$up move up
-    bindsym $mod+shift+$right move right
-    # ditto, with arrow keys
-    bindsym $mod+shift+left move left
-    bindsym $mod+shift+down move down
-    bindsym $mod+shift+up move up
-    bindsym $mod+shift+right move right
-#
-# workspaces:
-#
-    # switch to workspace
-    bindsym $mod+1 workspace number 1
-    bindsym $mod+2 workspace number 2
-    bindsym $mod+3 workspace number 3
-    bindsym $mod+4 workspace number 4
-    bindsym $mod+5 workspace number 5
-    bindsym $mod+6 workspace number 6
-    bindsym $mod+7 workspace number 7
-    bindsym $mod+8 workspace number 8
-    bindsym $mod+9 workspace number 9
-    bindsym $mod+0 workspace number 10
-    # move focused container to workspace
-    bindsym $mod+shift+1 move container to workspace number 1
-    bindsym $mod+shift+2 move container to workspace number 2
-    bindsym $mod+shift+3 move container to workspace number 3
-    bindsym $mod+shift+4 move container to workspace number 4
-    bindsym $mod+shift+5 move container to workspace number 5
-    bindsym $mod+shift+6 move container to workspace number 6
-    bindsym $mod+shift+7 move container to workspace number 7
-    bindsym $mod+shift+8 move container to workspace number 8
-    bindsym $mod+shift+9 move container to workspace number 9
-    bindsym $mod+shift+0 move container to workspace number 10
-    # note: workspaces can have any name you want, not just numbers.
-    # we just use 1-10 as the default.
-#
-# layout stuff:
-#
-    # you can "split" the current object of your focus with
-    # $mod+b or $mod+v, for horizontal and vertical splits
-    # respectively.
-    bindsym $mod+b splith
-    bindsym $mod+v splitv
 
-    # switch the current container between different layout styles
-    bindsym $mod+s layout stacking
-    bindsym $mod+w layout tabbed
-    bindsym $mod+e layout toggle split
+# 切换工作区
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
 
-    # make the current focus fullscreen
-    bindsym $mod+f fullscreen
+# 将当前窗口移动到指定的工作区
+bindsym $mod+shift+1 move container to workspace number 1
+bindsym $mod+shift+2 move container to workspace number 2
+bindsym $mod+shift+3 move container to workspace number 3
+bindsym $mod+shift+4 move container to workspace number 4
+bindsym $mod+shift+5 move container to workspace number 5
+bindsym $mod+shift+6 move container to workspace number 6
+bindsym $mod+shift+7 move container to workspace number 7
+bindsym $mod+shift+8 move container to workspace number 8
+bindsym $mod+shift+9 move container to workspace number 9
+bindsym $mod+shift+0 move container to workspace number 10
 
-    # toggle the current focus between tiling and floating mode
-    bindsym $mod+shift+space floating toggle
+# 布局
+# 切换水平垂直布局
+bindsym $mod+b splith
+bindsym $mod+v splitv
 
-    # swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
+# 切换布局风格
+bindsym $mod+s layout toggle split
+bindsym $mod+w layout tabbed
 
-    # move focus to the parent container
-    bindsym $mod+a focus parent
-#
-# scratchpad:
-#
-    # sway has a "scratchpad", which is a bag of holding for windows.
-    # you can send windows there and get them back later.
+# 窗口全屏
+bindsym $mod+f fullscreen
 
-    # move the currently focused window to the scratchpad
-    bindsym $mod+shift+minus move scratchpad
+# 切换窗口浮动
+bindsym $mod+shift+space floating toggle
 
-    # show the next scratchpad window or hide the focused scratchpad window.
-    # if there are multiple scratchpad windows, this command cycles through them.
-    bindsym $mod+minus scratchpad show
-#
-# resizing containers:
-#
+# 切换焦点模式
+bindsym $mod+space focus mode_toggle
+
+# 焦点回到父窗口
+bindsym $mod+a focus parent
+
+# 暂存区
+# 将窗口移动到暂存区
+bindsym $mod+shift+minus move scratchpad
+
+# 从暂存区取出窗口，如果有多个窗口，则循环展示
+bindsym $mod+minus scratchpad show
+
+# 调整窗口尺寸
 mode "resize" {
-    # left will shrink the containers width
-    # right will grow the containers width
-    # up will shrink the containers height
-    # down will grow the containers height
     bindsym $left resize shrink width 10px
     bindsym $down resize grow height 10px
     bindsym $up resize shrink height 10px
     bindsym $right resize grow width 10px
 
-    # ditto, with arrow keys
     bindsym left resize shrink width 10px
     bindsym down resize grow height 10px
     bindsym up resize shrink height 10px
     bindsym right resize grow width 10px
 
-    # return to default mode
+    # 回到默认模式
     bindsym return mode "default"
     bindsym escape mode "default"
 }
 bindsym $mod+r mode "resize"
-#
-# utilities:
-#
-    # special keys to adjust volume via pulseaudio
-    bindsym --locked xf86audiomute exec pactl set-sink-mute \@default_sink@ toggle
-    bindsym --locked xf86audiolowervolume exec pactl set-sink-volume \@default_sink@ -5%
-    bindsym --locked xf86audioraisevolume exec pactl set-sink-volume \@default_sink@ +5%
-    bindsym --locked xf86audiomicmute exec pactl set-source-mute \@default_source@ toggle
-    # special keys to adjust brightness via brightnessctl
-    bindsym --locked xf86monbrightnessdown exec brightnessctl set 5%-
-    bindsym --locked xf86monbrightnessup exec brightnessctl set 5%+
-    # special key to take a screenshot with grim
-    bindsym print exec grim
 
-#
-# status bar:
-#
-# read `man 5 sway-bar` for more information about this section.
-#bar {
-    #status_command waybar
-#}
 
+# 默认使用 pixel 边框
 default_border pixel
-gaps inner 10
+# 窗口内间距
+gaps inner 5
 
+# 自启动进程
+# 状态栏
 exec "waybar -c ~/.config/waybar/config-sway"
+# 输入法
 exec --no-startup-id "fcitx5 -d"
+# 网络代理
 exec clash-verge
+# 锁屏配置
+exec swayidle -w timeout 1800 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2'
 
-# sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
-# See FS#63021
-# Adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
-
-# Upstream refuses to set XDG_CURRENT_DESKTOP so we have to.
+# 部分环境变量
 exec systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
-exec systemctl --user import-environment DISPLAY \
-                                         SWAYSOCK \
-                                         WAYLAND_DISPLAY \
-                                         XDG_CURRENT_DESKTOP
+exec systemctl --user import-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway WAYLAND_DISPLAY
 
-exec hash dbus-update-activation-environment 2>/dev/null && \
-     dbus-update-activation-environment --systemd DISPLAY \
-                                                  SWAYSOCK \
-                                                  XDG_CURRENT_DESKTOP=sway \
-                                                  WAYLAND_DISPLAY
-
+# 其他自定义相关的配置
 include ./custom.conf

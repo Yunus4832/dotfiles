@@ -1,22 +1,13 @@
-################
-### MONITORS ###
-################
+# 显示器配置
 
-# See https://wiki.hypr.land/Configuring/Monitors/
 #monitor=eDP-1,2880x1800,0x0,auto
 #monitor=DP-2,1920x1080,-1920x-180,auto
-
+#
 #xwayland {
-    #force_zero_scaling = true
+#    force_zero_scaling = true
 #}
 
-##############################
-### WINDOWS AND WORKSPACES ###
-##############################
-
-# See https://wiki.hypr.land/Configuring/Window-Rules/ for more
-# See https://wiki.hypr.land/Configuring/Workspace-Rules/ for workspace rules
-
+# 工作区配置
 #workspace = 1, monitor:DP-2, default:true
 #workspace = 2, monitor:DP-2
 #workspace = 3, monitor:DP-2

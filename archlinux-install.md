@@ -100,11 +100,15 @@ yay -- AUR 用户软件仓库包管理器
 
 ## 其他注意事项
 
-1. Java GUI 程序对于 Wayland 环境需要设置特殊的环境变量运行
+1. XWayland 以及 Java 程序对于 Wayland 环境需要设置特殊的环境变量运行
 
    ```environment
    # /etc/environment
-   # 增加如下行
+   GDK_SCALE=1
+   XCURSOR_SIZE=24
+   GTK_IM_MODULE=fcitx
+   QT_IM_MODULE=fcitx
+   XMODIFIERS=@im=fcitx
    _JAVA_AWT_WM_NONREPARENTING=1
    ```
 
@@ -141,4 +145,14 @@ yay -- AUR 用户软件仓库包管理器
 
 6. GRUB 识别 window 系统
 
+   略
+
 7. GRUB 美化
+
+   略
+
+8. xwayland 应用在高分屏模糊问题
+
+   原因是高分屏对 xwayland 只有在整数倍的缩放下才能够清晰，因此可以选择设置显示器整数倍缩放，但是这样字体会十分小，
+   另一个解决方案是多显示器方案，xwayland 应用运行在普通分辨率的显示器上，并且该显示器的缩放设置为 1
+
