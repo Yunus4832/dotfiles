@@ -137,5 +137,11 @@ export LANG=en_US.UTF-8
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+if command -v perl &> /dev/null; then
+    alias perlinit="eval '$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)'"
+fi
+
+
+
 # set do not raise error when can't match
 setopt nonomatch
