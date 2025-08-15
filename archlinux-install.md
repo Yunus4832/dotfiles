@@ -103,12 +103,18 @@ yay -- AUR 用户软件仓库包管理器
 1. XWayland 以及 Java 程序对于 Wayland 环境需要设置特殊的环境变量运行
 
    ```environment
-   # /etc/environment
+   # 启动时程序时携带环境变量，或者写入到 /etc/environment, 不建议直接写到该文件中，因为它是全局的环境变量，可能会污染其他应用程序
+   # 缩放
    GDK_SCALE=1
+   # 光标大小
    XCURSOR_SIZE=24
+   # 输入法
    GTK_IM_MODULE=fcitx
+   # 输入法
    QT_IM_MODULE=fcitx
+   # 输入法
    XMODIFIERS=@im=fcitx
+   # Java 应用配置环境变量
    _JAVA_AWT_WM_NONREPARENTING=1
    ```
 
