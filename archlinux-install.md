@@ -46,6 +46,7 @@ vim -- 通用编辑器
 git -- 版本管理工具
 fzf -- 模糊搜索工具
 curl -- 终端 http 客户端
+xh -- Rust 编写的 http 客户端，比 curl 更加友好, 兼容 httpie 但是不依赖 python
 ctags -- 用于生成 tags 文件
 astyle -- 格式化代码
 jq -- json 格式化工具
@@ -93,9 +94,11 @@ nodejs -- node 环境，用于运行语言服务器
 chrome -- 浏览器
 
 clash-meta -- 代理工具内核
-clash-verge-rev -- 代理工具
+clash-verge-rev -- 代理工具, clash-meta 会被作为依赖自动安装
 
 yay -- AUR 用户软件仓库包管理器
+
+sc-im -- 终端表格处理工具，交互类似 vim
 ```
 
 ## 其他注意事项
@@ -138,7 +141,7 @@ yay -- AUR 用户软件仓库包管理器
   - 可能是之前安装了旧版本的 clash-verge 导致服务配置指向的 clash-verge-service 路径错误， 编辑
    `/usr/lib/systemd/system/clash-verge-service.service` 中的可执行文件，一般指向 `/usr/bin/clash-verge-service`
 
-  - 可能是每一个相关 linux 能力导致的，执行如下命令可以修复
+  - 可能是没有相关 linux 能力导致的，执行如下命令可以修复
 
    ```bash
    sudo setcap cap_net_bind_service,cap_net_admin=+ep /usr/bin/clash-meta
@@ -160,5 +163,7 @@ yay -- AUR 用户软件仓库包管理器
 8. xwayland 应用在高分屏模糊问题
 
    原因是高分屏对 xwayland 只有在整数倍的缩放下才能够清晰，因此可以选择设置显示器整数倍缩放，但是这样字体会十分小，
-   另一个解决方案是多显示器方案，xwayland 应用运行在普通分辨率的显示器上，并且该显示器的缩放设置为 1
+   另一个解决方案是多显示器方案，xwayland 应用运行在普通分辨率的显示器上，并且该显示器的缩放设置为 1，这样会带来另
+   一个问题，即鼠标位置偏移，具体现象是光标显示位置和实际位置部分，体感上表现为无相应，大多数 WM 都有这个问题，KDE
+   可以正常使用。
 
