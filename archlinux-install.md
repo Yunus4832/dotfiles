@@ -71,10 +71,11 @@ sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多 x
 river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口，问题同 Sway
 hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
 
-swayidle -- sway 生态的空闲管理器
-swaylock | swaylock-effects -- 窗口管理器锁屏 | 带特殊效果
 hypridle -- hyprland 生态的空闲管理器
 hyprlock -- hyprland 生态锁屏
+swayidle -- sway 生态的空闲管理器，可选，优先 hypridle
+swaylock | swaylock-effects -- sway 生态锁屏, effects 带特殊效果，可选，优先 hyprlock
+wlopm -- wayland 环境通用的系统工具, river 依赖其进行熄屏
 
 swaybg -- 窗口管理器背景图
 swayimg -- 查看图片

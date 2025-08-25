@@ -5,7 +5,7 @@ riverctl map normal Super Return spawn foot
 riverctl map normal Super Q spawn foot
 
 # 锁定桌面
-riverctl map normal Super+Shift Q spawn "swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2"
+riverctl map normal Super+Shift Q spawn "hyprlock"
 
 # 应用启动噐
 riverctl map normal Super D spawn "rofi -show drun"
@@ -115,7 +115,6 @@ riverctl spawn "fcitx5 --replace -d"
 riverctl spawn "waybar -c ~/.config/waybar/config-river"
 riverctl spawn "swaybg -i ~/.config/wallpapers/wallpaper.png -m fill"
 riverctl spawn "clash-verge"
-riverctl spawn "swayidle -w timeout 1800 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2'"
 
 # 环境变量
 systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP

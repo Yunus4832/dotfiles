@@ -47,7 +47,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+m exec 'swaymsg exit'
 
 # 锁定桌面
-bindsym $mod+shift+q exec 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000'
+bindsym $mod+shift+q exec 'hyprlock'
 
 # 移动窗口焦点
 bindsym $mod+$left focus left
@@ -156,7 +156,7 @@ exec --no-startup-id "fcitx5 -d"
 # 网络代理
 exec clash-verge
 # 锁屏配置
-exec swayidle -w timeout 1800 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2'
+exec "hypridle -c ~/.config/sway/hypridle.conf"
 
 # 部分环境变量
 exec systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
