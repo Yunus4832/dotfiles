@@ -9,7 +9,7 @@
 #riverctl spawn "hypridle -c ~/.config/river/hypridle.conf"
 # 对于 OpenGL 版本较低的设备无法使用 hyprlock，使用 swayidle + swaylock 替代
 #riverctl map normal Super+Shift Q spawn "swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2"
-#riverctl spawn "swayidle -w timeout 300 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2' timeout 600 'swaymsg \"output * power off\"' resume 'swaymsg \"output * power on\"'"
+#riverctl spawn "swayidle -w timeout 300 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2' timeout 600 'wlopm --off eDP-1' resume 'wlopm --on eDP-1'"
 #
 # 触控板示例配置
 #riverctl input "pointer-1739-32552-MSFT0001:02_06CB:7F28_Touchpad" tap enabled
