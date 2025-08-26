@@ -46,9 +46,6 @@ bindsym $mod+Shift+c reload
 # 退出 Sway 会话
 bindsym $mod+m exec 'swaymsg exit'
 
-# 锁定桌面
-bindsym $mod+shift+q exec 'hyprlock'
-
 # 移动窗口焦点
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
@@ -155,8 +152,6 @@ exec "waybar -c ~/.config/waybar/config-sway"
 exec --no-startup-id "fcitx5 -d"
 # 网络代理
 exec clash-verge
-# 锁屏配置
-exec "hypridle -c ~/.config/sway/hypridle.conf"
 
 # 部分环境变量
 exec systemctl --user set-environment XDG_CURRENT_DESKTOP=sway

@@ -96,10 +96,10 @@ if command -v river &> /dev/null; then
 fi
 
 #-----------------------------------------------------
-# river 配置                                         -
+# hyprland 配置                                      -
 #-----------------------------------------------------
 
-if command -v hyprland &> /dev/null; then
+if command -v hyprland &> /dev/null || command -v hyprlock &> /dev/null || command -v hypridle &> /dev/null; then
     echo "Copy hyprland config to $HOME/.config/hypr..."
     cp -r $DOTFILES_DIR/.config/hypr $HOME/.config
     echo done

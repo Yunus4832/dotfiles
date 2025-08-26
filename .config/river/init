@@ -4,9 +4,6 @@
 riverctl map normal Super Return spawn foot
 riverctl map normal Super Q spawn foot
 
-# 锁定桌面
-riverctl map normal Super+Shift Q spawn "hyprlock"
-
 # 应用启动噐
 riverctl map normal Super D spawn "rofi -show drun"
 
