@@ -70,6 +70,7 @@ flatpak -- 软件沙盒环境
 sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多 xwayland 应用难以解决的小问题，例如输入法配置, 字体模糊等
 river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口，问题同 Sway
 hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
+xdg-desktop-portal-gtk -- hyprland 依赖这个软件包作为 xdg-desktop-portal 的后端，包括文件选择噐等功能
 
 hypridle -- hyprland 生态的空闲管理器
 hyprlock -- hyprland 生态锁屏
