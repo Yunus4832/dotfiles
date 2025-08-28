@@ -92,6 +92,9 @@ fi
 if command -v river &> /dev/null; then
     echo "Copy river config to $HOME/.config/river..."
     cp -r $DOTFILES_DIR/.config/river $HOME/.config
+    if [ ! -e $HOME/.config/river/hypridle.conf ]; then
+        cp $HOME/.config/river/hypridle.conf.example $HOME/.config/river/hypridle.conf
+    fi
     echo done
 fi
 
