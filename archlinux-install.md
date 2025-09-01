@@ -190,7 +190,7 @@ sc-im -- 终端表格处理工具，交互类似 vim
    ```bash
    # 安装 gtk 的后端以支持选取文件
    sudo pacman -S xdg-desktop-portal-gtk
-   # 启用 gtk 的后端
-   systemctl --user enable xdg-desktop-portal-gtk.service
+   # 重启主服务
+   systemctl --user restart xdg-desktop-portal.service
    ```
 
