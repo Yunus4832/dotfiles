@@ -70,7 +70,8 @@ flatpak -- 软件沙盒环境
 sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多 xwayland 应用难以解决的小问题，例如输入法配置, 字体模糊等
 river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口，问题同 Sway
 hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
-xdg-desktop-portal-gtk -- hyprland 依赖这个软件包作为 xdg-desktop-portal 的后端，包括文件选择噐等功能
+xdg-desktop-protal-wlr -- wayland 环境默认的 xdg-desktop-portal 后端。
+xdg-desktop-portal-gtk -- 部分软件包依赖 xdg-desktop-portal 的 gtk 后端，例如文件选择噐等功能
 
 hypridle -- hyprland 生态的空闲管理器
 hyprlock -- hyprland 生态锁屏
@@ -96,7 +97,8 @@ fcitx5-configtool -- 输入法配置工具，如果使用 KDE 可不安装
 python -- 通用脚本语言
 nodejs -- node 环境，用于运行语言服务器
 
-chrome -- 浏览器
+chrome -- chrome 浏览器
+firefox -- firefox 浏览器，比 chrome 占用的资源更少
 
 clash-meta -- 代理工具内核
 clash-verge-rev -- 代理工具, clash-meta 会被作为依赖自动安装
@@ -178,5 +180,17 @@ sc-im -- 终端表格处理工具，交互类似 vim
 
    ```.Xresources
    Xft.dpi=192
+   ```
+
+10. 非 KDE 环境中部分应用无法使用 xdg-desktop-portal 选取文件 file-picker
+
+   原因是 wayland 环境的默认 xdg-desktop-portal 后端 xdg-desktop-portal-wlr 在这些环境中还不支持 file-picker，
+   对于 gtk 的应用，需要额外安装并启用 gtk 的后端，具体命令如下：
+
+   ```bash
+   # 安装 gtk 的后端以支持选取文件
+   sudo pacman -S xdg-desktop-portal-gtk
+   # 启用 gtk 的后端
+   systemctl --user enable xdg-desktop-portal-gtk.service
    ```
 
