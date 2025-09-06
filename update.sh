@@ -138,6 +138,15 @@ if command -v rofi &> /dev/null; then
     echo done
 fi
 
+#-----------------------------------------------------
+# xdg-desktop-portal 配置                            -
+#-----------------------------------------------------
+
+if pacman -Q xdg-desktop-portal &> /dev/null; then
+    echo "Copy xdg-desktop-portal config to $HOME/.config/xdg-desktop-portal..."
+    cp -r $DOTFILES_DIR/.config/xdg-desktop-portal $HOME/.config
+fi
+
 echo config done
 
 
