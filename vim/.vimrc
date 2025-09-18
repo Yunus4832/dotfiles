@@ -318,6 +318,9 @@ set clipboard=unnamed
 set guioptions-=m
 set guioptions-=T
 
+" 设置 Gvim 使用的字体
+set guifont=Consolas\ 7NF\ 14
+
 " 去除左右两边滚动条
 set go-=r
 set go-=L
@@ -837,21 +840,23 @@ augroup end
 "=====================================================================
 
 " 主题颜色自定义配置
-hi Error ctermbg=NONE guibg=NONE
-hi CursorLineNr ctermbg=NONE guibg=NONE
-hi LineNr ctermbg=NONE guibg=NONE
-hi SignColumn ctermbg=NONE guibg=NONE
-hi GitGutterAdd ctermfg=22 ctermbg=NONE guibg=NONE
-hi GitGutterChange ctermfg=3 ctermbg=NONE guibg=NONE
-hi GitGutterDelete ctermfg=8 ctermbg=NONE guibg=NONE
-hi GitGutterChangeDelete ctermfg=3 ctermbg=NONE guibg=NONE
-hi CursorLine ctermbg=236
-hi CursorColumn ctermbg=236
-hi Conceal ctermbg=NONE guibg=NONE
-hi NonText ctermbg=NONE guibg=NONE
-hi Normal ctermbg=NONE guibg=NONE
-hi Search ctermbg=64 ctermfg=231 guibg=NONE
-hi SpecialKey ctermbg=NONE ctermfg=59 guifg=#49483e guibg=NONE
+hi Error ctermbg=NONE guibg=#000000
+hi CursorLineNr ctermbg=NONE guibg=#000000
+hi Conceal ctermbg=NONE guibg=#000000
+hi NonText ctermbg=NONE guibg=#000000
+hi Normal ctermbg=NONE guibg=#000000
+hi LineNr ctermbg=NONE guibg=#000000
+hi SignColumn ctermbg=NONE guibg=#000000
+
+hi GitGutterAdd ctermfg=22 guifg=#005f00 ctermbg=NONE guibg=#000000
+hi GitGutterChange ctermfg=3 guifg=#cdcd00 ctermbg=NONE guibg=#000000
+hi GitGutterDelete ctermfg=8 guifg=#878787 ctermbg=NONE guibg=#000000
+hi GitGutterChangeDelete ctermfg=3 guifg=#cdcd00 ctermbg=NONE guibg=#000000
+
+hi CursorLine ctermbg=236 guibg=#303030
+hi CursorColumn ctermbg=236 guibg=#303030
+hi Search ctermbg=64 guibg=#5f875f ctermfg=231 guifg=#ffffff
+hi SpecialKey ctermbg=NONE ctermfg=59 guifg=#5f5f5f guibg=#000000
 
 
 "=====================================================================

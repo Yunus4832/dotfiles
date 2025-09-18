@@ -43,6 +43,7 @@ iwd -- 连接无线网络 wifi
 dhcpcd -- 自动获取 ip 地址
 
 vim -- 通用编辑器
+gvim -- Vim 的 GUI 版本，可选
 git -- 版本管理工具
 fzf -- 模糊搜索工具
 curl -- 终端 http 客户端
@@ -82,7 +83,7 @@ wlopm -- wayland 环境通用的系统工具, river 依赖其进行熄屏
 swaybg -- 窗口管理器背景图
 swayimg -- 查看图片
 foot -- 终端模拟器, 可选，konsole 也能用，资源占用更低
-rofi-wayland -- 程序启动器 rofi 的 Wayland 版本
+rofi -- 程序启动器 rofi, 现在已支持 Wayland
 waybar -- 状态栏显示
 
 wl-clipboard -- wayland 协议的剪切板
