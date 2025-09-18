@@ -433,6 +433,10 @@ let g:NERDTreeDirArrowExpandable = ' '
 let g:NERDTreeDirArrowCollapsible = ' '
 let g:NERDTreeGitStatusUseNerdFonts = 1
 
+" nerdcommenter 配置
+" 不使用默认的注释快捷键映射
+let g:NERDCreateDefaultMappings = 1
+
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
@@ -604,8 +608,6 @@ nmap <leader>w <C-w>
 " 缓冲区
 " 切换最近的缓冲区
 nmap <leader>bb :silent b#<CR>
-" tab 选择缓冲区
-nmap <leader>b<tab> :b
 " 下一个缓冲区
 nmap <leader>bn :silent bn<CR>
 " 上一个缓冲区
@@ -668,6 +670,10 @@ nmap <leader>;t :AsyncTask
 
 " 变量重命名
 " nmap <leader>;r NONE
+
+" 代码注释
+nmap <leader>;c <Plug>NERDCommenterToggle
+xmap <leader>;c <Plug>NERDCommenterToggle
 
 " 版本控制
 if g:my_git_extension_enable

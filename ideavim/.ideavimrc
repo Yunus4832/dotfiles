@@ -41,17 +41,15 @@ nmap <C-i> <Action>(Forward)
 nmap <C-o> <Action>(Back)
 
 " vim 通用按键映射
-map <leader>cc <Action>(CommentByLineComment)
-map <leader>cu <Action>(CommentByLineComment)
 nmap <leader>f  <Action>(ActivateProjectToolWindow)
 "nmap <leader>t  <Action>(ActivateTerminalToolWindow)
 
 " 缓冲区设置
 nmap <leader>bb :b#<CR>
-nmap <leader>b<tab> <Action>(Switcher)
 nmap <leader>bn :bn<CR>
 nmap <leader>bp :bp<CR>
 nmap <leader>bd :bd<CR>
+nmap <leader>bl <Action>(RecentFiles)
 
 " 窗口跳转
 nmap <leader>w <C-w>
@@ -72,10 +70,12 @@ nmap <leader>;; <Action>(MainMenu)
 nmap <leader>;s <Action>(SearchEverywhere)
 nmap <leader>;a <Action>(Annotate)
 nmap <leader>;e <Action>(RecentFiles)
-nmap <leader>;E <Action>(RecentChangedFiles)
+"nmap <leader>;E <Action>(RecentChangedFiles)
 nmap <leader>;f <Action>(ReformatCode)
 xmap <leader>;f <Action>(ReformatCode)
-nmap <leader>;c <Action>(CloseProject)
+nmap <leader>;c <Action>(CommentByLineComment)
+xmap <leader>;c <Action>(CommentByLineComment)
+nmap <leader>;q <Action>(CloseProject)
 nmap <leader>;r <Action>(RenameElement)
 
 " 跳转命令
