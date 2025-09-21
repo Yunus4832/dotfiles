@@ -59,6 +59,7 @@ zsh -- 更好用的 shell
 tmux -- 终端复用工具
 dtash -- 另一个更轻量级的终端复用工具
 dvtm -- 另一个轻量级的终端平铺窗口工具
+polkit -- 现代化的特权授权工具
 
 font -- 中文字体
 
@@ -194,4 +195,20 @@ sc-im -- 终端表格处理工具，交互类似 vim
    # 重启主服务
    systemctl --user restart xdg-desktop-portal.service
    ```
+
+11. 新版本的 clash-verge-rev 使用 polkit 进行认证，使用窗口管理器的用户如果需要静默授权需要使用增加如下规则到
+    `/etc/polkit-1/rules.d/99-clash-verge-nopass.rules` 中，用户修改成登陆用户：
+
+    ```javascript
+    polkit.addRule(function(action, subject) {
+        if (subject.user != "yunus") return;
+        if (action.id != "org.freedesktop.policykit.exec") return;
+        var program = action.lookup("program");
+        if (!program) return;
+        if (program == "/usr/bin/install-service") return polkit.Result.YES;
+        if (program == "/usr/bin/uninstall-service") return polkit.Result.YES;
+        if (program == "/usr/bin/start-service") return polkit.Result.YES;
+        if (program == "/usr/bin/stop-service") return polkit.Result.YES;
+    });
+    ```
 
