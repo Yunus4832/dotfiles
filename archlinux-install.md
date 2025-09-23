@@ -197,18 +197,13 @@ sc-im -- 终端表格处理工具，交互类似 vim
    ```
 
 11. 新版本的 clash-verge-rev 使用 polkit 进行认证，使用窗口管理器的用户如果需要静默授权需要使用增加如下规则到
-    `/etc/polkit-1/rules.d/99-clash-verge-nopass.rules` 中，用户修改成登陆用户：
+    `/etc/polkit-1/rules.d/49-nopasswd-global.rules` 中，用户修改成登陆用户：
 
     ```javascript
-    polkit.addRule(function(action, subject) {
-        if (subject.user != "yunus") return;
-        if (action.id != "org.freedesktop.policykit.exec") return;
-        var program = action.lookup("program");
-        if (!program) return;
-        if (program == "/usr/bin/install-service") return polkit.Result.YES;
-        if (program == "/usr/bin/uninstall-service") return polkit.Result.YES;
-        if (program == "/usr/bin/start-service") return polkit.Result.YES;
-        if (program == "/usr/bin/stop-service") return polkit.Result.YES;
-    });
+    polkit.addRule(function(action, subject){
+        if(subject.isInGroup("yunus")){
+            return polkit.Result.YES;
+        }
+    })
     ```
 
