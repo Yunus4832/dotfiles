@@ -20,6 +20,23 @@ if v:version >= 901
     let g:my_version_901 = 1
 endif
 
+" vim 版本是否支持 python3
+let g:my_has_python3 = 0
+if has('python3')
+    let g:my_has_python3 = 1
+endif
+
+" 是否启用 vim-snipmate 代码片段引擎
+let g:my_vim_snipmate_enable = 0
+" 是否启用 ultisnips 代码片段引擎
+let g:my_ultisnips_enable = 0
+" 默认使用 ultisnips，如果 python3 不支持，使用 vim-snipmate 替代
+if g:my_has_python3
+    let g:my_ultisnips_enable = 1
+else 
+    let g:my_vim_snipmate_enable = 1
+endif
+
 " 是否启用了 tagbar, 依赖 ctags
 let g:my_tagbar_enable = 0
 if executable('ctags')
@@ -48,7 +65,6 @@ else
     let g:ctrlp_enable = 1
 endif
 
-
 " 是否启用了 neoformat, 依赖 astyle
 let g:my_neoformat_enable = 0
 if executable('astyle')
@@ -75,14 +91,13 @@ endif
 
 " 是否启用了 vimcomplete
 let g:my_vimcomplete_enable = 0
-
 " 是否启用了 AutoComplPop
 let g:my_auto_compl_pop_enable = 0
-
 " 是否启用了 coc.nvim
 " Msys2 或 Cygwin 上使用 coc.nvim 性能太差, 所以关闭了，
 " 可以设置 OSTYPE=linux-gun 环境变量启用 coc.nvim，依赖 node
 let g:my_coc_enable = 0
+
 " 优先使用 coc 如果 coc 不可用，则使用 vim9 的补全插件，最后使用低版本兼容插件
 if executable('node') && !(g:os_type ==# "msys") && !(g:os_type ==# "cygwin")
     let g:my_coc_enable = 1
@@ -214,6 +229,19 @@ Plug 'masukomi/vim-markdown-folding'
 
 " Markdown 表格支持
 Plug 'dhruvasagar/vim-table-mode'
+
+" ultisnips 代码引擎, 需要支持 python3 的编译版本
+if g:my_ultisnips_enable
+    Plug 'SirVer/ultisnips'
+    Plug 'honza/vim-snippets'
+endif
+
+" vim-snipmate 代码引擎
+if g:my_vim_snipmate_enable
+    Plug 'garbas/vim-snipmate'
+    Plug 'MarcWeber/vim-addon-mw-utils'
+    Plug 'honza/vim-snippets'
+endif
 
 " vim9script 插件
 if g:my_version_901
@@ -597,6 +625,23 @@ if g:my_vimcomplete_enable
 
 endif
 
+" ultisnips 配置
+if g:my_ultisnips_enable
+    let g:UltiSnipsExpandTrigger="<tab>"
+    let g:UltiSnipsJumpForwardTrigger="<c-j>"
+    let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+endif
+
+" vim-snipmate 配置
+if g:my_vim_snipmate_enable
+    imap <Tab> <Plug>snipMateNextOrTrigger
+    imap <C-j> <Plug>snipMateNextOrTrigger
+    smap <C-j> <Plug>snipMateNextOrTrigger
+    imap <C-k> <Plug>snipMateBack
+    smap <C-k> <Plug>snipMateBack
+    silent! iunmap <S-Tab>
+    silent! iunmap <C-r><Tab>
+endif
 
 "=====================================================================
 " Mapping 按键映射                                                   =
