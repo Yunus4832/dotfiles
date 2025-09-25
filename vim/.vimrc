@@ -518,7 +518,7 @@ endif
 
 " rooter 识别项目目录配置
 let g:rooter_targets = '/,*'
-let g:rooter_patterns = ['.git', '.svg']
+let g:rooter_patterns = ['.git', '.svg', '.root']
 let g:rooter_change_directory_for_non_project_files = 'current'
 let g:rooter_silent_chdir = 1
 
@@ -565,13 +565,14 @@ endif
 
 " coc 配置
 if g:my_coc_enable
-    " 映射 coc 的补全快捷键为 <CR>
-    inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm(): "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
     " 设置配置目录和数据目录
     let g:coc_config_home = '~/.config/coc-config'
     let g:coc_data_home = '~/.config/coc'
     " 关闭启动时vim 或 node 版本低的警告
     let g:coc_disable_startup_warning = 1
+    " snippet 跳转键映射
+    let g:coc_snippet_next = '<tab>'
+    let g:coc_snippet_prev = '<s-tab>'
     " 退出时自动关闭 lsp
     autocmd VimLeavePre * :call coc#rpc#kill()
     autocmd VimLeave * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -' . g:coc_process_pid) | endif
@@ -627,20 +628,28 @@ endif
 
 " ultisnips 配置
 if g:my_ultisnips_enable
-    let g:UltiSnipsExpandTrigger="<tab>"
-    let g:UltiSnipsJumpForwardTrigger="<c-j>"
-    let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+    if g:my_coc_enable
+        let g:UltiSnipsExpandTrigger="<c-j>"
+        let g:UltiSnipsJumpForwardTrigger="<c-j>"
+        let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+    else
+        let g:UltiSnipsExpandTrigger="<tab>"
+        let g:UltiSnipsJumpForwardTrigger="<tab>"
+        let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+    endif
 endif
 
 " vim-snipmate 配置
 if g:my_vim_snipmate_enable
-    imap <Tab> <Plug>snipMateNextOrTrigger
-    imap <C-j> <Plug>snipMateNextOrTrigger
-    smap <C-j> <Plug>snipMateNextOrTrigger
-    imap <C-k> <Plug>snipMateBack
-    smap <C-k> <Plug>snipMateBack
-    silent! iunmap <S-Tab>
-    silent! iunmap <C-r><Tab>
+    if g:my_coc_enable
+        imap <C-j> <Plug>snipMateNextOrTrigger
+        smap <C-j> <Plug>snipMateNextOrTrigger
+        imap <C-k> <Plug>snipMateBack
+        smap <C-k> <Plug>snipMateBack
+    else
+        imap <Tab> <Plug>snipMateNextOrTrigger
+        imap <S-Tab> <Plug>snipMateBack
+    endif
 endif
 
 "=====================================================================
@@ -801,6 +810,15 @@ nmap <silent><f7> :AsyncTask project-build<CR>
 
 " 如果 coc 可用，并且它有更好的实现，上面的映射会被覆盖
 if g:my_coc_enable
+    " 设置 Tab 切换补全列表
+    inoremap <silent><expr> <TAB>
+                \ coc#pum#visible() ? coc#pum#next(1) :
+                \ CheckBackspace() ? "\<Tab>" :
+                \ coc#refresh()
+    inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+    " 映射 coc 的补全快捷键为 <CR>
+    inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm(): "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
     " IDE 功能
     " 变量重命名
