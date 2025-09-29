@@ -158,7 +158,7 @@ if g:my_git_extension_enable
     Plug 'airblade/vim-gitgutter'
 endif
 
-" Coc 自动补全 
+" Coc 自动补全
 if g:my_coc_enable
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
 endif
@@ -518,7 +518,7 @@ endif
 
 " rooter 识别项目目录配置
 let g:rooter_targets = '/,*'
-let g:rooter_patterns = ['.git', '.svg', '.root']
+let g:rooter_patterns = ['.git', '.svn', ".root"]
 let g:rooter_change_directory_for_non_project_files = 'current'
 let g:rooter_silent_chdir = 1
 
@@ -680,9 +680,9 @@ endif
 " 使用 NERDTree 插件查看工程文件。
 if g:os_type ==# "msys" || g:os_type ==# "cygwin"
     " VCS 在 Msys2 和 Cygwin 上太慢了, 所有退而去其次
-    nmap <leader>f :NERDTreeToggle<CR>
+    nmap <leader>f :NERDTreeFind<CR>
 else
-    nmap <leader>f :NERDTreeToggleVCS<CR>
+    nmap <leader>f :call NERDTreeVcsOrFind()<CR>
 endif
 
 " 终端
@@ -995,16 +995,55 @@ if g:my_git_extension_enable
     endfunction
 endif
 
+" 如果当前缓冲区不是文件打开 VCS 否则定位该文件
+function! NERDTreeVcsOrFind()
+    " 判断是否为无文件，不可修改的零时缓冲区
+    if expand('%') == '' && &buftype == '' && !&modifiable
+        " 无文件上下文，打开项目根目录的 NERDTree
+        NERDTreeVCS
+    else
+        " 有文件上下文，定位当前文件
+        NERDTreeFind
+    endif
+endfunction
+
+" 将变更保存到补丁
+function! DiffToPatch()
+    if expand('%') == ''
+        echo 'Error: No file name (buffer is not associated with a file).'
+        return
+    endif
+    if !filereadable(expand('%'))
+        echo 'Error: Original file does not exist on disk.'
+        return
+    endif
+
+    let temp = tempname()
+    execute '%w ' . fnameescape(temp)
+    let patchfile = expand('%:p') . '.patch'
+    let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1,2d" > ' . shellescape(patchfile) . ' 2>/dev/null'
+    call system(cmd)
+    let diff_exit_code = v:shell_error
+    call delete(temp)
+
+    if diff_exit_code == 0
+        echo 'Patch saved to: ' . patchfile
+    else
+        call delete(patchfile)
+        echohl ErrorMsg | echo 'diff failed (exit code ' . diff_exit_code . ')' | echohl NONE
+    endif
+endfunction
+
 
 "=====================================================================
 " Custom Command 自定义命令                                          =
 "=====================================================================
 
 " 查看编辑前的改动
-if !exists(":DiffOrig")
-    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis | wincmd p | diffthis
-endif
+command! DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis | wincmd p | diffthis
 
+" 将变更保存到补丁
+command! DiffToPatch silent call DiffToPatch()
 
 "=====================================================================
 " Compatible 兼容相关                                                =

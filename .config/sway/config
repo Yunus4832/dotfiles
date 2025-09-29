@@ -158,5 +158,17 @@ exec systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
 exec systemctl --user import-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway WAYLAND_DISPLAY
 
-# 其他自定义相关的配置
-include ./custom.conf
+# 显示噐示例配置
+# output eDP-1 res 2880x1800 pos 0 0 scale 2
+# output DP-2 res 1920x1080 pos -1920 -180 scale 1
+#
+# 锁定桌面
+# OpenGL 版本高的版本使用 hypridle + hyprlock
+#bindsym $mod+shift+q exec 'hyprlock'
+#exec "hypridle -c ~/.config/hypridle/hypridle-sway.conf"
+# OpenGL 低的版本使用 swayidle + swaylock 替代
+#bindsym $mod+shift+q exec 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000'
+#exec swayidle -w timeout 1800 'swaylock  --screenshots  --clock --indicator  --indicator-radius 100  --indicator-thickness 7  --effect-blur 7x5  --effect-vignette 0.5:0.5  --ring-color bb00cc  --key-hl-color 880033  --line-color 00000000  --inside-color 00000088  --separator-color 00000000  --grace 2  --fade-in 0.2' timeout 2100 'swaymsg "output * power off"' resume 'swaymsg "output * power on"'
+
+# 其他自定义相关的配置, 请自行创建 custom.conf 文件，并解除注释
+#include ./custom.conf

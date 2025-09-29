@@ -82,6 +82,9 @@ fi
 if command -v sway &> /dev/null; then
     echo "Copy sway config to $HOME/.config/sway..."
     cp -r $DOTFILES_DIR/.config/sway $HOME/.config
+    if [ -e $HOME/.config/sway/config.patch ]; then
+        patch -d $HOME/.config -p0 < $HOME/.config/sway/config.patch
+    fi
     echo done
 fi
 
@@ -92,8 +95,8 @@ fi
 if command -v river &> /dev/null; then
     echo "Copy river config to $HOME/.config/river..."
     cp -r $DOTFILES_DIR/.config/river $HOME/.config
-    if [ ! -e $HOME/.config/river/hypridle.conf ]; then
-        cp $HOME/.config/river/hypridle.conf.example $HOME/.config/river/hypridle.conf
+    if [ -e $HOME/.config/river/init.patch ]; then
+        patch -d $HOME/.config -p0 < $HOME/.config/river/init.patch
     fi
     echo done
 fi
@@ -105,6 +108,11 @@ fi
 if command -v hyprland &> /dev/null || command -v hyprlock &> /dev/null || command -v hypridle &> /dev/null; then
     echo "Copy hyprland config to $HOME/.config/hypr..."
     cp -r $DOTFILES_DIR/.config/hypr $HOME/.config
+    echo "Copy hypridle config to $HOME/.config/hypridle..."
+    cp -r $DOTFILES_DIR/.config/hypridle $HOME/.config
+    if [ -e $HOME/.config/hypr/hyprland.conf.patch ]; then
+        patch -d $HOME/.config -p0 < $HOME/.config/hypr/hyprland.conf.patch
+    fi
     echo done
 fi
 
