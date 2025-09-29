@@ -1021,7 +1021,7 @@ function! DiffToPatch()
     let temp = tempname()
     execute '%w ' . fnameescape(temp)
     let patchfile = expand('%:p') . '.patch'
-    let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1,2d" > ' . shellescape(patchfile) . ' 2>/dev/null'
+    let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1{p; s/^---/+++/}; 2d" > ' . shellescape(patchfile) . ' 2>/dev/null'
     call system(cmd)
     let diff_exit_code = v:shell_error
     call delete(temp)
