@@ -856,6 +856,11 @@ if g:my_coc_enable
         endif
     endfunction
 
+    function! CheckBackspace() abort
+        let col = col('.') - 1
+        return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+
 endif
 
 
@@ -926,6 +931,9 @@ hi CursorLine ctermbg=236 guibg=#303030
 hi CursorColumn ctermbg=236 guibg=#303030
 hi Search ctermbg=64 guibg=#5f875f ctermfg=231 guifg=#ffffff
 hi SpecialKey ctermbg=NONE ctermfg=59 guifg=#5f5f5f guibg=#000000
+
+hi CocHintVirtualText ctermfg=12 ctermbg=NONE guifg=#15aabf guibg=#000000
+hi CocInlayHint ctermfg=12 ctermbg=NONE guifg=#15aabf guibg=#000000
 
 
 "=====================================================================

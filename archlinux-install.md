@@ -63,6 +63,9 @@ polkit -- 现代化的特权授权工具
 
 font -- 中文字体
 
+sddm -- 登录管理器，可选，可以直接在 tty 中输入命令启动窗口管理器后 DE
+xorg-xrandr -- 设置显示器参数，sddm 依赖其设置多显示器的布局
+
 plasma -- KDE 桌面环境，可选，也可使用窗口管理器
 ark -- KDE 环境解压缩工具
 dolphin -- KDE 环境文件管理器
@@ -72,8 +75,10 @@ flatpak -- 软件沙盒环境
 sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多 xwayland 应用难以解决的小问题，例如输入法配置, 字体模糊等
 river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口，问题同 Sway
 hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
+
 xdg-desktop-protal-wlr -- wayland 环境默认的 xdg-desktop-portal 后端。
 xdg-desktop-portal-gtk -- 部分软件包依赖 xdg-desktop-portal 的 gtk 后端，例如文件选择噐等功能
+mako -- wayland 协议的桌面通知组件
 
 hypridle -- hyprland 生态的空闲管理器
 hyprlock -- hyprland 生态锁屏
@@ -205,5 +210,27 @@ sc-im -- 终端表格处理工具，交互类似 vim
             return polkit.Result.YES;
         }
     })
+    ```
+
+12. SDDM 多显示器自定义配置，配置只使用主显示器登录，并且开启 HiDPI 支持
+
+    - `/etc/sddm.conf.d/hidpi.conf` 写入如下内容开启 HiDPI 支持
+
+    ```conf
+    [Wayland]
+    EnableHiDPI=true
+
+    [X11]
+    EnableHiDPI=true
+
+    [General]
+    GreeterEnvironment=QT_SCREEN_SCALE_FACTORS=2,QT_FONT_DPI=192
+    ```
+
+    - `/usr/share/sddm/scripts/Xsetup` 添加如下内容设置 sddm 只使用一个显示器，需要根据实际情况调整
+
+    ```conf
+    xrandr --output eDP-1 --mode 2880x1800 --output DP-2 --off
+
     ```
 
