@@ -108,10 +108,13 @@ fi
 if command -v hyprland &> /dev/null || command -v hyprlock &> /dev/null || command -v hypridle &> /dev/null; then
     echo "Copy hyprland config to $HOME/.config/hypr..."
     cp -r $DOTFILES_DIR/.config/hypr $HOME/.config
-    echo "Copy hypridle config to $HOME/.config/hypridle..."
-    cp -r $DOTFILES_DIR/.config/hypridle $HOME/.config
     if [ -e $HOME/.config/hypr/hyprland.conf.patch ]; then
         patch -d $HOME/.config -p0 < $HOME/.config/hypr/hyprland.conf.patch
+    fi
+    echo "Copy hypridle config to $HOME/.config/hypridle..."
+    cp -r $DOTFILES_DIR/.config/hypridle $HOME/.config
+    if [ -e $HOME/.config/hypridle/hypridle.conf.patch ]; then
+        patch -d $HOME/.config -p0 < $HOME/.config/hypridle/hypridle.conf.patch
     fi
     echo done
 fi
