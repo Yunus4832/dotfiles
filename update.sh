@@ -117,6 +117,19 @@ if command -v hyprland &> /dev/null || command -v hyprlock &> /dev/null || comma
 fi
 
 #-----------------------------------------------------
+# niri 配置                                      -
+#-----------------------------------------------------
+
+if command -v niri &> /dev/null; then
+    echo "Copy niri config to $HOME/.config/niri..."
+    cp -r $DOTFILES_DIR/.config/niri $HOME/.config
+    if [ -e $HOME/.config/niri/config.kdl.patch ]; then
+        patch -d $HOME/.config -p0 < $HOME/.config/niri/config.kdl.patch
+    fi
+    echo done
+fi
+
+#-----------------------------------------------------
 # waybar 配置                                        -
 #-----------------------------------------------------
 
