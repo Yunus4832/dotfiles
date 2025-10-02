@@ -15,7 +15,7 @@ prefer-no-csd
 
 // 环境变量
 environment {
-    XDG_CURRENT_DESKTOP niri
+    XDG_CURRENT_DESKTOP "niri"
 }
 
 hotkey-overlay {
