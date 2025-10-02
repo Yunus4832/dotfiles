@@ -112,6 +112,7 @@ riverctl spawn "fcitx5 --replace -d"
 riverctl spawn "waybar -c ~/.config/waybar/config-river"
 riverctl spawn "swaybg -i ~/.config/wallpapers/wallpaper.png -m fill"
 riverctl spawn "clash-verge"
+riverctl spawn "mako"
 
 # 环境变量
 systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
