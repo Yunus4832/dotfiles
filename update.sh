@@ -83,7 +83,7 @@ if command -v sway &> /dev/null; then
     echo "Copy sway config to $HOME/.config/sway..."
     cp -r $DOTFILES_DIR/.config/sway $HOME/.config
     if [ -e $HOME/.config/sway/config.patch ]; then
-        patch -d $HOME/.config -p0 < $HOME/.config/sway/config.patch
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/sway/config.patch
     fi
     echo done
 fi
@@ -96,7 +96,7 @@ if command -v river &> /dev/null; then
     echo "Copy river config to $HOME/.config/river..."
     cp -r $DOTFILES_DIR/.config/river $HOME/.config
     if [ -e $HOME/.config/river/init.patch ]; then
-        patch -d $HOME/.config -p0 < $HOME/.config/river/init.patch
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/river/init.patch
     fi
     echo done
 fi
@@ -109,12 +109,12 @@ if command -v hyprland &> /dev/null || command -v hyprlock &> /dev/null || comma
     echo "Copy hyprland config to $HOME/.config/hypr..."
     cp -r $DOTFILES_DIR/.config/hypr $HOME/.config
     if [ -e $HOME/.config/hypr/hyprland.conf.patch ]; then
-        patch -d $HOME/.config -p0 < $HOME/.config/hypr/hyprland.conf.patch
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/hypr/hyprland.conf.patch
     fi
     echo "Copy hypridle config to $HOME/.config/hypridle..."
     cp -r $DOTFILES_DIR/.config/hypridle $HOME/.config
     if [ -e $HOME/.config/hypridle/hypridle.conf.patch ]; then
-        patch -d $HOME/.config -p0 < $HOME/.config/hypridle/hypridle.conf.patch
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/hypridle/hypridle.conf.patch
     fi
     echo done
 fi
@@ -127,7 +127,7 @@ if command -v niri &> /dev/null; then
     echo "Copy niri config to $HOME/.config/niri..."
     cp -r $DOTFILES_DIR/.config/niri $HOME/.config
     if [ -e $HOME/.config/niri/config.kdl.patch ]; then
-        patch -d $HOME/.config -p0 < $HOME/.config/niri/config.kdl.patch
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/niri/config.kdl.patch
     fi
     echo done
 fi
