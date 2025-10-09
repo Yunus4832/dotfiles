@@ -28,11 +28,11 @@ layout {
 
     preset-column-widths {
         proportion 0.5
-        proportion 0.75
+        proportion 0.98
         proportion 1.0
     }
 
-    default-column-width { proportion 1.0; }
+    default-column-width { proportion 0.98; }
 
     focus-ring {
         width 4
@@ -57,16 +57,6 @@ animations {
 window-rule {
     geometry-corner-radius 8
     clip-to-geometry true
-}
-
-window-rule {
-    match app-id=r#"^org\.wezfurlong\.wezterm$"#
-    default-column-width {}
-}
-
-window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-    open-floating true
 }
 
 binds {
