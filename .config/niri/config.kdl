@@ -223,6 +223,7 @@ input {
     }
 
     mouse {
+        scroll-factor 1.0
     }
 
     trackpoint {
