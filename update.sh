@@ -174,3 +174,11 @@ fi
 echo config done
 
 
+#-----------------------------------------------------
+# foot 终端模拟器配置                                -
+#-----------------------------------------------------
+
+if command -v foot &> /dev/null; then
+    echo "Copy foot config to $HOME/.config/foot..."
+    cp -r $DOTFILES_DIR/.config/foot $HOME/.config
+fi
