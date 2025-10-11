@@ -652,6 +652,7 @@ if g:my_vim_snipmate_enable
     endif
 endif
 
+
 "=====================================================================
 " Mapping 按键映射                                                   =
 "=====================================================================
@@ -908,7 +909,6 @@ augroup VimAutoMkdir
 augroup end
 
 
-
 "=====================================================================
 " Highlight 高亮相关                                                 =
 "=====================================================================
@@ -934,6 +934,7 @@ hi SpecialKey ctermbg=NONE ctermfg=59 guifg=#5f5f5f guibg=#000000
 
 hi CocHintVirtualText ctermfg=12 ctermbg=NONE guifg=#15aabf guibg=#000000
 hi CocInlayHint ctermfg=12 ctermbg=NONE guifg=#15aabf guibg=#000000
+hi link FgCocNotificationProgressBgNormal CocInlayHint
 
 
 "=====================================================================
@@ -1016,7 +1017,7 @@ function! NERDTreeVcsOrFind()
 endfunction
 
 " 将变更保存到补丁
-function! DiffToPatch()
+function! DiffToPatch(append, patchfile)
     if expand('%') == ''
         echo 'Error: No file name (buffer is not associated with a file).'
         return
@@ -1028,16 +1029,25 @@ function! DiffToPatch()
 
     let temp = tempname()
     execute '%w ' . fnameescape(temp)
-    let patchfile = expand('%:p') . '.patch'
-    let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1{p; s/^---/+++/}; 2d" > ' . shellescape(patchfile) . ' 2>/dev/null'
+
+    let lpatchfile = expand('%:p') . '.patch'
+    if !empty(a:patchfile)
+        let lpatchfile = a:patchfile
+    endif
+
+    let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1{p; s/^---/+++/}; 2d" > ' . shellescape(lpatchfile) . ' 2>/dev/null'
+    if a:append != 0
+        let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1{p; s/^---/+++/}; 2d" >> ' . shellescape(lpatchfile) . ' 2>/dev/null'
+    endif
+
     call system(cmd)
     let diff_exit_code = v:shell_error
     call delete(temp)
 
     if diff_exit_code == 0
-        echo 'Patch saved to: ' . patchfile
+        echo 'Patch saved to: ' . lpatchfile
     else
-        call delete(patchfile)
+        call delete(lpatchfile)
         echohl ErrorMsg | echo 'diff failed (exit code ' . diff_exit_code . ')' | echohl NONE
     endif
 endfunction
@@ -1051,7 +1061,9 @@ endfunction
 command! DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis | wincmd p | diffthis
 
 " 将变更保存到补丁
-command! DiffToPatch silent call DiffToPatch()
+command! -nargs=? DiffToPatch silent call DiffToPatch(0, <q-args>)
+command! -nargs=? DiffToPatchAppend silent call DiffToPatch(1, <q-args>)
+
 
 "=====================================================================
 " Compatible 兼容相关                                                =
