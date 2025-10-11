@@ -22,4 +22,4 @@
 | xdg-desktop-portal | xdg-desktop-portal | 文件夹 | .config/xdg-desktop-portal | ~/.config/xdg-desktop-portal | 桌面门户接口                                      |
 | wallpapres         | wallpapres         | 文件夹 | .config/wallpapres         | ~/.config/wallpapers         | 我的壁纸                                          |
 
-部分软件支持自定义配置，使用补丁实现，如果在配置文件下存在同名的 .patch 文件，执行 update.sh 更新时会尝试应用该补丁实现自定义配置。
+部分软件支持自定义配置，使用补丁实现，如果在配置文件下存在同名 .patch 文件或者可能是 custom.patch 文件，执行 update.sh 更新时会尝试应用该补丁实现自定义配置。

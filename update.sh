@@ -10,6 +10,9 @@ DOTFILES_DIR=$(pwd)
 if command -v tmux &> /dev/null; then
     echo "Copy tmux config to $HOME..."
     cp $DOTFILES_DIR/tmux/.tmux.conf*  $HOME/
+    if [ -e $HOME/.tmux.conf.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.tmux.conf.patch
+    fi
     echo done
 fi
 
@@ -21,6 +24,9 @@ fi
 if command -v zsh &> /dev/null; then
     echo "Copy zsh config to $HOME..."
     cp $DOTFILES_DIR/zsh/.zshrc $HOME/
+    if [ -e $HOME/.zshrc.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.zshrc.patch
+    fi
     echo done
 fi
 
@@ -39,6 +45,11 @@ if command -v git &> /dev/null; then
     then
         sed -i 's!\(autocrlf\s\?=\s\?\).*!\1true!g' $HOME/.gitconfig
     fi
+
+    if [ -e $HOME/.gitconfig.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.gitconfig.patch
+    fi
+
     echo done
 fi
 
@@ -51,7 +62,7 @@ if command -v vim &> /dev/null; then
     echo "Copy vim config to $HOME..."
     cp $DOTFILES_DIR/vim/.vimrc $HOME/
 
-    # 如果 Vim 的版本大于 9, 将 Vim9 的配置赋值到 HOME 目录
+    # 如果 Vim 的版本大于 9, 将 Vim9 的配置复制到 HOME 目录
     vim_version=$(vim --version | sed -n "1{s/.* \([0-9]\+\.[0-9]\+\).*/\1/p;q}")
     if [[ $vim_version > "9.0" || $vim_version == "9.0" ]]; 
     then
@@ -72,6 +83,9 @@ if command -v vim &> /dev/null; then
     echo "Edit plug_dir in .vimrc"
     echo "Config plug_dir to $plug_dir..."
     sed -i 's!^let g:my_plug_dir = \".*\"$!let g:my_plug_dir = \"'$plug_dir'\"!g' $HOME/.vimrc
+    if [ -e $HOME/.vimrc.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.virmc.patch
+    fi
     echo done
 fi
 
@@ -113,8 +127,8 @@ if command -v hyprland &> /dev/null || command -v hyprlock &> /dev/null || comma
     fi
     echo "Copy hypridle config to $HOME/.config/hypridle..."
     cp -r $DOTFILES_DIR/.config/hypridle $HOME/.config
-    if [ -e $HOME/.config/hypridle/hypridle.conf.patch ]; then
-        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/hypridle/hypridle.conf.patch
+    if [ -e $HOME/.config/hypridle/custom.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/hypridle/custom.patch
     fi
     echo done
 fi
@@ -139,6 +153,9 @@ fi
 if command -v waybar &> /dev/null; then
     echo "Copy waybar config to $HOME/.config/waybar..."
     cp -r $DOTFILES_DIR/.config/waybar $HOME/.config
+    if [ -e $HOME/.config/waybar/custom.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/waybar/custom.patch
+    fi
     echo done
 fi
 
@@ -169,10 +186,12 @@ fi
 if pacman -Q xdg-desktop-portal &> /dev/null; then
     echo "Copy xdg-desktop-portal config to $HOME/.config/xdg-desktop-portal..."
     cp -r $DOTFILES_DIR/.config/xdg-desktop-portal $HOME/.config
+    if [ -e $HOME/.config/xdg-desktop-portal/custom.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/xdg-desktop-portal/custom.patch
+    fi
 fi
 
 echo config done
-
 
 #-----------------------------------------------------
 # foot 终端模拟器配置                                -
@@ -181,4 +200,7 @@ echo config done
 if command -v foot &> /dev/null; then
     echo "Copy foot config to $HOME/.config/foot..."
     cp -r $DOTFILES_DIR/.config/foot $HOME/.config
+    if [ -e $HOME/.config/foot/foot.ini.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/foot/foot.ini.patch
+    fi
 fi
