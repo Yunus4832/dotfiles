@@ -4,6 +4,9 @@
 riverctl map normal Super Return spawn foot
 riverctl map normal Super Q spawn foot
 
+# 通过终端从输入法获取字符串
+riverctl map normal Super A spawn "foot --app-id get-string vim -u ~/.vim/get-string.vimrc"
+
 # 应用启动噐
 riverctl map normal Super D spawn "rofi -show drun"
 
@@ -78,7 +81,10 @@ riverctl map normal Super 0 set-focused-tags $all_tags
 riverctl map normal Super+Shift 0 set-view-tags $all_tags
 
 # 切换浮动
-riverctl map normal Super Space toggle-float
+riverctl map normal Super V toggle-float
+
+# 浮动窗口
+riverctl rule-add -app-id 'get-string' float
 
 # 窗口全屏
 riverctl map normal Super F toggle-fullscreen

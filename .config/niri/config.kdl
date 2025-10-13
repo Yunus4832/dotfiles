@@ -59,9 +59,16 @@ window-rule {
     clip-to-geometry true
 }
 
+window-rule{
+    match app-id="io.gitlab.liferooter.TextPieces"
+    match app-id="get-string"
+    open-floating true
+}
+
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
+    Mod+A hotkey-overlay-title="Get string from terminal" { spawn "foot" "--app-id" "get-string" "vim" "-u" "/home/yunus/.vim/get-string.vimrc"; }
     Mod+Q hotkey-overlay-title="Open a Terminal: foot" { spawn "foot"; }
     Mod+D hotkey-overlay-title="Run an Application: rofi" { spawn "rofi" "-show" "drun"; }
     Mod+E hotkey-overlay-title="Run a FileExploer: dolphin" {spawn "dolphin"; }

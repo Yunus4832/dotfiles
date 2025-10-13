@@ -31,6 +31,9 @@ input type:touchpad {
 bindsym $mod+Return exec $term
 bindsym $mod+q exec $term
 
+# 通过终端从输入法获取字符串
+bindsym $mod+a exec 'foot --app-id get-string vim -u ~/.vim/get-string.vimrc'
+
 # 关闭窗口
 bindsym $mod+c kill
 
@@ -93,52 +96,45 @@ bindsym $mod+shift+8 move container to workspace number 8
 bindsym $mod+shift+9 move container to workspace number 9
 bindsym $mod+shift+0 move container to workspace number 10
 
-# 布局
-# 切换水平垂直布局
-bindsym $mod+b splith
-bindsym $mod+v splitv
 
 # 切换布局风格
-bindsym $mod+s layout toggle split
-bindsym $mod+w layout tabbed
+#bindsym $mod+s layout toggle split
+#bindsym $mod+w layout tabbed
 
 # 窗口全屏
 bindsym $mod+f fullscreen
 
 # 切换窗口浮动
-bindsym $mod+shift+space floating toggle
-
-# 切换焦点模式
-bindsym $mod+space focus mode_toggle
-
-# 焦点回到父窗口
-bindsym $mod+a focus parent
+bindsym $mod+v floating toggle
 
 # 暂存区
 # 将窗口移动到暂存区
-bindsym $mod+shift+minus move scratchpad
+bindsym $mod+s move scratchpad
 
 # 从暂存区取出窗口，如果有多个窗口，则循环展示
-bindsym $mod+minus scratchpad show
+bindsym $mod+shift+s scratchpad show
 
 # 调整窗口尺寸
-mode "resize" {
-    bindsym $left resize shrink width 10px
-    bindsym $down resize grow height 10px
-    bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
+#mode "resize" {
+    #bindsym $left resize shrink width 10px
+    #bindsym $down resize grow height 10px
+    #bindsym $up resize shrink height 10px
+    #bindsym $right resize grow width 10px
 
-    bindsym left resize shrink width 10px
-    bindsym down resize grow height 10px
-    bindsym up resize shrink height 10px
-    bindsym right resize grow width 10px
+    #bindsym left resize shrink width 10px
+    #bindsym down resize grow height 10px
+    #bindsym up resize shrink height 10px
+    #bindsym right resize grow width 10px
 
-    # 回到默认模式
-    bindsym return mode "default"
-    bindsym escape mode "default"
-}
-bindsym $mod+r mode "resize"
+    ## 回到默认模式
+    #bindsym return mode "default"
+    #bindsym escape mode "default"
+#}
 
+#bindsym $mod+r mode "resize"
+
+# 浮动窗口
+#for_window [app_id="get-string"] floating enable
 
 # 默认使用 pixel 边框
 default_border pixel
