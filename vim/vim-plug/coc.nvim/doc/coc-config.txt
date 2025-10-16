@@ -7,6 +7,7 @@ Core features
 	File system watch 			|coc-config-fileSystemWatch|
 	Extensions 				|coc-config-extensions|
 	Preferences 				|coc-config-preferences|
+	Editor 					|coc-config-editor|
 	Float factory 				|coc-config-floatFactory|
 	Float 					|coc-config-float|
 	Tree 					|coc-config-tree|
@@ -20,6 +21,7 @@ LSP features
 	CodeLens 				|coc-config-codeLens|
 	Colors 					|coc-config-colors|
 	Completion 				|coc-config-suggest|
+	Inline completion 			|coc-config-inlineSuggest|
 	Cursors 				|coc-config-cursors|
 	Diagnostics 				|coc-config-diagnostic|
 	Document highlight 			|coc-config-documentHighlight|
@@ -103,6 +105,13 @@ WORKSPACE
 	patterns resolved.
 
 	Scope: `application`, default: `true`
+
+"workspace.removeEmptyWorkspaceFolder"			*coc-config-workspace-removeEmptyWorkspaceFolder*
+
+	Automatically remove the workspace folder when no buffer associated
+	with it.
+
+	Scope: `application`, default: `false`
 
 ------------------------------------------------------------------------------
 FILESYSTEMWATCH 					*coc-config-fileSystemWatch*
@@ -196,9 +205,15 @@ PREFERENCES
 
 "coc.preferences.enableMessageDialog"			*coc-preferences-enableMessageDialog*
 
-	Enable messages shown in notification dialog.
+	Enable messages shown in notification dialog. Deprecated, prefer configuration 'coc.preferences.messageDialogKind' instead.
 
 	Scope: `application`, default: `false`
+
+"coc.preferences.messageDialogKind"			*coc-preferences-messageDialogKind*
+
+	Configure the type of user interaction when a message dialog occurs with more than one actions to trigger.
+
+	Scope: `application`, default: `confirm`
 
 "coc.preferences.excludeImageLinksInMarkdownDocument"	*coc-preferences-excludeImageLinksInMarkdownDocument*
 
@@ -236,9 +251,10 @@ PREFERENCES
 
 	Scope: `language-overridable`, default: `false`
 
-"coc.preferences.formatterExtension"			*coc-preferences-formatterExtension*
+"coc.preferences.formatterExtension" 			*coc-preferences-formatterExtension*
 
-	Extension used for formatting documents. When set to null, the formatter with highest priority is used.
+	Extension used for formatting documents. When set to null, the
+	formatter with highest priority is used.
 
 	Scope: `language-overridable`, default: `null`
 
@@ -308,6 +324,27 @@ PREFERENCES
 	Scope: `application`, default: `0`
 
 ------------------------------------------------------------------------------
+EDITOR
+							*coc-config-editor*
+							*coc-config-editor-codeActionsOnSave*
+
+"editor.codeActionsOnSave"
+
+	Run Code Actions for the buffer on save, normally source actions,
+	Example: `\"source.organizeImports\": \"always\"`,
+	|coc-preferences-willSaveHandlerTimeout| is used for timeout control.
+
+	Scope: `language-overridable`, default: `{}`
+
+							*coc-config-editor-autocmdTimeout*
+
+"editor.autocmdTimeout"
+
+	Timeout for execute request autocmd registered by coc extensions.
+
+	Scope: `application`, default: `1000`
+
+------------------------------------------------------------------------------
 FLOATfACTORY
 							*coc-config-floatFactory*
 "floatFactory.floatConfig"				*coc-config-floatFactory-floatConfig*
@@ -333,7 +370,7 @@ following properties are supported:
 	  `"CocFloating"`.
 	- "title": Title text used by float window, default: `""`.
 	- "borderhighlight": Border highlight group of float window, default:
-	  `"CocFloating"`.
+	  `"CocFloatBorder"`.
 	- "close": Set to `true` to draw close icon.
 	- "maxWidth": Maximum width of float window, contains border.
 	- "maxHeight": Maximum height of float window, contains border.
@@ -700,7 +737,7 @@ CODELENS
 
 "codeLens.position"					*coc-config-codeLens-position*
 
-	Position of codeLens, requires nvim >= 0.6.0.
+	Display position of codeLens virtual text.
 
 	Scope: `resource`, default: `"top"`
 
@@ -781,6 +818,13 @@ DIAGNOSTIC
 	Use Ale, coc-diagnostics-shim.nvim, or other provider to display
 	diagnostics in vim. This setting will disable diagnostic display using
 	coc's handler. A restart required on change.
+
+	Scope: `language-overridable`, default: `false`
+
+"diagnostic.displayByVimDiagnostic"			*coc-config-diagnostic-displayByVimDiagnostic*
+
+	Set diagnostics to nvim's `vim.diagnostic`, and prevent coc.nvim's
+	handler to display in virtualText/floating window etc.
 
 	Scope: `language-overridable`, default: `false`
 
@@ -938,7 +982,7 @@ DIAGNOSTIC
 
 "diagnostic.virtualTextAlign"				*coc-config-diagnostic-virtualTextAlign*
 
-	Position of virtual text. Vim9 only.
+	Position of virtual text.
 
 	Scope: `language-overridable`, default: `"after"`
 
@@ -963,7 +1007,7 @@ DIAGNOSTIC
 
 "diagnostic.virtualTextLimitInOneLine"			*coc-config-diagnostic-virtualTextLimitInOneLine*
 
-	The maximum number of diagnostic messages to disaply in one line.
+	The maximum number of diagnostic messages to display in one line.
 
 	Scope: `language-overridable`, default: `999`
 
@@ -1632,11 +1676,15 @@ SUGGEST
 
 	Scope: `language-overridable`, default: `false`
 
-"suggest.chineseSegments"				*coc-config-suggest-chineseSegments*
+"suggest.segmenterLocales" 				*coc-config-suggest-segmenterLocales*
 
-	Divide Chinese sentence into segments in around/buffer source.
+	Locales used for divide sentence into segments for around and buffer
+	source, works when NodeJS built with intl support, see:
+	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter/Segmenter#parameters
+	default empty string means auto detect, use null to disable this
+	feature.
 
-	Scope: `language-overridable`, default: `true`
+	Scope: `language-overridable`, default: `""`
 
 "suggest.asciiMatch"					*coc-config-suggest-asciiMatch*
 
@@ -1730,9 +1778,8 @@ SUGGEST
 	Configure style of popup menu and documentation window for completion,
 	see |coc-config-float|.
 
-	Note: some properties not work, including: "title", "focusable",
-	"close" and "maxHeight" (use 'pumheight' option for maximum height of
-	popup menu).
+	Note: some properties not work, including: "focusable", "close" and
+	"maxHeight" (use 'pumheight' option for maximum height of popup menu).
 
 	Note: "maxWidth" not works for popup menu, use
 	|coc-config-suggest-labelMaxLength| instead.
@@ -1823,11 +1870,11 @@ SUGGEST
 	used when not specified, see |coc-config-float|.
 
 	Available properties: "border", "rounded", "highlight",
-	"borderhighlight", "winblend" and "shadow".
+	"borderhighlight", "winblend", "title" and "shadow".
 
 	Note: 'winblend' option is used for custom popup menu when not
-	configured, use 'pumwidth' for minimal width of popup menu and
-	'pumheight' for maximum height of popup menu.
+	configured (neovim only), use 'pumwidth' for minimal width of popup
+	menu and 'pumheight' for maximum height of popup menu.
 
 	Scope: `application`, default: `null`
 
@@ -1902,6 +1949,24 @@ SUGGEST
 	complete item.
 
 	Scope: `application`, default: `false`
+
+------------------------------------------------------------------------------
+INLINE COMPLETION
+							*coc-config-inlineSuggest*
+
+"inlineSuggest.autoTrigger"				*coc-config-inlineSuggest-autoTrigger*
+
+	Enable automatically trigger inline completion after completion done
+	or cursor hold.
+
+	Scope: `language-overridable`, default: `true`
+
+"inlineSuggest.triggerCompletionWait"   		*coc-config-inlineSuggest-triggerCompletionWait*
+
+	Wait time in milliseconds between text synchronize and trigger inline
+	completion.
+
+	Scope: `language-overridable`, default: `10`
 
 ------------------------------------------------------------------------------
 TYPEHIERARCHY

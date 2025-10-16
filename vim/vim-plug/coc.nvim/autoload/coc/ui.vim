@@ -1,6 +1,7 @@
 let s:is_vim = !has('nvim')
 let s:is_win = has('win32') || has('win64')
 let s:is_mac = has('mac')
+let s:root = expand('<sfile>:h:h:h')
 let s:sign_api = exists('*sign_getplaced') && exists('*sign_place')
 let s:sign_groups = []
 let s:outline_preview_bufnr = 0
@@ -99,19 +100,20 @@ function! coc#ui#open_terminal(opts) abort
     endif
   endfunction
 
-  if has('nvim')
-    call termopen(cmd, {
-          \ 'cwd': cwd,
-          \ 'on_exit': {job, status -> s:OnExit(status)},
-          \})
-  else
+  if s:is_vim
     if s:is_win
       let cmd = 'cmd.exe /C "'.cmd.'"'
     endif
     call term_start(cmd, {
           \ 'cwd': cwd,
+          \ 'term_finish': 'close',
           \ 'exit_cb': {job, status -> s:OnExit(status)},
           \ 'curwin': 1,
+          \})
+  else
+    call termopen(cmd, {
+          \ 'cwd': cwd,
+          \ 'on_exit': {job, status -> s:OnExit(status)},
           \})
   endif
   if keepfocus
@@ -133,6 +135,19 @@ function! coc#ui#run_terminal(opts, cb)
         \ 'Callback': {status, bufnr, content -> a:cb(v:null, {'success': status == 0 ? v:true : v:false, 'bufnr': bufnr, 'content': content})}
         \}
   call coc#ui#open_terminal(opts)
+endfunction
+
+function! coc#ui#fix() abort
+  let file = s:root .. '/esbuild.js'
+  if filereadable(file)
+    let opts = {
+          \ 'cmd': 'npm ci',
+          \ 'cwd': s:root,
+          \ 'keepfocus': 1,
+          \ 'Callback': {_ -> execute('CocRestart')}
+          \}
+    call coc#ui#open_terminal(opts)
+  endif
 endfunction
 
 function! coc#ui#echo_hover(msg)
@@ -250,68 +265,27 @@ function! s:system(cmd)
   return output
 endfunction
 
-function! coc#ui#set_lines(bufnr, changedtick, original, replacement, start, end, changes, cursor, col) abort
-  if !bufloaded(a:bufnr)
-    return
-  endif
-  let delta = 0
-  if !empty(a:col)
-    let delta = col('.') - a:col
-  endif
-  if getbufvar(a:bufnr, 'changedtick') > a:changedtick && bufnr('%') == a:bufnr
-    " try apply current line change
-    let lnum = line('.')
-    " change for current line
-    if a:end - a:start == 1 && a:end == lnum && len(a:replacement) == 1
-      let idx = a:start - lnum + 1
-      let previous = get(a:original, idx, 0)
-      if type(previous) == 1
-        let content = getline('.')
-        if previous !=# content
-          let diff = coc#string#diff(content, previous, col('.'))
-          let changed = get(a:replacement, idx, 0)
-          if type(changed) == 1 && strcharpart(previous, 0, diff['end']) ==# strcharpart(changed, 0, diff['end'])
-            let applied = coc#string#apply(changed, diff)
-            let replacement = copy(a:replacement)
-            let replacement[idx] = applied
-            call coc#compat#buf_set_lines(a:bufnr, a:start, a:end, replacement)
-            return
-          endif
-        endif
-      endif
+function! coc#ui#set_lines(bufnr, changedtick, original, replacement, start, end, changes, cursor, col, linecount) abort
+  try
+    if s:is_vim
+      call coc#vim9#Set_lines(a:bufnr, a:changedtick, a:original, a:replacement, a:start, a:end, a:changes, a:cursor, a:col, a:linecount)
+    else
+      call v:lua.require('coc.text').set_lines(a:bufnr, a:changedtick, a:original, a:replacement, a:start, a:end, a:changes, a:cursor, a:col, a:linecount)
     endif
-  endif
-  if exists('*nvim_buf_set_text') && !empty(a:changes)
-    for item in reverse(copy(a:changes))
-      call nvim_buf_set_text(a:bufnr, item[1], item[2], item[3], item[4], item[0])
-    endfor
-  else
-    call coc#compat#buf_set_lines(a:bufnr, a:start, a:end, a:replacement)
-  endif
-  if !empty(a:cursor)
-    call cursor(a:cursor[0], a:cursor[1] + delta)
-  endif
+  catch /.*/
+    " Need try catch here on vim9
+    call coc#compat#send_error('coc#ui#set_lines', s:is_vim)
+  endtry
 endfunction
 
 function! coc#ui#change_lines(bufnr, list) abort
-  if !bufloaded(a:bufnr) | return v:null | endif
-  undojoin
-  if exists('*setbufline')
-    for [lnum, line] in a:list
-      call setbufline(a:bufnr, lnum + 1, line)
-    endfor
-  elseif a:bufnr == bufnr('%')
-    for [lnum, line] in a:list
-      call setline(lnum + 1, line)
-    endfor
-  else
-    let bufnr = bufnr('%')
-    exe 'noa buffer '.a:bufnr
-    for [lnum, line] in a:list
-      call setline(lnum + 1, line)
-    endfor
-    exe 'noa buffer '.bufnr
+  if !bufloaded(a:bufnr)
+    return v:null
   endif
+  undojoin
+  for [lnum, line] in a:list
+    call setbufline(a:bufnr, lnum + 1, line)
+  endfor
 endfunction
 
 function! coc#ui#open_url(url)
@@ -351,6 +325,7 @@ function! coc#ui#rename_file(oldPath, newPath, write) abort
   if bufloaded(newPath)
     execute 'silent bdelete! '.bufnr(newPath)
   endif
+  " TODO use nvim_buf_set_name instead
   let current = bufnr == bufnr('%')
   let bufname = fnamemodify(newPath, ":~:.")
   let filepath = fnamemodify(bufname(bufnr), '%:p')
@@ -362,10 +337,10 @@ function! coc#ui#rename_file(oldPath, newPath, write) abort
     execute 'keepalt tab drop '.fnameescape(bufname(bufnr))
     let winid = win_getid()
   endif
-  call coc#compat#execute(winid, 'keepalt file '.fnameescape(bufname), 'silent')
-  call coc#compat#execute(winid, 'doautocmd BufEnter')
+  call win_execute(winid, 'keepalt file '.fnameescape(bufname), 'silent')
+  call win_execute(winid, 'doautocmd BufEnter')
   if a:write
-    call coc#compat#execute(winid, 'noa write!', 'silent')
+    call win_execute(winid, 'noa write!', 'silent')
     call delete(filepath, '')
   endif
   if curr != -1
@@ -459,7 +434,7 @@ function! coc#ui#outline_preview(config) abort
   call setwinvar(result[0], 'kind', 'outline-preview')
   let s:outline_preview_bufnr = result[1]
   if !empty(filetype)
-    call coc#compat#execute(result[0], 'setfiletype '.filetype)
+    call win_execute(result[0], 'setfiletype '.filetype)
   endif
   return result[1]
 endfunction
@@ -519,7 +494,7 @@ endfunction
 function! coc#ui#create_tree(opts) abort
   let viewId = a:opts['viewId']
   let bufname = a:opts['bufname']
-  let tabid = coc#util#tabnr_id(tabpagenr())
+  let tabid = coc#compat#tabnr_id(tabpagenr())
   let winid = s:get_tree_winid(a:opts)
   let bufnr = a:opts['bufnr']
   if !bufloaded(bufnr)
@@ -554,7 +529,7 @@ function! s:get_tree_winid(opts) abort
     return winid
   endif
   if winid != -1
-    call coc#compat#execute(winid, 'noa close!', 'silent!')
+    call win_execute(winid, 'noa close!', 'silent!')
   endif
   return coc#window#find('cocViewId', viewId)
 endfunction

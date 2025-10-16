@@ -23,7 +23,7 @@ function! coc#dialog#create_pum_float(lines, config) abort
   let pw = pumbounding['width'] + (pumbounding['border'] ? 0 : get(pumbounding, 'scrollbar', 0))
   let rp = &columns - pumbounding['col'] - pw
   let showRight = pumbounding['col'] > rp ? 0 : 1
-  let maxWidth = showRight ? coc#math#min(rp - 1, a:config['maxWidth']) : coc#math#min(pumbounding['col'] - 1, a:config['maxWidth'])
+  let maxWidth = showRight ? min([rp - 1, a:config['maxWidth']]) : min([pumbounding['col'] - 1, a:config['maxWidth']])
   let bh = get(border, 0 ,0) + get(border, 2, 0)
   let maxHeight = &lines - pumbounding['row'] - &cmdheight - 1 - bh
   if maxWidth <= 2 || maxHeight < 1
@@ -34,9 +34,9 @@ function! coc#dialog#create_pum_float(lines, config) abort
     let dw = max([1, strdisplaywidth(line)])
     let width = max([width, dw + 2])
   endfor
-  let width = float2nr(coc#math#min(maxWidth, width))
+  let width = width < maxWidth ? width : maxWidth
   let ch = coc#string#content_height(a:lines, width - 2)
-  let height = float2nr(coc#math#min(maxHeight, ch))
+  let height = ch < maxHeight ? ch : maxHeight
   let lines = map(a:lines, {_, s -> s =~# '^─' ? repeat('─', width - 2 + (s:is_vim && ch > height ? -1 : 0)) : s})
   let opts = {
         \ 'lines': lines,
@@ -49,7 +49,7 @@ function! coc#dialog#create_pum_float(lines, config) abort
         \ 'scrollinside': showRight ? 0 : 1,
         \ 'codes': get(a:config, 'codes', []),
         \ }
-  for key in ['border', 'highlight', 'borderhighlight', 'winblend', 'focusable', 'shadow', 'rounded']
+  for key in ['border', 'highlight', 'borderhighlight', 'winblend', 'focusable', 'shadow', 'rounded', 'title']
     if has_key(a:config, key)
       let opts[key] = a:config[key]
     endif
@@ -97,9 +97,11 @@ function! coc#dialog#create_cursor_float(winid, bufnr, lines, config) abort
   let alignTop = dimension['row'] < 0
   let winid = res[0]
   let bufnr = res[1]
-  call coc#compat#execute(winid, 'setl nonumber')
-  redraw
-  if has('nvim')
+  call win_execute(winid, 'setl nonumber')
+  if s:is_vim
+    call timer_start(0, { -> execute('redraw')})
+  else
+    redraw
     call coc#float#nvim_scrollbar(winid)
   endif
   return [currbuf, pos, winid, bufnr, alignTop]
@@ -115,6 +117,7 @@ function! coc#dialog#_create_prompt_vim(title, default, opts) abort
         \ 'hidden': 1,
         \ 'term_finish': 'close',
         \ 'norestore': 1,
+        \ 'tty_type': 'conpty',
         \ 'term_highlight': 'CocPopupTerminal'
         \ }
   let bufnr = term_start([node, s:root . '/bin/prompt.js', a:default, empty(placeHolder) ? '' : placeHolder], opt)
@@ -287,7 +290,7 @@ function! coc#dialog#create_menu(lines, config) abort
   let s:prompt_win_bufnr = ids[1]
   call coc#dialog#set_cursor(ids[0], ids[1], contentCount + 1)
   redraw
-  if has('nvim')
+  if !s:is_vim
     call coc#float#nvim_scrollbar(ids[0])
   endif
   return [ids[0], ids[1], contentCount]
@@ -322,7 +325,7 @@ function! coc#dialog#create_dialog(lines, config) abort
   if get(a:config, 'cursorline', 0)
     call coc#dialog#place_sign(bufnr, 1)
   endif
-  if has('nvim')
+  if !s:is_vim
     redraw
     call coc#float#nvim_scrollbar(res[0])
   endif
@@ -530,11 +533,9 @@ function! coc#dialog#change_input_value(winid, bufnr, value) abort
   endif
   if s:is_vim
     if !s:term_support
-      " not supported
-      return
+      call term_sendkeys(a:bufnr, "\<C-u>\<C-k>".a:value)
     endif
     " call timer_start(3000, { -> term_sendkeys(bufnr, "\<C-u>\<C-k>abcd")})
-    call term_sendkeys(a:bufnr, "\<C-u>\<C-k>".a:value)
   else
     let mode = mode()
     if mode ==# 'i'
@@ -548,12 +549,7 @@ function! coc#dialog#change_input_value(winid, bufnr, value) abort
       noa set completeopt=menu
     endif
     noa call complete(1, [{ 'empty': 1, 'word': a:value }])
-    if has('nvim-0.6.1')
-      call feedkeys("\<C-x>\<C-z>", 'in')
-    else
-      let g:coc_disable_space_report = 1
-      call feedkeys("\<space>\<bs>", 'in')
-    endif
+    call feedkeys("\<C-x>\<C-z>", 'in')
     execute 'noa set completeopt='.saved_completeopt
   endif
 endfunction
@@ -647,7 +643,7 @@ endfunction
 function! coc#dialog#set_cursor(winid, bufnr, line) abort
   if a:winid >= 0
     if s:is_vim
-      call coc#compat#execute(a:winid, 'exe '.max([a:line, 1]), 'silent!')
+      call win_execute(a:winid, 'exe ' . max([a:line, 1]), 'silent!')
       call popup_setoptions(a:winid, {'cursorline' : 1})
       call popup_setoptions(a:winid, {'cursorline' : 0})
     else
@@ -674,7 +670,7 @@ function! s:create_prompt_win(bufnr, title, default, opts) abort
         \ 'title': a:title,
         \ 'lines': s:is_vim ? v:null : [a:default],
         \ 'highlight': get(a:opts, 'highlight', 'CocFloating'),
-        \ 'borderhighlight': [get(a:opts, 'borderhighlight', 'CocFloating')],
+        \ 'borderhighlight': [get(a:opts, 'borderhighlight', 'CocFloatBorder')],
         \ }))
 endfunction
 

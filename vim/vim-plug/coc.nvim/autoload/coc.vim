@@ -25,15 +25,11 @@ function! coc#expandableOrJumpable() abort
   return coc#rpc#request('snippetCheck', [1, 1])
 endfunction
 
+" Only clear augroup starts with coc
 function! coc#clearGroups(prefix) abort
-  " 遍历所有 augroup 名称
-  for group in getcompletion('', 'augroup')
-    " 检查是否以指定前缀开头
+  for group in getcompletion('coc', 'augroup')
     if group =~# '^' . a:prefix
-      " 进入该 augroup，执行清空操作
-      execute 'augroup ' . group
-        autocmd!
-      augroup END
+      execute 'autocmd! ' . group
     endif
   endfor
 endfunction
@@ -77,7 +73,7 @@ function! coc#status(...)
   if get(a:, 1, 0)
     let status = substitute(status, '%', '%%', 'g')
   endif
-  return coc#compat#trim(join(msgs, ' ') . ' ' . status)
+  return trim(join(msgs, ' ') . ' ' . status)
 endfunction
 
 function! coc#config(section, value)
