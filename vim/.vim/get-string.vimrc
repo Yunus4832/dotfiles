@@ -17,14 +17,14 @@ set noeol
 
 " 状态栏提示
 set laststatus=2
-set statusline=\ 输入文本后按Enter复制到剪贴板
+set statusline=\ 输入文本后按\ Enter\ 复制到剪贴板
 
 " 启动后自动进入插入模式
 autocmd VimEnter * startinsert
 
 " 当缓冲区不为空时复制到剪切板
 function! CopyIfNotEmptyAndQuit()
-    if getline(1, '$') != ['']
+    if getline(1, '$') != [''] && executable('wl-copy')
         silent w !wl-copy
     endif
     q!
