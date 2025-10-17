@@ -9,6 +9,7 @@ set nowritebackup
 set shortmess+=A
 set binary " 关键设置，阻止自动添加换行符
 set noeol
+set ttimeoutlen=10
 
 " 启动后自动进入插入模式
 autocmd VimEnter * startinsert
@@ -22,7 +23,7 @@ inoremap <C-CR> <CR>
 
 " 可选：添加退出映射（Esc 直接退出不复制）
 nnoremap <silent> <Esc> :q!<CR>
-inoremap <silent> <Esc> :q!<CR>
+inoremap <silent> <Esc> <Esc>:q!<CR>
 
 " 状态栏提示
 set laststatus=2
