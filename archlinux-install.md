@@ -41,7 +41,7 @@ sudo pacman -Syuu
    ```plain-text
    iwd -- 连接无线网络 wifi
    dhcpcd -- 自动获取 ip 地址
-   
+
    vim -- 通用编辑器
    gvim -- Vim 的 GUI 版本，可选
    git -- 版本管理工具
@@ -60,26 +60,26 @@ sudo pacman -Syuu
    dtash -- 另一个更轻量级的终端复用工具
    dvtm -- 另一个轻量级的终端平铺窗口工具
    polkit -- 现代化的特权授权工具
-   
+
    font -- 中文字体
-   
+
    sddm -- 登录管理器，可选，可以直接在 tty 中输入命令启动窗口管理器后 DE
-   
+
    plasma -- KDE 桌面环境，可选，也可使用窗口管理器
    ark -- KDE 环境解压缩工具
    dolphin -- KDE 环境文件管理器
    konsole -- KDE 环境终端模拟器
    flatpak -- 软件沙盒环境
-   
+
    sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多 xwayland 应用难以解决的小问题，例如输入法配置, 字体模糊等
    river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口，问题同 Sway
    hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
    niri -- 另一个卷轴式的平铺窗口管理器，高效易用，但是对部分应用，尤其是 Electron 应用的输入法支持不是很好
-   
+
    xdg-desktop-protal-wlr -- wayland 环境默认的 xdg-desktop-portal 后端。
    xdg-desktop-portal-gtk -- 部分软件包依赖 xdg-desktop-portal 的 gtk 后端，例如文件选择噐等功能
    mako -- wayland 协议的桌面通知组件
-   
+
    hypridle -- hyprland 生态的空闲管理器
    hyprlock -- hyprland 生态锁屏
    swayidle -- sway 生态的空闲管理器，可选，优先 hypridle
@@ -88,34 +88,35 @@ sudo pacman -Syuu
    wlr-randr -- waylany 环境中的显示器管理工具, river 依赖其设置显示器参数
    xorg-xrandr -- X11 环境中设置显示器参数工具，sddm 依赖其设置多显示器的布局
    xwayland-satellite -- niri 依赖该软件包支持 xwayland 应用
-   
+
    swaybg -- 窗口管理器背景图
    swayimg -- 查看图片
    foot -- 终端模拟器, 可选，konsole 也能用，但是 foot 资源占用更低
    rofi -- 程序启动器 rofi, 现在已支持 Wayland
    waybar -- 状态栏显示
-   
+
    wl-clipboard -- wayland 协议的剪切板
-   
+
    fcitx5 -- 输入法
    fcitx5-chinese-addons -- 输入法中文扩展
    fcitx5-cn-meta
    fcitx5-qt
    fcitx5-gtk
    fcitx5-configtool -- 输入法配置工具，如果使用 KDE 可不安装
-   
+
    python -- 通用脚本语言
    nodejs -- node 环境，用于运行语言服务器
-   
+
    chrome -- chrome 浏览器
    firefox -- firefox 浏览器，比 chrome 占用的资源更少
-   
+
    clash-meta -- 代理工具内核
    clash-verge-rev -- 代理工具, clash-meta 会被作为依赖自动安装
-   
+
    yay -- AUR 用户软件仓库包管理器
-   
+
    sc-im -- 终端表格处理工具，交互类似 vim
+   mdp -- 终端文稿演示工具，类似 PPT
    ```
 
 ## 其他注意事项
