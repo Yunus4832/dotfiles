@@ -14,15 +14,15 @@ set noeol
 autocmd VimEnter * startinsert
 
 " 映射 Enter 键执行操作
-nnoremap <silent> <CR> :w! /tmp/vim_temp.txt<CR>:!wl-copy < /tmp/vim_temp.txt<CR>:q!<CR>
-inoremap <silent> <CR> <Esc>:w! /tmp/vim_temp.txt<CR>:!wl-copy < /tmp/vim_temp.txt<CR>:q!<CR>
+nnoremap <silent> <CR> :w !wl-copy<CR>:q!<CR>
+inoremap <silent> <CR> <Esc>:w !wl-copy<CR>:q!<CR>
 
 " 可选：添加一个备用映射（Ctrl+Enter）以防需要换行
 inoremap <C-CR> <CR>
 
 " 可选：添加退出映射（Esc 直接退出不复制）
 nnoremap <silent> <Esc> :q!<CR>
-inoremap <silent> <Esc> <Esc>:q!<CR>
+inoremap <silent> <Esc> :q!<CR>
 
 " 状态栏提示
 set laststatus=2
