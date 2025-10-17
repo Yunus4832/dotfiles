@@ -3,33 +3,41 @@
 
 " 基本设置
 set nocompatible
+set showcmd
 set nobackup
 set noswapfile
 set nowritebackup
+set number
 set shortmess+=A
-set binary " 关键设置，阻止自动添加换行符
-set noeol
 set ttimeoutlen=10
+
+" 阻止自动添加换行符
+set binary
+set noeol
+
+" 状态栏提示
+set laststatus=2
+set statusline=\ 输入文本后按Enter复制到剪贴板
 
 " 启动后自动进入插入模式
 autocmd VimEnter * startinsert
 
-" 映射 Enter 键执行操作
-nnoremap <silent> <CR> :w !wl-copy<CR>:q!<CR>
-inoremap <silent> <CR> <Esc>:w !wl-copy<CR>:q!<CR>
+" 当缓冲区不为空时复制到剪切板
+function! CopyIfNotEmptyAndQuit()
+    if getline(1, '$') != ['']
+        silent w !wl-copy
+    endif
+    q!
+endfunction
 
-" 可选：添加一个备用映射（Ctrl+Enter）以防需要换行
+" Enter 调用函数复制缓冲区内容
+nnoremap <silent> <CR> :call CopyIfNotEmptyAndQuit()<CR>
+inoremap <silent> <CR> <Esc>:call CopyIfNotEmptyAndQuit()<CR>
+
+" 添加一个备用映射（Ctrl+Enter）以防需要换行
 inoremap <C-CR> <CR>
 
-" 可选：添加退出映射（Esc 直接退出不复制）
+" 添加退出映射（Esc 直接退出不复制）
 nnoremap <silent> <Esc> :q!<CR>
 inoremap <silent> <Esc> <Esc>:q!<CR>
 
-" 状态栏提示
-set laststatus=2
-set statusline=%{exists('g:loaded_fugitive')?fugitive#statusline():''}\ 输入文本后按Enter复制到剪贴板\ \ %=
-
-" 可选：设置一些友好的编辑选项
-set number
-set ruler
-set showcmd
