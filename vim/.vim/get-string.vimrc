@@ -36,6 +36,8 @@ inoremap <silent> <CR> <Esc>:call CopyIfNotEmptyAndQuit()<CR>
 
 " 添加一个备用映射（Ctrl+Enter）以防需要换行
 inoremap <C-CR> <CR>
+" 部分终端无法使用 <C-CR> 映射使用 <C-j> 替代
+inoremap <C-j> <CR>
 
 " 添加退出映射（Esc 直接退出不复制）
 nnoremap <silent> <Esc> :q!<CR>
