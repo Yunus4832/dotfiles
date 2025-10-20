@@ -60,7 +60,6 @@ window-rule {
 }
 
 window-rule{
-    match app-id="io.gitlab.liferooter.TextPieces"
     match app-id="get-string"
     open-floating true
 }
