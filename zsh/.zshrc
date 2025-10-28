@@ -67,7 +67,7 @@ if [ -d $DESKTOP_DIR ]; then
     alias desktop="$DESKTOP_DIR"
     if [ -d $TEMP_PATH ]; then
         alias temp="~/Desktop/temp"
-        alias draft="$TEMP_PATH/draft.temp"
+        alias draft="vim $TEMP_PATH/draft.temp"
     fi
     if [ -d $CODE_PATH ]; then
         alias code="~/Desktop/code"
