@@ -44,6 +44,7 @@ sudo pacman -Syuu
 
    vim -- 通用编辑器
    gvim -- Vim 的 GUI 版本，可选
+   emacs -- 另一个强大的通用编辑器，本人比较依赖其 Org-Mode, 可选
    git -- 版本管理工具
    fzf -- 模糊搜索工具
    curl -- 终端 http 客户端
@@ -117,6 +118,11 @@ sudo pacman -Syuu
 
    sc-im -- 终端表格处理工具，交互类似 vim
    mdp -- 终端文稿演示工具，类似 PPT
+
+   docker -- 容器引擎
+   podman -- 容器引擎, 个人偏好 podman, 优先选择 podman
+   qemu -- 虚拟机软件
+   qemu-ui-curses -- qemu 终端模式下的 UI
    ```
 
 ## 其他注意事项
