@@ -121,6 +121,7 @@ sudo pacman -Syuu
 
    docker -- 容器引擎
    podman -- 容器引擎, 个人偏好 podman, 优先选择 podman
+   fuse-overlayfs -- podman 依赖该软件包，不使用 podman 可选
    qemu -- 虚拟机软件
    qemu-ui-curses -- qemu 终端模式下的 UI
    ```
@@ -239,4 +240,8 @@ sudo pacman -Syuu
       xrandr --output eDP-1 --mode 2880x1800 --output DP-2 --off
       
       ```
+
+13. **podman 相关命令提示 "kernel does not support overlay fs:'overlay'"**
+
+    podman 依赖 fuse-overlayfs，安装对应软件包即可
 
