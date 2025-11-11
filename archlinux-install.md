@@ -125,6 +125,8 @@ sudo pacman -Syuu
    fuse-overlayfs -- podman 依赖该软件包，不使用 podman 可选
    qemu -- 虚拟机软件
    qemu-ui-curses -- qemu 终端模式下的 UI
+
+   binsider -- 二进制分析工具
    ```
 
 ## 其他注意事项
