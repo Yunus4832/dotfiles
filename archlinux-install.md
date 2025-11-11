@@ -97,6 +97,7 @@ sudo pacman -Syuu
    waybar -- 状态栏显示
 
    wl-clipboard -- wayland 协议的剪切板
+   wtype -- wayland 环境中的键盘模拟器
 
    fcitx5 -- 输入法
    fcitx5-chinese-addons -- 输入法中文扩展

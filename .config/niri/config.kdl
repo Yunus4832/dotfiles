@@ -67,7 +67,7 @@ window-rule{
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    Mod+A hotkey-overlay-title="Get string from terminal" { spawn "foot" "--app-id" "get-string" "vim" "-u" "/home/yunus/.vim/get-string.vimrc"; }
+    Mod+A hotkey-overlay-title="Get string from terminal" { spawn-sh "foot --app-id get-string vim -u /home/yunus/.vim/get-string.vimrc && wl-paste --no-newline | wtype -"; }
     Mod+Q hotkey-overlay-title="Open a Terminal: foot" { spawn "foot"; }
     Mod+D hotkey-overlay-title="Run an Application: rofi" { spawn "rofi" "-show" "drun"; }
     Mod+E hotkey-overlay-title="Run a FileExploer: dolphin" {spawn "dolphin"; }

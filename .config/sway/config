@@ -32,7 +32,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+q exec $term
 
 # 通过终端从输入法获取字符串
-bindsym $mod+a exec 'foot --app-id get-string vim -u ~/.vim/get-string.vimrc'
+bindsym $mod+a exec 'foot --app-id get-string vim -u ~/.vim/get-string.vimrc && wl-paste --no-newline | wtype -'
 
 # 关闭窗口
 bindsym $mod+c kill
