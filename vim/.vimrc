@@ -26,6 +26,18 @@ if has('python3')
     let g:my_has_python3 = 1
 endif
 
+" Rg 是否可用
+let g:my_has_rg = 0
+if executable('rg')
+    let g:my_has_rg = 1
+endif
+
+" Ag 是否可用
+let g:my_has_ag = 0
+if executable('ag')
+    let g:my_has_ag = 1
+endif
+
 " 是否启用 vim-snipmate 代码片段引擎
 let g:my_vim_snipmate_enable = 0
 " 是否启用 ultisnips 代码片段引擎
@@ -33,7 +45,7 @@ let g:my_ultisnips_enable = 0
 " 默认使用 ultisnips，如果 python3 不支持，使用 vim-snipmate 替代
 if g:my_has_python3
     let g:my_ultisnips_enable = 1
-else 
+else
     let g:my_vim_snipmate_enable = 1
 endif
 
@@ -59,7 +71,7 @@ let g:ctrlp_enable = 0
 " 默认使用 fzf，如果 fzf 不可用，并且版本大于 901 则使用 scope，否则使用 ctrlp
 if executable('fzf')
     let g:my_fzf_enable = 1
-elseif g:my_version_901 
+elseif g:my_version_901
     let g:my_scope_enable = 1
 else
     let g:ctrlp_enable = 1
@@ -401,6 +413,9 @@ set list lcs=lead:.,tab:-->,trail:.
 " 补全菜单配置
 set completeopt=menuone,noinsert
 
+" 关闭自动换行
+set tw=0
+
 " 初始化插件系统
 " 自适应不同语言的智能缩进
 filetype on
@@ -537,7 +552,7 @@ if g:my_fzf_enable
     let g:fzf_vim.preview_window = []
     " 弹窗居中显示
     let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6, 'relative': v:true } }
-endif 
+endif
 
 " ctrlp 配置
 if g:ctrlp_enable
@@ -679,12 +694,7 @@ else
 endif
 
 " 使用 NERDTree 插件查看工程文件。
-if g:os_type ==# "msys" || g:os_type ==# "cygwin"
-    " VCS 在 Msys2 和 Cygwin 上太慢了, 所有退而去其次
-    nmap <leader>f :NERDTreeFind<CR>
-else
-    nmap <leader>f :call NERDTreeVcsOrFind()<CR>
-endif
+nmap <leader>f :call NERDTreeVcsOrFind()<CR>
 
 " 终端
 " 打开终端
@@ -693,7 +703,7 @@ tnoremap <silent> <esc> <C-_>:call TerminalToggle()<CR>
 
 " IDE 功能
 " 最近打开的文件
-if g:my_fzf_enable 
+if g:my_fzf_enable
     nmap <leader>;e :History<CR>
 elseif g:my_scope_enable
     nmap <leader>;e :call g:scope#fuzzy#MRU()<CR>
@@ -706,7 +716,7 @@ endif
 nmap <leader>;a :call OpenGitBlame()<CR>
 
 " 模糊搜索文件
-if g:my_fzf_enable 
+if g:my_fzf_enable
     nmap <leader>;s :Files<CR>
 elseif g:my_scope_enable
     nmap <leader>;s :call g:scope#fuzzy#File()<CR>
@@ -714,8 +724,29 @@ else
     nmap <leader>;s <Plug>(ctrlp)
 endif
 
+" 模糊搜索文件内容
+" 如果启用 fzf.vim，并且 rg，ag 可用，则搜索文件内容，否则只搜索文件名
+" 如果启用 scope，并且 rg，ag 可用，使用 rg ag 进行搜索，否则使用 grep 进行搜索
+if g:my_fzf_enable
+    if g:my_has_rg
+        nmap <leader>;S :Rg<CR>
+    elseif g:my_has_ag
+        nmap <leader>;S :Ag<CR>
+    else
+        nmap <leader>;S :Files<CR>
+    endif
+elseif g:my_scope_enable
+    if g:my_has_rg
+        nmap <leader>;S :call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F')<CR>
+    elseif g:my_has_ag
+        nmap <leader>;S :call g:scope#fuzzy#Grep('ag --vimgrep')<CR>
+    else
+        nmap <leader>;S :call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git')<CR>
+    endif
+endif
+
 " 格式化代码
-if g:my_neoformat_enable 
+if g:my_neoformat_enable
     nmap <leader>;f :Neoformat<CR>
     xmap <leader>;f :Neoformat<CR>
 endif
@@ -852,7 +883,7 @@ if g:my_coc_enable
     function ShowDocumentation()
         if CocAction('hasProvider', 'hover')
             call CocActionAsync('doHover')
-        else 
+        else
             call feedkeys("K", "in")
         endif
     endfunction
@@ -1006,10 +1037,15 @@ endif
 
 " 如果当前缓冲区不是文件打开 VCS 否则定位该文件
 function! NERDTreeVcsOrFind()
-    " 判断是否为无文件，不可修改的零时缓冲区
+    " 判断是否为无文件，不可修改的临时缓冲区
     if expand('%') == '' && &buftype == '' && !&modifiable
         " 无文件上下文，打开项目根目录的 NERDTree
-        NERDTreeVCS
+        " VCS 在 Msys2 和 Cygwin 上太慢了, 所有退而去其次
+        if g:os_type ==# "msys" || g:os_type ==# "cygwin"
+            NERDTree
+        else
+            NERDTreeVCS
+        endif
     else
         " 有文件上下文，定位当前文件
         NERDTreeFind

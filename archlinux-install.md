@@ -61,6 +61,8 @@ sudo pacman -Syuu
    dtash -- 另一个更轻量级的终端复用工具
    dvtm -- 另一个轻量级的终端平铺窗口工具
    polkit -- 现代化的特权授权工具
+   ripgrep -- rg 文本搜索工具，rust 语言实现，对于代码库中的搜索，优于 grep
+   the_silver_searcher -- ag 另一个文本搜索工具，优于 grep
 
    font -- 中文字体
 
