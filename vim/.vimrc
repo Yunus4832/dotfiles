@@ -205,6 +205,9 @@ Plug 'mtdl9/vim-log-highlighting'
 " 代码块移动
 Plug 'matze/vim-move'
 
+" 使用成对的符号包裹内容
+Plug 'tpope/vim-surround'
+
 " 代码格式化插件, 依赖 astyle
 if g:my_neoformat_enable
     Plug 'sbdchd/neoformat'
@@ -521,6 +524,10 @@ let g:asyncrun_open = 6
 " 设置执行任务的方式
 let g:asynctasks_term_pos = 'bottom'
 
+" asynctasks 配置
+let g:asynctasks_config_name = '.vim/tasks.ini'
+
+" gitgutter 配置
 if g:my_git_extension_enable
     " gitgutter 状态颜色设置
     let g:gitgutter_sign_added = '▋'
