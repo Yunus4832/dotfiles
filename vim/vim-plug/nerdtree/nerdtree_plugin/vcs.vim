@@ -38,6 +38,7 @@ function! s:FindParentVCSRoot(path)
         \ !isdirectory(l:path._str() . '/.git') &&
         \ !isdirectory(l:path._str() . '/.svn') &&
         \ !isdirectory(l:path._str() . '/.hg') &&
+        \ !isdirectory(l:path._str() . '/.root') &&
         \ !isdirectory(l:path._str() . '/.bzr') &&
         \ !isdirectory(l:path._str() . '/_darcs')
         let l:path = l:path.getParent()

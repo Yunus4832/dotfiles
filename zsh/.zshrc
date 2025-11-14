@@ -59,7 +59,7 @@ fi
 export LANG=en_US.UTF-8
 
 # Aliases
-# Edit custom config file
+# edit custom config file
 alias custom="vim $CONFIG/zsh/custom.zsh && source $CONFIG/zsh/custom.zsh"
 
 # common directory aliases
@@ -99,6 +99,50 @@ if command -v vim >/dev/null; then
     alias cvim="OSTYPE=msys vim"
     # lite vim
     alias lvim="vim -u $HOME/.vim/lite.vimrc"
+fi
+
+# git extension alias
+# shallow clone
+alias 'gcls'='git clone --depth 1'
+
+# Custom functions
+# use grep & fzf to find content in dir
+if command -v fzf >/dev/null; then
+    grepf() {
+        grep -REIHns --exclude-dir=.git "$1" . | \
+            fzf --delimiter : \
+            --preview 'bat --color=always --style=numbers -r {2}: {1}' \
+            --bind 'enter:become(vim {1} +{2})' \
+            --bind 'j:down' \
+            --bind 'k:up' \
+            --layout=reverse
+        }
+fi
+
+# use rg & fzf to find content in dir
+if command -v fzf >/dev/null && command -v rg >/dev/null; then
+rgf() {
+    rg -F --no-heading --line-number --color=never --follow "$1" . | \
+        fzf --delimiter : \
+        --preview 'bat --color=always --style=numbers -r {2}: {1}' \
+        --bind 'enter:become(vim {1} +{2})' \
+        --bind 'j:down' \
+        --bind 'k:up' \
+        --layout=reverse
+}
+fi
+
+# use ag & fzf to find content in dir
+if command -v fzf >/dev/null && command -v ag >/dev/null; then
+agf() {
+    ag --literal --nobreak --noheading --numbers --ignore-dir=.git "$1" . | \
+        fzf --delimiter : \
+        --preview 'bat --color=always --style=numbers -r {2}: {1}' \
+        --bind 'enter:become(vim {1} +{2})' \
+        --bind 'j:down' \
+        --bind 'k:up' \
+        --layout=reverse
+}
 fi
 
 # set do not raise error when can't match
