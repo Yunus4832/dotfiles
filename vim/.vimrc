@@ -732,7 +732,7 @@ else
 endif
 
 " 模糊搜索文件内容
-" 如果启用 fzf.vim，并且 rg，ag 可用，则搜索文件内容，否则只搜索文件名
+" 如果启用 fzf.vim，并且 rg，ag 可用，则搜索文件内容，否则使用 grep 进行搜索
 " 如果启用 scope，并且 rg，ag 可用，使用 rg ag 进行搜索，否则使用 grep 进行搜索
 if g:my_fzf_enable
     if g:my_has_rg
@@ -740,7 +740,7 @@ if g:my_fzf_enable
     elseif g:my_has_ag
         nmap <leader>;S :Ag<CR>
     else
-        nmap <leader>;S :Files<CR>
+        nmap <leader>;S :call fzf#vim#grep("grep -REIHns --exclude-dir=.git".fzf#shellescape(<q-args>), fzf#vim#with_preview(), <bang>0)',
     endif
 elseif g:my_scope_enable
     if g:my_has_rg
@@ -1104,9 +1104,11 @@ endfunction
 command! DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis | wincmd p | diffthis
 
 " 将变更保存到补丁
-command! -nargs=? DiffToPatch silent call DiffToPatch(0, <q-args>)
-command! -nargs=? DiffToPatchAppend silent call DiffToPatch(1, <q-args>)
+command! -nargs=? -complete=file DiffToPatch silent call DiffToPatch(0, <q-args>)
+command! -nargs=? -complete=file DiffToPatchAppend silent call DiffToPatch(1, <q-args>)
 
+" 分割窗口比较当前文件 Diff 的命令
+command! -nargs=? -complete=file Vds exec "vertical diffsplit " . <q-args>
 
 "=====================================================================
 " Compatible 兼容相关                                                =
