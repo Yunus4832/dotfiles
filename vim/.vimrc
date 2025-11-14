@@ -1108,7 +1108,7 @@ command! -nargs=? -complete=file DiffToPatch silent call DiffToPatch(0, <q-args>
 command! -nargs=? -complete=file DiffToPatchAppend silent call DiffToPatch(1, <q-args>)
 
 " 分割窗口比较当前文件 Diff 的命令
-command! -nargs=? -complete=file Vds exec "vertical diffsplit " . <q-args>
+command! -nargs=1 -complete=file Vds exec 'vertical diffsplit ' . <q-args>
 
 "=====================================================================
 " Compatible 兼容相关                                                =
