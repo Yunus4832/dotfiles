@@ -63,6 +63,7 @@ sudo pacman -Syuu
    polkit -- 现代化的特权授权工具
    ripgrep -- rg 文本搜索工具，rust 语言实现，对于代码库中的搜索，优于 grep
    the_silver_searcher -- ag 另一个文本搜索工具，优于 grep
+   fd -- 文件搜索工具，比 find 更加友好
 
    font -- 中文字体
 

@@ -158,6 +158,19 @@ if command -v fzf >/dev/null; then
         }
 fi
 
+# use fd & fzf to find file
+if command -v fzf >/dev/null && command -v fd>/dev/null; then
+    fdf() {
+        fd "$1" | \
+            fzf \
+            --preview 'bat --color=always --style=numbers {1}' \
+            --bind 'enter:become(vim {1})' \
+            --bind 'j:down' \
+            --bind 'k:up' \
+            --layout=reverse
+        }
+fi
+
 # set do not raise error when can't match
 setopt nonomatch
 
