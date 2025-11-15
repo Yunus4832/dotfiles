@@ -145,6 +145,19 @@ agf() {
 }
 fi
 
+# use git & fzf to find edited file
+if command -v fzf >/dev/null; then
+    gdf() {
+        git diff --name-only | \
+            fzf \
+            --preview 'git diff {1} | bat --style=numbers --color=always' \
+            --bind 'enter:become(vim {1})' \
+            --bind 'j:down' \
+            --bind 'k:up' \
+            --layout=reverse
+        }
+fi
+
 # set do not raise error when can't match
 setopt nonomatch
 
