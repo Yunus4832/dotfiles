@@ -752,6 +752,9 @@ elseif g:my_scope_enable
     endif
 endif
 
+" Git 仓库变更文件列表
+nmap <leader>;d :GitDiff<CR>
+
 " 格式化代码
 if g:my_neoformat_enable
     nmap <leader>;f :Neoformat<CR>
@@ -1109,6 +1112,15 @@ command! -nargs=? -complete=file DiffToPatchAppend silent call DiffToPatch(1, <q
 
 " 分割窗口比较当前文件 Diff 的命令
 command! -nargs=1 -complete=file Vds exec 'vertical diffsplit ' . <q-args>
+
+" 编辑过的 Git 仓库 文件列表
+if g:my_fzf_enable
+    command GitDiff call fzf#run(fzf#wrap({'source': 'git diff --name-only'}))
+endif
+if g:my_scope_enable
+    command GitDiff call g:scope#fuzzy#File('git diff --name-only')
+endif
+
 
 "=====================================================================
 " Compatible 兼容相关                                                =
