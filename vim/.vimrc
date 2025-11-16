@@ -737,18 +737,24 @@ endif
 if g:my_fzf_enable
     if g:my_has_rg
         nmap <leader>;S :Rg<CR>
+        xmap <leader>;S y:exec 'Rg '.shellescape(@")<CR>
     elseif g:my_has_ag
         nmap <leader>;S :Ag<CR>
+        xmap <leader>;S y:exec 'Ag '.shellescape(@")<CR>
     else
-        nmap <leader>;S :call fzf#vim#grep("grep -REIHns --exclude-dir=.git".fzf#shellescape(<q-args>), fzf#vim#with_preview(), <bang>0)',
+        nmap <leader>;S :Grep<CR>
+        xmap <leader>;S y:exec 'Grep '.@"<CR>
     endif
 elseif g:my_scope_enable
     if g:my_has_rg
         nmap <leader>;S :call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F')<CR>
+        xmap <leader>;S y:call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F', 1, @")<CR>
     elseif g:my_has_ag
         nmap <leader>;S :call g:scope#fuzzy#Grep('ag --vimgrep')<CR>
+        xmap <leader>;S y:call g:scope#fuzzy#Grep('ag --vimgrep', 1, @")<CR>
     else
         nmap <leader>;S :call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git')<CR>
+        xmap <leader>;S y:call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git', 1, @")<CR>
     endif
 endif
 
@@ -1115,6 +1121,7 @@ command! -nargs=1 -complete=file Vds exec 'vertical diffsplit ' . <q-args>
 
 " 编辑过的 Git 仓库 文件列表
 if g:my_fzf_enable
+    command! -bang -nargs=* Grep call fzf#vim#grep("grep -REIHns --exclude-dir=.git ".fzf#shellescape(<q-args>), fzf#vim#with_preview(), <bang>0)',
     command GitDiff call fzf#run(fzf#wrap({'source': 'git diff --name-only'}))
 endif
 if g:my_scope_enable
