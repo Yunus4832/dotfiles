@@ -737,10 +737,10 @@ endif
 if g:my_fzf_enable
     if g:my_has_rg
         nmap <leader>;S :Rg<CR>
-        xmap <leader>;S y:exec 'Rg '.shellescape(@")<CR>
+        xmap <leader>;S y:exec 'Rg '.@"<CR>
     elseif g:my_has_ag
         nmap <leader>;S :Ag<CR>
-        xmap <leader>;S y:exec 'Ag '.shellescape(@")<CR>
+        xmap <leader>;S y:exec 'Ag '.@"<CR>
     else
         nmap <leader>;S :Grep<CR>
         xmap <leader>;S y:exec 'Grep '.@"<CR>
