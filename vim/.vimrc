@@ -472,6 +472,8 @@ let NERDTreeAutoDeleteBuffer = 1
 let NERDTreeQuitOnOpen = 1
 " 当只有一个窗口时自动退出 NERDTree
 "autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" 过滤特定后缀的文件
+let NERDTreeIgnore = ['\.o$[[file]]', '\.class$[[file]]']
 
 " Nerdtree-git-plugin 配置
 " 删除多余的箭头标识文件夹

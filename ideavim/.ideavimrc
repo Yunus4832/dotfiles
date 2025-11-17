@@ -68,6 +68,7 @@ nmap <leader>dp <Action>(BuildSolutionAction)
 " idea 特殊配置
 nmap <leader>;; <Action>(MainMenu)
 nmap <leader>;s <Action>(SearchEverywhere)
+xmap <leader>;s <Action>(SearchEverywhere)
 nmap <leader>;a <Action>(Annotate)
 nmap <leader>;e <Action>(RecentFiles)
 "nmap <leader>;E <Action>(RecentChangedFiles)
