@@ -117,7 +117,6 @@ rivertile -view-padding 3 -outer-padding 3 &
 riverctl spawn "fcitx5 --replace -d"
 riverctl spawn "waybar -c ~/.config/waybar/config-river"
 riverctl spawn "swaybg -i ~/.config/wallpapers/wallpaper.png -m fill"
-riverctl spawn "clash-verge"
 riverctl spawn "mako"
 
 # 环境变量

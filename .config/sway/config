@@ -146,8 +146,6 @@ gaps inner 5
 exec "waybar -c ~/.config/waybar/config-sway"
 # 输入法
 exec --no-startup-id "fcitx5 --replace -d"
-# 网络代理
-exec clash-verge
 # 通知
 exec mako
 

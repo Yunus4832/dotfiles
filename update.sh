@@ -204,3 +204,16 @@ if command -v foot &> /dev/null; then
         patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/foot/foot.ini.patch
     fi
 fi
+
+#-----------------------------------------------------
+# mihomo 代理模拟器配置                              -
+#-----------------------------------------------------
+
+if command -v mihomo &> /dev/null; then
+    echo "Copy mihomo config to $HOME/.config/mihomo..."
+    cp -r $DOTFILES_DIR/.config/mihomo $HOME/.config
+    if [ -e $HOME/.config/mihomo/config.yaml.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/mihomo/config.yaml.patch
+    fi
+fi
+

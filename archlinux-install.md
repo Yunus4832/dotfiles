@@ -115,8 +115,7 @@ sudo pacman -Syuu
    chrome -- chrome 浏览器
    firefox -- firefox 浏览器，比 chrome 占用的资源更少
 
-   clash-meta -- 代理工具内核
-   clash-verge-rev -- 代理工具, clash-meta 会被作为依赖自动安装
+   mihomo -- 代理工具内核
 
    yay -- AUR 用户软件仓库包管理器
 
@@ -167,16 +166,9 @@ sudo pacman -Syuu
    sudo pacman -S clash-meta-rev
    ```
 
-4. **解决无法打开 clash-verge 的 tun 虚拟网卡模式**
+4. **安装 mihomo 网络代理服务**
 
-   - 可能是之前安装了旧版本的 clash-verge 导致服务配置指向的 clash-verge-service 路径错误， 编辑 `/usr/lib/systemd/system/clash-verge-service.service` 中的可执行文件，一般指向 `/usr/bin/clash-verge-service`
-
-   - 可能是没有相关 linux 能力导致的，执行如下命令可以修复
-
-     ```bash
-     sudo setcap cap_net_bind_service,cap_net_admin=+ep /usr/bin/clash-meta
-     sudo setcap cap_net_bind_service,cap_net_admin=+ep /usr/bin/clash-verge
-     ```
+   在 `~/.config/mihomo` 目录下有一个可执行的 shell 脚本 `install-mihomo-service.sh` 能够安装和启动 mihomo 代理服务, 修改 `config.yaml` 将订阅填入，安装服务即可启动代理。
 
 5. **解决 Chrome 在 wayland 会话下显示模糊的问题**
 
@@ -213,9 +205,9 @@ sudo pacman -Syuu
     systemctl --user restart xdg-desktop-portal.service
     ```
 
-11. **新版本的 clash-verge-rev 使用 polkit 进行认证**
+11. **桌面用户 DBus 使用 polkit 进行认证**
 
-    新版本的 clash-verge-rev 使用 polkit 进行认证，使用窗口管理器的用户如果需要静默授权需要使用增加如下规则到 `/etc/polkit-1/rules.d/49-nopasswd-global.rules` 中，用户修改成登陆用户：
+    使用 polkit 进行认证，使用窗口管理器的用户如果需要静默授权需要使用增加如下规则到 `/etc/polkit-1/rules.d/49-nopasswd-global.rules` 中，用户修改成登陆用户：
 
     ```javascript
     polkit.addRule(function(action, subject){
