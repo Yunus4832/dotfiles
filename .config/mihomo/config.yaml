@@ -1,3 +1,14 @@
+mixed-port: 7890
+ipv6: false
+allow-lan: true
+bind-address: "*"
+log-level: silent
+
+external-controller: 127.0.0.1:7891
+external-ui: uis/metacubexd
+external-ui-url: https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip
+select: ""
+
 NodeParam: &NodeParam {type: http, interval: 86400, health-check: {enable: true, url: 'http://connectivitycheck.platform.hicloud.com/generate_204', interval: 300}}
 
 proxy-providers:
