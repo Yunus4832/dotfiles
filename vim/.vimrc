@@ -706,9 +706,7 @@ endif
 nmap <leader>f :call NERDTreeVcsOrFind()<CR>
 
 " 终端
-" 打开终端
-"nmap <leader>t :call TerminalToggle()<CR>
-tnoremap <silent> <esc> <C-_>:call TerminalToggle()<CR>
+" 切换终端 <C-=> 可以切换终端
 
 " IDE 功能
 " 最近打开的文件
@@ -956,6 +954,9 @@ augroup VimAutoMkdir
         endif
     endfunction
 augroup end
+
+" 解决未知原因导致的 airline 可能的乱码
+autocmd VimEnter * silent! sleep 50m | redraw!
 
 
 "=====================================================================

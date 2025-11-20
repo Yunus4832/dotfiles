@@ -26,8 +26,9 @@ autocmd VimEnter * startinsert
 function! CopyIfNotEmptyAndQuit()
     if getline(1, '$') != [''] && executable('wl-copy')
         silent w !wl-copy
+        q!
     endif
-    q!
+    cq
 endfunction
 
 " Enter 调用函数复制缓冲区内容
@@ -40,6 +41,6 @@ inoremap <C-CR> <CR>
 inoremap <C-j> <CR>
 
 " 添加退出映射（Esc 直接退出不复制）
-nnoremap <silent> <Esc> :q!<CR>
-inoremap <silent> <Esc> <Esc>:q!<CR>
+nnoremap <silent> <Esc> :cq<CR>
+inoremap <silent> <Esc> <Esc>:cq<CR>
 
