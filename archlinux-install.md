@@ -65,6 +65,11 @@ sudo pacman -Syuu
    the_silver_searcher -- ag 另一个文本搜索工具，优于 grep
    fd -- 文件搜索工具，比 find 更加友好
    net-tools -- 网络工具
+   fastfetch -- 展示系统相关信息
+   bc -- 基础的计算器
+   ed -- 基础的编辑器
+   openbsd-netcat -- nc 网络工具
+   autossh -- 自动 ssh 端口转发实现内网穿透的工具
 
    font -- 中文字体
 
