@@ -82,13 +82,25 @@ proxy-groups:
     use: [provider1]
 
 rules:
+  # 22 端口直连
   - DST-PORT,22,DIRECT
+
+  # 局域网直连
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,::1/128,DIRECT
+  - IP-CIDR,fc00::/7,DIRECT
+  - IP-CIDR,fe80::/10,DIRECT
+
+  # 国内 Id 直连
+  - GEOIP,CN,DIRECT
+
   - DOMAIN-SUFFIX,google.com,PROXY
   - DOMAIN-SUFFIX,googleapis.com,PROXY
   - DOMAIN-SUFFIX,gstatic.com,PROXY
   - DOMAIN-SUFFIX,ggpht.com,PROXY
   - DOMAIN-SUFFIX,youtube.com,PROXY
-
-  - GEOIP,CN,DIRECT
 
   - MATCH,PROXY
