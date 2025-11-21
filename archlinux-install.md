@@ -70,6 +70,8 @@ sudo pacman -Syuu
    ed -- 基础的编辑器
    openbsd-netcat -- nc 网络工具
    autossh -- 自动 ssh 端口转发实现内网穿透的工具
+   lftp -- ftp 文件服务器客户端，虽然 dolphin 内置 ftp 支持，但是如果没有 dolphin 仍然需要一个通用的 ftp 客户端
+   bottom -- 任务管理器，top 的替代，比 top 更加友好直观
 
    font -- 中文字体
 
