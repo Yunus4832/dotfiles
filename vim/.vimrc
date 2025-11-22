@@ -835,7 +835,6 @@ if g:my_tagbar_enable
     nmap <M-7> :TagbarToggle<CR>
 endif
 
-
 " 快速退出插入模式
 imap jj <Esc>
 imap kk <Esc>
@@ -850,6 +849,11 @@ nmap <silent><f9> :AsyncTask file-build<CR>
 nmap <silent><f6> :AsyncTask project-run<CR>
 " 编译 / 构建项目
 nmap <silent><f7> :AsyncTask project-build<CR>
+
+" 文件内可视模式搜索
+xnoremap * :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xnoremap / :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
 
 
 "=====================================================================
@@ -1105,6 +1109,14 @@ function! DiffToPatch(append, patchfile)
         call delete(lpatchfile)
         echohl ErrorMsg | echo 'diff failed (exit code ' . diff_exit_code . ')' | echohl NONE
     endif
+endfunction
+
+" 可视模式下支持使用 * # / 搜索选中的内容
+function! VSetSearch(cmdtype)
+  let temp = @s
+  norm! gv"sy
+  let @/ = '\V' . substitute(escape(@s, a:cmdtype.'\'), '\n', '\\n', 'g')
+  let @s = temp
 endfunction
 
 
