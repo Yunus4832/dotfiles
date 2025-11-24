@@ -960,6 +960,10 @@ autocmd VimLeavePre * silent! wall
 " q 自动退出 quickfix 窗口
 autocmd FileType qf nmap <buffer> <silent> q :q<CR>
 
+" q 自动退出帮助文档, 帮助文档显示在左侧
+autocmd FileType help nmap <buffer> <silent> q :q<CR>
+autocmd BufWinEnter * if &filetype == 'help' | wincmd L | vertical resize 85
+
 " 保存文件时，如果文件夹不存在则自动创建
 augroup VimAutoMkdir
     autocmd!
