@@ -745,23 +745,29 @@ endif
 if g:my_fzf_enable
     if g:my_has_rg
         nmap <leader>;S :Rg<CR>
+        xmap <leader>;s y:exec 'Rg '.@"<CR>
         xmap <leader>;S y:exec 'Rg '.@"<CR>
     elseif g:my_has_ag
         nmap <leader>;S :Ag<CR>
+        xmap <leader>;s y:exec 'Ag '.@"<CR>
         xmap <leader>;S y:exec 'Ag '.@"<CR>
     else
         nmap <leader>;S :Grep<CR>
+        xmap <leader>;s y:exec 'Grep '.@"<CR>
         xmap <leader>;S y:exec 'Grep '.@"<CR>
     endif
 elseif g:my_scope_enable
     if g:my_has_rg
         nmap <leader>;S :call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F')<CR>
+        xmap <leader>;s y:call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F', 1, @")<CR>
         xmap <leader>;S y:call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F', 1, @")<CR>
     elseif g:my_has_ag
         nmap <leader>;S :call g:scope#fuzzy#Grep('ag --vimgrep')<CR>
+        xmap <leader>;s y:call g:scope#fuzzy#Grep('ag --vimgrep', 1, @")<CR>
         xmap <leader>;S y:call g:scope#fuzzy#Grep('ag --vimgrep', 1, @")<CR>
     else
         nmap <leader>;S :call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git')<CR>
+        xmap <leader>;s y:call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git', 1, @")<CR>
         xmap <leader>;S y:call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git', 1, @")<CR>
     endif
 endif
