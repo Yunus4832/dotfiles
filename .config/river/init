@@ -14,7 +14,7 @@ riverctl map normal Super D spawn "rofi -show drun"
 riverctl map normal Super C close
 
 # 文件管理器
-riverctl map normal Super E spawn "dolphin"
+riverctl map normal Super E spawn "foot ranger"
 
 # 退出 river 会话
 riverctl map normal Super M exit

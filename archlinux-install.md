@@ -54,6 +54,7 @@ sudo pacman -Syuu
    jq -- json 格式化工具
    ranger -- 文件管理器
    vifm -- 另一个简单的文件管理器
+   nnn -- 另一个极简的文件管理器
    more/less -- 分页查看文本文档，类似 cat
    bat -- cat 的上位替代
    zsh -- 更好用的 shell

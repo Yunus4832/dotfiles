@@ -42,7 +42,6 @@ nmap <C-o> <Action>(Back)
 
 " vim 通用按键映射
 nmap <leader>f  <Action>(ActivateProjectToolWindow)
-"nmap <leader>t  <Action>(ActivateTerminalToolWindow)
 
 " 缓冲区设置
 nmap <leader>bb :b#<CR>
@@ -71,7 +70,6 @@ nmap <leader>;s <Action>(SearchEverywhere)
 xmap <leader>;s <Action>(SearchEverywhere)
 nmap <leader>;a <Action>(Annotate)
 nmap <leader>;e <Action>(RecentFiles)
-"nmap <leader>;E <Action>(RecentChangedFiles)
 nmap <leader>;f <Action>(ReformatCode)
 xmap <leader>;f <Action>(ReformatCode)
 nmap <leader>;c <Action>(CommentByLineComment)
@@ -114,6 +112,11 @@ nmap <leader>,i :set ic!<CR>
 
 " 设置 EasyMotion 启动快捷键
 nmap <leader><leader>s <Plug>(easymotion-s)
+
+" 文件内搜索扩展
+xnoremap * y/<C-R>0<CR>
+xnoremap / y/<C-R>0<CR>
+xnoremap # y?<C-R>0<CR>
 
 " idea 和 vim 的按键绑定
 sethandler <C-S-2> a:vim

@@ -12,7 +12,7 @@ set $term foot
 # 默认程序启动噐
 set $menu rofi -show drun
 # 文件管理器
-set $fileManager dolphin
+set $fileManager foot ranger
 
 # 默认壁纸
 output * bg ~/.config/wallpapers/wallpaper.png fill

@@ -291,6 +291,14 @@ let mapleader = "\<Space>"
 let &t_TI = ""
 let &t_TE = ""
 
+" 关闭终端类型查询
+" 如果不关闭，在打开大文件时，可能会因为 vim
+" 处理终端模拟器响应不及时而造成乱码。目前，
+" 对我来说关闭它影响不大。
+set t_RV=
+set t_RF=
+
+
 " 显示光标当前位置
 set ruler
 
@@ -851,9 +859,9 @@ nmap <silent><f6> :AsyncTask project-run<CR>
 nmap <silent><f7> :AsyncTask project-build<CR>
 
 " 文件内可视模式搜索
-xnoremap * :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
-xnoremap / :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
-xnoremap # :<C-u>call VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
+xmap * :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xmap / :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xmap # :<C-u>call VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
 
 
 "=====================================================================
@@ -958,9 +966,6 @@ augroup VimAutoMkdir
         endif
     endfunction
 augroup end
-
-" 解决未知原因导致的 airline 可能的乱码
-autocmd VimEnter * silent! sleep 50m | redraw!
 
 
 "=====================================================================
