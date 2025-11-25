@@ -822,10 +822,8 @@ nmap <leader>,h :nohls<CR>
 nmap <leader>,i :set ic!<CR>
 " 临时切换折行
 nmap <leader>,w :set wrap!<CR>
-
 " 临时切换是否显示空白字符
 nmap <leader>,l :set list!<CR>
-
 " 临时切换是否显示行号
 nmap <leader>,n :set nu!<CR>:set rnu!<CR>
 
@@ -1148,6 +1146,20 @@ function! VSetSearch(cmdtype)
   let @s = temp
 endfunction
 
+" 设置终端的默认背景色
+function! Black(bang)
+    if a:bang
+        let l:current = synIDattr(hlID('Normal'), 'bg', 'cterm')
+        if l:current == 'black' || l:current == '0'
+            hi Normal ctermbg=NONE
+        else
+            hi Normal ctermbg=black
+        endif
+    else
+        hi Normal ctermbg=black
+    endif
+endfunction
+
 
 "=====================================================================
 " Custom Command 自定义命令                                          =
@@ -1171,6 +1183,9 @@ endif
 if g:my_scope_enable
     command GitDiff call g:scope#fuzzy#File('git diff --name-only')
 endif
+
+" 设置终端的默认背景色
+command! -bang Black call Black(<bang>0)
 
 
 "=====================================================================

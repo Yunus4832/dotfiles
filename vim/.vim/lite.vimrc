@@ -22,6 +22,14 @@ let mapleader = "\<Space>"
 let &t_TI = ""
 let &t_TE = ""
 
+" 关闭终端类型查询
+" 如果不关闭，在打开大文件时，可能会因为 vim
+" 处理终端模拟器响应不及时而造成乱码。目前，
+" 对我来说关闭它影响不大。
+set t_RV=
+set t_RF=
+
+
 " 显示光标当前位置
 set ruler
 
@@ -100,7 +108,7 @@ set go-=L
 set laststatus=2
 
 " 在光标接近底端或顶端时，自动下滚或上滚
-set scrolloff=10
+set scrolloff=3
 set tenc=utf-8
 set encoding=utf-8
 set fileencodings=utf-8,chinese,latin-1
@@ -144,6 +152,9 @@ set list lcs=lead:.,tab:-->,trail:.
 " 补全菜单配置
 set completeopt=menuone,noinsert
 
+" 关闭自动换行
+set tw=0
+
 " 初始化插件系统
 " 自适应不同语言的智能缩进
 filetype on
@@ -185,10 +196,8 @@ nmap <leader>,h :nohls<CR>
 nmap <leader>,i :set ic!<CR>
 " 临时切换折行
 nmap <leader>,w :set wrap!<CR>
-
 " 临时切换是否显示空白字符
 nmap <leader>,l :set list!<CR>
-
 " 临时切换是否显示行号
 nmap <leader>,n :set nu!<CR>:set rnu!<CR>
 
@@ -204,6 +213,12 @@ nmap gt :cn<CR>
 " 快速退出插入模式
 imap jj <Esc>
 imap kk <Esc>
+
+" 文件内可视模式搜索
+xmap * :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xmap / :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xmap # :<C-u>call VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
+
 
 "=====================================================================
 " Independent Autocmd 独立的自动命令                                 =
@@ -231,8 +246,8 @@ autocmd FileType qf nmap <buffer> <silent> q :q<CR>
 " 保存文件时，如果文件夹不存在则自动创建
 augroup VimAutoMkdir
     autocmd!
-    autocmd BufWritePre * call s:auto_mkdir(expand('<afile>:p:h'), v:cmdbang)
-    function! s:auto_mkdir(dir, force)
+    autocmd BufWritePre * call s:AutoMkdir(expand('<afile>:p:h'), v:cmdbang)
+    function! s:AutoMkdir(dir, force)
         if !isdirectory(a:dir)
                     \ && (a:force
                     \ || input("'" . a:dir . "' does not exist. Create? [y/N]") =~? '^y\%[es]$')
@@ -240,6 +255,7 @@ augroup VimAutoMkdir
         endif
     endfunction
 augroup end
+
 
 "=====================================================================
 " Highlight 高亮相关                                                 =
@@ -260,13 +276,12 @@ hi Search ctermbg=64 guibg=#5f875f ctermfg=231 guifg=#ffffff
 hi SpecialKey ctermbg=NONE ctermfg=59 guifg=#5f5f5f guibg=#000000
 
 
-
 "=====================================================================
 " Custom Functions 自定义函数                                        =
 "=====================================================================
 
 " 将变更保存到补丁
-function! DiffToPatch()
+function! DiffToPatch(append, patchfile)
     if expand('%') == ''
         echo 'Error: No file name (buffer is not associated with a file).'
         return
@@ -278,8 +293,17 @@ function! DiffToPatch()
 
     let temp = tempname()
     execute '%w ' . fnameescape(temp)
-    let patchfile = expand('%:p') . '.patch'
-    let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1{p; s/^---/+++/}; 2d" > ' . shellescape(patchfile) . ' 2>/dev/null'
+
+    let lpatchfile = expand('%:p') . '.patch'
+    if !empty(a:patchfile)
+        let lpatchfile = a:patchfile
+    endif
+
+    let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1{p; s/^---/+++/}; 2d" > ' . shellescape(lpatchfile) . ' 2>/dev/null'
+    if a:append != 0
+        let cmd = 'diff -u ' . shellescape(expand('%')) . ' ' . shellescape(temp) . ' | sed "1{p; s/^---/+++/}; 2d" >> ' . shellescape(lpatchfile) . ' 2>/dev/null'
+    endif
+
     call system(cmd)
     let diff_exit_code = v:shell_error
     call delete(temp)
@@ -289,6 +313,28 @@ function! DiffToPatch()
     else
         call delete(patchfile)
         echohl ErrorMsg | echo 'diff failed (exit code ' . diff_exit_code . ')' | echohl NONE
+    endif
+endfunction
+
+" 可视模式下支持使用 * # / 搜索选中的内容
+function! VSetSearch(cmdtype)
+  let temp = @s
+  norm! gv"sy
+  let @/ = '\V' . substitute(escape(@s, a:cmdtype.'\'), '\n', '\\n', 'g')
+  let @s = temp
+endfunction
+
+" 设置终端的默认背景色
+function! Black(bang)
+    if a:bang
+        let l:current = synIDattr(hlID('Normal'), 'bg', 'cterm')
+        if l:current == 'black' || l:current == '0'
+            hi Normal ctermbg=NONE
+        else
+            hi Normal ctermbg=black
+        endif
+    else
+        hi Normal ctermbg=black
     endif
 endfunction
 
