@@ -623,7 +623,7 @@ if g:my_vimsuggest_enable
         \ 'popupattrs': {},
         \ 'wildignore': v:true,
         \ 'addons': v:true,
-        \ 'trigger': 't',
+        \ 'trigger': 'tn',
         \ 'reverse': v:false,
         \ 'prefixlen': 4,
     \ }
@@ -796,15 +796,15 @@ if g:my_git_extension_enable
     " 打开 Git 工具窗口
     nmap <leader>vv :call OpenGit()<CR>
     " 回滚当前行的修改
-    nmap <leader>vr :GitGutterUndoHunk<CR>
+    nmap <leader>vr :call UndoHunk()<CR>
     " 跳转到下一个修改的地方
-    nmap <leader>vp :GitGutterPrevHunk<CR>
+    nmap <leader>vp :call PrevHunk()<CR>
     " 跳转到下一个修改的地方
-    nmap <leader>vn :GitGutterNextHunk<CR>
+    nmap <leader>vn :call NextHunk()<CR>
     " 从远端拉取代码
-    nmap <leader>vu :Git pull<CR>
+    nmap <leader>vu :call PullCode()<CR>
     " 推送代码到远端
-    nmap <leader>vs :Git push<CR>
+    nmap <leader>vs :call PushCode()<CR>
     " 提交代码
     nmap <leader>vc :call CommitCode()<CR>
     " 新增所有改动并提交代码
@@ -1048,38 +1048,101 @@ function! CloseBuffersMatched(pattern)
 endfunction
 
 if g:my_git_extension_enable
+
+    " 检查是否在 Git 仓库中
+    function! NotGitRepo()
+        if !gitgutter#utility#has_repo_path(bufnr('%'))
+            echohl ErrorMsg | echomsg "Not git repo" | echohl NONE
+            return 1
+        endif
+        return 0
+    endfunction
+
     " 打开 GitBlame
     function! OpenGitBlame()
+        if NotGitRepo()
+            return
+        endif
         exe "Git blame --date=short"
         nmap <buffer> <silent> q :q<CR>
     endfunction
 
     " 打开 Git
     function! OpenGit()
+        if NotGitRepo()
+            return
+        endif
         exe "belowright Git"
         nmap <buffer> <silent> q :q<CR>
     endfunction
 
     " 打开 GitLog
     function! OpenGitLog()
+        if NotGitRepo()
+            return
+        endif
         exe "belowright Git log --oneline --graph"
         nmap <buffer> <silent> q :q<CR>
     endfunction
 
+    " 拉取代码
+    function! PullCode()
+        if NotGitRepo()
+            return
+        endif
+        exe "Git pull"
+    endfunction
+
+    " 推送代码
+    function! PushCode()
+        if NotGitRepo()
+            return
+        endif
+        exe "Git push"
+    endfunction
+
+    " 下一个修改的代码
+    function! NextHunk()
+        if NotGitRepo()
+            return
+        endif
+        exe "GitGutterNextHunk"
+    endfunction
+
+    " 上一个修改的代码
+    function! PrevHunk()
+        if NotGitRepo()
+            return
+        endif
+        exe "GitGutterPrevHunk"
+    endfunction
+
+    " 撤销修改的代码
+    function! UndoHunk()
+        if NotGitRepo()
+            return
+        endif
+        exe "GitGutterUndoHunk"
+    endfunction
+
     " 提交代码
     function! CommitCode()
+        if NotGitRepo()
+            return
+        endif
         " 分屏执行提交代码
         exe "belowright Git commit"
     endfunction
 
     " 保存所有改动并提交代码
     function! AddAllCommitCode()
+        if NotGitRepo()
+            return
+        endif
         " 使用 :Git add -A 来添加所有改动
         exe "Git add -A"
-
         " 等待命令执行完毕
         redraw!
-
         " 分屏执行提交代码
         exe "belowright Git commit"
     endfunction
