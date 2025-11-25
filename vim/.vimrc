@@ -380,7 +380,7 @@ set go-=L
 set laststatus=2
 
 " 在光标接近底端或顶端时，自动下滚或上滚
-set scrolloff=10
+set scrolloff=3
 set tenc=utf-8
 set encoding=utf-8
 set fileencodings=utf-8,chinese,latin-1
@@ -960,6 +960,20 @@ autocmd VimLeavePre * silent! wall
 " q 自动退出 quickfix 窗口
 autocmd FileType qf nmap <buffer> <silent> q :q<CR>
 
+" 终端模式，如果任务已结束使用 q 退出终端
+augroup TerminalQMap
+    autocmd!
+    autocmd TerminalOpen * nmap <buffer> <silent> q :call SafeQuitTerminal()<CR>
+    function! SafeQuitTerminal()
+        if &buftype !=# 'terminal'
+            return;
+        endif
+        if 'finished' ==# term_getstatus(bufnr('%'))
+            q!
+        endif
+    endfunction
+augroup end
+
 " q 自动退出帮助文档, 帮助文档显示在左侧
 autocmd FileType help nmap <buffer> <silent> q :q<CR>
 autocmd BufWinEnter * if &filetype == 'help' | wincmd L | vertical resize 85
@@ -967,14 +981,20 @@ autocmd BufWinEnter * if &filetype == 'help' | wincmd L | vertical resize 85
 " 保存文件时，如果文件夹不存在则自动创建
 augroup VimAutoMkdir
     autocmd!
-    autocmd BufWritePre * call s:auto_mkdir(expand('<afile>:p:h'), v:cmdbang)
-    function! s:auto_mkdir(dir, force)
+    autocmd BufWritePre * call s:AutoMkdir(expand('<afile>:p:h'), v:cmdbang)
+    function! s:AutoMkdir(dir, force)
         if !isdirectory(a:dir)
                     \ && (a:force
                     \ || input("'" . a:dir . "' does not exist. Create? [y/N]") =~? '^y\%[es]$')
             call mkdir(iconv(a:dir, &encoding, &termencoding), 'p')
         endif
     endfunction
+augroup end
+
+" 关闭终端
+augroup ShutOffTerminals
+    autocmd!
+    autocmd QuitPre * call WipeoutTerminals()
 augroup end
 
 
@@ -1016,12 +1036,6 @@ function! WipeoutTerminals()
         exe "bw! " .. buf_nr
     endfor
 endfunction
-
-" 关闭终端
-augroup shoutoff_terminals
-    autocmd!
-    autocmd QuitPre * call WipeoutTerminals()
-augroup end
 
 " 关闭匹配的缓冲区
 function! CloseBuffersMatched(pattern)
