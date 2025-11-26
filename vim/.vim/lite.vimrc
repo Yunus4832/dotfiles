@@ -11,6 +11,18 @@ endif
 " 配置文件
 let g:my_vimrc = substitute(expand('<sfile>'), '\\', '/', 'g')
 
+" Rg 是否可用
+let g:my_has_rg = 0
+if executable('rg')
+    let g:my_has_rg = 1
+endif
+
+" Ag 是否可用
+let g:my_has_ag = 0
+if executable('ag')
+    let g:my_has_ag = 1
+endif
+
 "=====================================================================
 " Common Setting 通用设置                                            =
 "=====================================================================
@@ -100,6 +112,9 @@ set clipboard=unnamed
 set guioptions-=m
 set guioptions-=T
 
+" 设置 Gvim 使用的字体
+set guifont=Consolas\ 7NF\ 14
+
 " 去除左右两边滚动条
 set go-=r
 set go-=L
@@ -155,6 +170,15 @@ set completeopt=menuone,noinsert
 " 关闭自动换行
 set tw=0
 
+" 预定义 grep 使用的程序
+if g:my_has_rg
+    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
+elseif g:my_has_ag
+    set grepprg=ag\ --vimgrep
+else
+    set grepprg=grep\ -REIHns\ --exclude-dir=.git
+endif
+
 " 初始化插件系统
 " 自适应不同语言的智能缩进
 filetype on
@@ -183,6 +207,18 @@ nmap <leader>bp :silent bp<CR>
 nmap <leader>bd :silent bd<CR>
 " 缓冲区列表
 nmap <leader>bl :ls!<CR>
+
+" quickfix 相关
+" 打开 quickfix 窗口
+nmap <leader>co :copen<CR>
+" 下一个 quickfix 项
+nmap <leader>cn :cn<CR>
+" 上一个 quickfix 项
+nmap <leader>cp :cp<CR>
+" 关闭 quickfix 窗口
+nmap <leader>cc :cclose<CR>
+" 运行 make 并打开 quickfix 窗口
+nmap <leader>cm :silent make<CR>:copen<CR>
 
 " 使用 netrw 查看工程文件。
 nmap <leader>f :Lexplore<CR>
@@ -242,6 +278,24 @@ autocmd VimLeavePre * silent! wall
 
 " q 自动退出 quickfix 窗口
 autocmd FileType qf nmap <buffer> <silent> q :q<CR>
+
+" 终端模式，如果任务已结束使用 q 退出终端
+augroup TerminalQMap
+    autocmd!
+    autocmd TerminalOpen * nmap <buffer> <silent> q :call SafeQuitTerminal()<CR>
+    function! SafeQuitTerminal()
+        if &buftype !=# 'terminal'
+            return;
+        endif
+        if 'finished' ==# term_getstatus(bufnr('%'))
+            q!
+        endif
+    endfunction
+augroup end
+
+" q 自动退出帮助文档, 帮助文档显示在左侧
+autocmd FileType help nmap <buffer> <silent> q :q<CR>
+autocmd BufWinEnter * if &filetype == 'help' | wincmd L | vertical resize 85
 
 " 保存文件时，如果文件夹不存在则自动创建
 augroup VimAutoMkdir
@@ -309,9 +363,9 @@ function! DiffToPatch(append, patchfile)
     call delete(temp)
 
     if diff_exit_code == 0
-        echo 'Patch saved to: ' . patchfile
+        echo 'Patch saved to: ' . lpatchfile
     else
-        call delete(patchfile)
+        call delete(lpatchfile)
         echohl ErrorMsg | echo 'diff failed (exit code ' . diff_exit_code . ')' | echohl NONE
     endif
 endfunction

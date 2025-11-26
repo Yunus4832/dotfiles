@@ -427,6 +427,15 @@ set completeopt=menuone,noinsert
 " 关闭自动换行
 set tw=0
 
+" 预定义 grep 使用的程序
+if g:my_has_rg
+    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
+elseif g:my_has_ag
+    set grepprg=ag\ --vimgrep
+else
+    set grepprg=grep\ -REIHns\ --exclude-dir=.git
+endif
+
 " 初始化插件系统
 " 自适应不同语言的智能缩进
 filetype on
@@ -491,7 +500,7 @@ let g:NERDTreeGitStatusUseNerdFonts = 1
 
 " nerdcommenter 配置
 " 不使用默认的注释快捷键映射
-let g:NERDCreateDefaultMappings = 1
+let g:NERDCreateDefaultMappings = 0
 
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
@@ -619,7 +628,7 @@ if g:my_vimsuggest_enable
         \ 'pum': v:true,
         \ 'exclude': [],
         \ 'onspace': ['b\%[uffer]','colo\%[rscheme]'],
-        \ 'alwayson': v:true,
+        \ 'alwayson': v:false,
         \ 'popupattrs': {},
         \ 'wildignore': v:true,
         \ 'addons': v:true,
@@ -709,6 +718,18 @@ elseif g:my_scope_enable
 else
     nmap <leader>bl :ls!<CR>
 endif
+
+" quickfix 相关
+" 打开 quickfix 窗口
+nmap <leader>co :copen<CR>
+" 下一个 quickfix 项
+nmap <leader>cn :cn<CR>
+" 上一个 quickfix 项
+nmap <leader>cp :cp<CR>
+" 关闭 quickfix 窗口
+nmap <leader>cc :cclose<CR>
+" 运行 make 并打开 quickfix 窗口
+nmap <leader>cm :silent make<CR>:copen<CR>
 
 " 使用 NERDTree 插件查看工程文件。
 nmap <leader>f :call NERDTreeVcsOrFind()<CR>
