@@ -634,7 +634,7 @@ if g:my_vimsuggest_enable
         \ 'addons': v:true,
         \ 'trigger': 'tn',
         \ 'reverse': v:false,
-        \ 'prefixlen': 4,
+        \ 'prefixlen': 1,
     \ }
 
     " 配置弹窗外观
