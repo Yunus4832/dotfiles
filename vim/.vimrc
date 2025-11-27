@@ -729,7 +729,7 @@ nmap <leader>cp :cp<CR>
 " 关闭 quickfix 窗口
 nmap <leader>cc :cclose<CR>
 " 运行 make 并打开 quickfix 窗口
-nmap <leader>cm :silent make<CR>:copen<CR>
+nmap <leader>cm :call MakeWrapper()<CR>
 
 " 使用 NERDTree 插件查看工程文件。
 nmap <leader>f :call NERDTreeVcsOrFind()<CR>
@@ -1246,6 +1246,24 @@ function! Black(bang)
     else
         hi Normal ctermbg=black
     endif
+endfunction
+
+" make 命令包装
+function! MakeWrapper()
+    let l:cmd = input('makeprg: ', &makeprg, 'shellcmdline')
+    if empty(l:cmd)
+        echo 'Make: canceled'
+        return
+    endif
+    let l:old_makeprg = &makeprg
+    try
+        let &makeprg = l:cmd
+        silent make!
+        copen
+        redraw!
+    finally
+        let &makeprg = l:old_makeprg
+    endtry
 endfunction
 
 
