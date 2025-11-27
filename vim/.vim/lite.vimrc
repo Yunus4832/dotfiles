@@ -189,6 +189,10 @@ filetype plugin indent on
 syntax on
 syntax enable
 
+" 配色方案
+colorscheme unokai
+
+
 "=====================================================================
 " Mapping 按键映射                                                   =
 "=====================================================================
@@ -221,7 +225,7 @@ nmap <leader>cc :cclose<CR>
 nmap <leader>cm :silent make<CR>:copen<CR>
 
 " 使用 netrw 查看工程文件。
-nmap <leader>f :Lexplore<CR>
+nmap <leader>f :Explore<CR>
 
 " 设置
 " 打开配置文件
@@ -277,7 +281,10 @@ augroup end
 autocmd VimLeavePre * silent! wall
 
 " q 自动退出 quickfix 窗口
-autocmd FileType qf nmap <buffer> <silent> q :q<CR>
+autocmd FileType qf nmap <buffer> <silent> q :cclose<CR>
+
+" Q 自动 netrw 窗口
+autocmd FileType netrw nmap <buffer> <silent> Q :bd<CR>
 
 " 终端模式，如果任务已结束使用 q 退出终端
 augroup TerminalQMap
