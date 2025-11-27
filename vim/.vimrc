@@ -982,10 +982,6 @@ autocmd FileType qf nmap <buffer> <silent> q :cclose<CR>
 " Q 自动 netrw 窗口
 autocmd FileType netrw nmap <buffer> <silent> Q :bd<CR>
 
-" 关闭最后一个 buffer 打开 startify
-" 这会导致无法使用 Empty buffer，但是我从不使用它，所以对我没有影响
-autocmd BufEnter * if line2byte('.') == -1 && len(tabpagebuflist()) == 1 | Startify | endif
-
 " 终端模式，如果任务已结束使用 q 退出终端
 augroup TerminalQMap
     autocmd!
