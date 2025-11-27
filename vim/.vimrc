@@ -873,6 +873,7 @@ imap jj <Esc>
 imap kk <Esc>
 
 " F1-12 功能键映射
+nmap <silent><f2> :Startify<CR>
 " 运行单个文件
 nmap <silent><f5> :AsyncTask file-run<CR>
 " 编译单个文件
