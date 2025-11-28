@@ -83,6 +83,8 @@ if command -v emacs > /dev/null; then
     alias emacs='emacs -nw'
     # todo list
     alias todo='emacs -nw ~/.emacs.d/org/todo-list.org'
+    # lite emacs
+    alias lemacs='emacs -nw -q --load ~/.emacs.d/lite-emacs.el'
 fi
 
 # xh aliases
