@@ -120,6 +120,8 @@ sudo pacman -Syuu
 
    python -- 通用脚本语言
    nodejs -- node 环境，用于运行语言服务器
+   sbcl -- Steel Bank Common Lisp，一个通用的 lisp 解释器
+   rlwrap -- repl 包装器
 
    chrome -- chrome 浏览器
    firefox -- firefox 浏览器，比 chrome 占用的资源更少
