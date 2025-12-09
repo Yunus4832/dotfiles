@@ -111,6 +111,9 @@ sudo pacman -Syuu
    wl-clipboard -- wayland 协议的剪切板
    wtype -- wayland 环境中的键盘模拟器
 
+   grim -- 截图工具
+   slurp -- 配合 grim 实现区域截图
+
    fcitx5 -- 输入法
    fcitx5-chinese-addons -- 输入法中文扩展
    fcitx5-cn-meta

@@ -46,6 +46,9 @@ bindsym $mod+e exec $fileManager
 # 重新加载配置文件
 bindsym $mod+Shift+c reload
 
+# 屏幕截图
+bindsym F1 exec 'grim -g "$(slurp)" /home/yunus/Desktop/screenshot_$(date +%Y%m%d%H%M%S).png'
+
 # 退出 Sway 会话
 bindsym $mod+m exec 'swaymsg exit'
 
