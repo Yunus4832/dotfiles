@@ -163,7 +163,7 @@ fi
 # use fd & fzf to find file
 if command -v fzf >/dev/null && command -v fd>/dev/null; then
     fdf() {
-        fd "$1" | \
+        fd -H "$1" | \
             fzf \
             --preview 'bat --color=always --style=numbers {1}' \
             --bind 'enter:become(vim {1})' \
