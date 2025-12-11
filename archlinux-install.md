@@ -174,33 +174,27 @@ sudo pacman -Syuu
    flatpak install com.google.Chrome
    ```
 
-3. **安装 clash-verge-rev 代理工具**
-
-   ```bash
-   sudo pacman -S clash-meta-rev
-   ```
-
-4. **安装 mihomo 网络代理服务**
+3. **安装 mihomo 网络代理服务**
 
    在 `~/.config/mihomo` 目录下有一个可执行的 shell 脚本 `install-mihomo-service.sh` 能够安装和启动 mihomo 代理服务, 修改 `config.yaml` 将订阅填入，安装服务即可启动代理。
 
-5. **解决 Chrome 在 wayland 会话下显示模糊的问题**
+4. **解决 Chrome 在 wayland 会话下显示模糊的问题**
 
    打开 Chrome, 地址栏输入 `chrome://flags` 进入 Chrome 的实验室功能，搜索 `Preferred Ozone platform` 选择 `Auto` 即可
 
-6. **GRUB 识别 window 系统**
+5. **GRUB 识别 window 系统**
 
    略
 
-7. **GRUB 美化**
+6. **GRUB 美化**
 
    略
 
-8. **xwayland 应用在高分屏模糊问题**
+7. **xwayland 应用在高分屏模糊问题**
 
    原因是高分屏对 xwayland 只有在整数倍的缩放下才能够清晰，因此可以选择设置显示器整数倍缩放，但是这样字体会十分小，另一个解决方案是多显示器方案，xwayland 应用运行在普通分辨率的显示器上，并且该显示器的缩放设置为 1，这样会带来另一个问题，即鼠标位置偏移，具体现象是光标显示位置和实际位置部分，体感上表现为无响应，大多数 WM 都有这个问题，KDE 可以正常使用。
 
-9. **xwayland 应用中 fcitx5 候选框大小异常**
+8. **xwayland 应用中 fcitx5 候选框大小异常**
 
    编辑 `~/.Xresources` 文件，新增下列行，然后重启即可（或者使用 `xrdb -merge ~/.Xresources` 重新加载配置)
 
@@ -208,7 +202,7 @@ sudo pacman -Syuu
    Xft.dpi=192
    ```
 
-10. **非 KDE 环境中部分应用无法使用 xdg-desktop-portal 选取文件 file-picker**
+9. **非 KDE 环境中部分应用无法使用 xdg-desktop-portal 选取文件 file-picker**
 
     原因是 wayland 环境的默认 xdg-desktop-portal 后端 xdg-desktop-portal-wlr 在这些环境中还不支持 file-picker， 对于 gtk 的应用，需要额外安装并启用 gtk 的后端，具体命令如下：
 
@@ -219,7 +213,7 @@ sudo pacman -Syuu
     systemctl --user restart xdg-desktop-portal.service
     ```
 
-11. **桌面用户 DBus 使用 polkit 进行认证**
+10. **桌面用户 DBus 使用 polkit 进行认证**
 
     使用 polkit 进行认证，使用窗口管理器的用户如果需要静默授权需要使用增加如下规则到 `/etc/polkit-1/rules.d/49-nopasswd-global.rules` 中，用户修改成登陆用户：
 
@@ -231,7 +225,7 @@ sudo pacman -Syuu
     })
     ```
 
-12. **SDDM 多显示器自定义配置，配置只使用主显示器登录，并且开启 HiDPI 支持**
+11. **SDDM 多显示器自定义配置，配置只使用主显示器登录，并且开启 HiDPI 支持**
 
     - `/etc/sddm.conf.d/hidpi.conf` 写入如下内容开启 HiDPI 支持
 
@@ -253,7 +247,7 @@ sudo pacman -Syuu
       
       ```
 
-13. **podman 相关命令提示 "kernel does not support overlay fs:'overlay'"**
+12. **podman 相关命令提示 "kernel does not support overlay fs:'overlay'"**
 
     podman 依赖 fuse-overlayfs，安装对应软件包即可
 

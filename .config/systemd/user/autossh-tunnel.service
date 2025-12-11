@@ -1,0 +1,16 @@
+[Unit]
+Description=AutoSSH tunnel to public server (user service)
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/autossh -M 0 \
+    -o "ServerAliveInterval=30" \
+    -o "ServerAliveCountMax=3" \
+    -o "ExitOnForwardFailure=yes" \
+    -N -R 2222:localhost:22 \
+    root@yunus.top
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target
