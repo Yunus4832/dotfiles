@@ -65,34 +65,38 @@ alias custom="vim $CONFIG/zsh/custom.zsh && source $CONFIG/zsh/custom.zsh"
 # common directory aliases
 if [ -d $DESKTOP_DIR ]; then
     alias desktop="$DESKTOP_DIR"
+    hash -d desktop="$DESKTOP_DIR"
     if [ -d $TEMP_PATH ]; then
-        alias temp="~/Desktop/temp"
+        alias temp="$DESKTOP_DIR/temp"
+        hash -d temp="$DESKTOP_DIR/temp"
         alias draft="vim $TEMP_PATH/draft.temp"
     fi
     if [ -d $CODE_PATH ]; then
-        alias code="~/Desktop/code"
+        alias code="$DESKTOP_DIR/code"
+        hash -d code="$DESKTOP_DIR/code"
     fi
     if [ -d $DESKTOP_DIR/Document/Markdown ]; then
-        alias markdown='~/Desktop/Document/Markdown'
+        alias markdown="$DESKTOP_DIR/Document/Markdown"
+        hash -d markdown="$DESKTOP_DIR/Document/Markdown"
     fi
 fi
 
 # emacs aliases
 if command -v emacs > /dev/null; then
     # emacs editor
-    alias emacs='emacs -nw'
+    alias emacs="emacs -nw"
     # todo list
-    alias todo='emacs -nw ~/.emacs.d/org/todo-list.org'
+    alias todo="emacs -nw $HOME/.emacs.d/org/todo-list.org"
     # lite emacs
-    alias lemacs='emacs -nw -q --load ~/.emacs.d/lite-emacs.el'
+    alias lemacs="emacs -nw -q --load $HOME/.emacs.d/lite-emacs.el"
 fi
 
 # xh aliases
 if command -v xh >/dev/null; then
-    alias hpg='xh get'
-    alias hpp='xh post'
-    alias hpgv='xh -v get'
-    alias hppv='xh -v post'
+    alias hpg="xh get"
+    alias hpp="xh post"
+    alias hpgv="xh -v get"
+    alias hppv="xh -v post"
 fi
 
 # vim aliases
@@ -105,7 +109,7 @@ fi
 
 # git extension alias
 # shallow clone
-alias 'gcls'='git clone --depth 1'
+alias gcls="git clone --depth 1"
 
 # Custom functions
 # use grep & fzf to find content in dir
@@ -113,10 +117,10 @@ if command -v fzf >/dev/null; then
     grepf() {
         grep -REIHns --exclude-dir=.git "$1" . | \
             fzf --delimiter : \
-            --preview 'bat --color=always --style=numbers -r {2}: {1}' \
-            --bind 'enter:become(vim {1} +{2})' \
-            --bind 'j:down' \
-            --bind 'k:up' \
+            --preview "bat --color=always --style=numbers -r {2}: {1}" \
+            --bind "enter:become(vim {1} +{2})" \
+            --bind "j:down" \
+            --bind "k:up" \
             --layout=reverse
         }
 fi
@@ -126,10 +130,10 @@ if command -v fzf >/dev/null && command -v rg >/dev/null; then
 rgf() {
     rg -F --no-heading --line-number --color=never --follow "$1" . | \
         fzf --delimiter : \
-        --preview 'bat --color=always --style=numbers -r {2}: {1}' \
-        --bind 'enter:become(vim {1} +{2})' \
-        --bind 'j:down' \
-        --bind 'k:up' \
+        --preview "bat --color=always --style=numbers -r {2}: {1}" \
+        --bind "enter:become(vim {1} +{2})" \
+        --bind "j:down" \
+        --bind "k:up" \
         --layout=reverse
 }
 fi
@@ -139,10 +143,10 @@ if command -v fzf >/dev/null && command -v ag >/dev/null; then
 agf() {
     ag --literal --nobreak --noheading --numbers --ignore-dir=.git "$1" . | \
         fzf --delimiter : \
-        --preview 'bat --color=always --style=numbers -r {2}: {1}' \
-        --bind 'enter:become(vim {1} +{2})' \
-        --bind 'j:down' \
-        --bind 'k:up' \
+        --preview "bat --color=always --style=numbers -r {2}: {1}" \
+        --bind "enter:become(vim {1} +{2})" \
+        --bind "j:down" \
+        --bind "k:up" \
         --layout=reverse
 }
 fi
@@ -152,10 +156,10 @@ if command -v fzf >/dev/null; then
     gdf() {
         git diff --name-only | \
             fzf \
-            --preview 'git diff {1} | bat --style=numbers --color=always' \
-            --bind 'enter:become(vim {1})' \
-            --bind 'j:down' \
-            --bind 'k:up' \
+            --preview "git diff {1} | bat --style=numbers --color=always" \
+            --bind "enter:become(vim {1})" \
+            --bind "j:down" \
+            --bind "k:up" \
             --layout=reverse
         }
 fi
@@ -165,10 +169,10 @@ if command -v fzf >/dev/null && command -v fd>/dev/null; then
     fdf() {
         fd -H "$1" | \
             fzf \
-            --preview 'bat --color=always --style=numbers {1}' \
-            --bind 'enter:become(vim {1})' \
-            --bind 'j:down' \
-            --bind 'k:up' \
+            --preview "bat --color=always --style=numbers {1}" \
+            --bind "enter:become(vim {1})" \
+            --bind "j:down" \
+            --bind "k:up" \
             --layout=reverse
         }
 fi
