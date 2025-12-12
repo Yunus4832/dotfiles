@@ -137,7 +137,7 @@ bindsym $mod+shift+s scratchpad show
 #bindsym $mod+r mode "resize"
 
 # 浮动窗口
-#for_window [app_id="get-string"] floating enable
+for_window [app_id="get-string"] floating enable
 
 # 默认使用 pixel 边框
 default_border pixel

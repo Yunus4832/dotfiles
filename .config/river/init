@@ -5,7 +5,7 @@ riverctl map normal Super Return spawn foot
 riverctl map normal Super Q spawn foot
 
 # 通过终端从输入法获取字符串
-riverctl map normal Super A spawn "foot --app-id get-string vim -u ~/.vim/get-string.vimrc && wl-past --no-newline | wtype -"
+riverctl map normal Super A spawn "foot --app-id get-string vim -u ~/.vim/get-string.vimrc && wl-paste --no-newline | wtype -"
 
 # 应用启动噐
 riverctl map normal Super D spawn "rofi -show drun"
