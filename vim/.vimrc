@@ -992,10 +992,16 @@ autocmd FileType netrw nmap <buffer> <silent> Q :bd<CR>
 " 终端模式，如果任务已结束使用 q 退出终端
 augroup TerminalQMap
     autocmd!
-    autocmd TerminalOpen * nmap <buffer> <silent> q :call SafeQuitTerminal()<CR>
+    autocmd TerminalOpen * call SetTerminalQMap()
+    function! SetTerminalQMap()
+        if &buftype !=# 'terminal'
+            return
+        endif
+        nmap <buffer> <silent> q :call SafeQuitTerminal()<CR>
+    endfunction
     function! SafeQuitTerminal()
         if &buftype !=# 'terminal'
-            return;
+            return
         endif
         if 'finished' ==# term_getstatus(bufnr('%'))
             q!
