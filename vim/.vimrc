@@ -8,6 +8,9 @@ if empty(g:os_type)
     let g:os_type = substitute(system('echo $OSTYPE'), '[\n ]\+', '', 'g')
 endif
 
+" 是否是在 ssh 会话中
+let g:ssh_session = $SSH_CONNECTION
+
 " 配置文件
 let g:my_vimrc = substitute(expand('<sfile>'), '\\', '/', 'g')
 
