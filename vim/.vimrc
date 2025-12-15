@@ -258,6 +258,9 @@ if g:my_vim_snipmate_enable
     Plug 'honza/vim-snippets'
 endif
 
+" OSC52 终端扩展
+Plug 'fcpg/vim-osc52'
+
 " vim9script 插件
 if g:my_version_901
 
@@ -571,13 +574,13 @@ let g:startify_change_to_vcs_root = 1
 if g:my_fzf_enable
     " fzf.vim 配置
     " fzf 默认 option
-    let $FZF_DEFAULT_OPTS = '--layout=reverse --border'
+    let $FZF_DEFAULT_OPTS = '--layout=reverse --border --bind ctrl-a:select-all'
     " 配置字典
     let g:fzf_vim = {}
     " 关闭预览窗口
-    let g:fzf_vim.preview_window = []
+    let g:fzf_vim.preview_window = ['hidden,right,50%', 'ctrl-/']
     " 弹窗居中显示
-    let g:fzf_layout = { 'window': { 'width': 0.6, 'height': 0.6, 'relative': v:true } }
+    let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.8, 'relative': v:true } }
 endif
 
 " ctrlp 配置
@@ -1297,8 +1300,14 @@ command! -bang Black call Black(<bang>0)
 " Compatible 兼容相关                                                =
 "=====================================================================
 
-" 在 wayland 显示协议下，剪切板工具现在需要特殊配置
-if executable('wl-copy')
+" 如果是在 ssh 会话中，或者 wl-copy 相关工具不可用，尝试使用 OSC52 进行复制
+if g:ssh_session || !executable('wl-copy')
+    augroup osc-clipboard
+        autocmd!
+        autocmd TextYankPost * silent! call SendViaOSC52(getreg('"'))
+    augroup END
+" 否则使用 wl-copy 相关工具进行复制和粘贴
+else
     augroup wl-clipboard
         autocmd!
         autocmd TextYankPost * silent! call system('wl-copy --trim-newline', @")
