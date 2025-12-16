@@ -442,6 +442,12 @@ else
     set grepprg=grep\ -REIHns\ --exclude-dir=.git
 endif
 
+" vim 9 相关设置
+if g:my_version_901
+    " 设置跳转列表行为方式
+    set jumpoptions=stack
+endif
+
 " 初始化插件系统
 " 自适应不同语言的智能缩进
 filetype on
@@ -895,6 +901,12 @@ xmap * :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
 xmap / :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
 xmap # :<C-u>call VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
 
+" 复制一行，但是光标不变
+nnoremap <C-j> :DuplicateLine<CR>
+
+" 删除一行，但是光标不变
+nnoremap <C-k> :DeleteLine<CR>
+
 
 "=====================================================================
 " Coc Mapping Coc 相关映射                                           =
@@ -959,10 +971,6 @@ endif
 "=====================================================================
 " Independent Autocmd 独立的自动命令                                 =
 "=====================================================================
-
-" Perl TT2 模板文件自动高亮设置
-autocmd BufNewFile,BufRead *.tt2 setf tt2
-autocmd BufNewFile,BufRead *.ep setf html
 
 " 自动补全
 " 补全完成时预览窗口自动消失
@@ -1277,6 +1285,25 @@ function! MakeWrapper()
     endtry
 endfunction
 
+" 复制一行, 列位置不变
+function! DuplicateLine()
+    let l:col = col('.')
+    normal! Yp
+    call cursor(line('.'), l:col)
+endfunction
+
+" 删除一行, 列位置不变
+function! DeleteLine()
+    let l:cur_line = line('.')
+    let l:col = col('.')
+    if l:cur_line == 1
+        normal! dd
+    else
+        normal! dd
+        call cursor(l:cur_line - 1, l:col)
+    endif
+endfunction
+
 
 "=====================================================================
 " Custom Command 自定义命令                                          =
@@ -1304,6 +1331,11 @@ endif
 " 设置终端的默认背景色
 command! -bang Black call Black(<bang>0)
 
+" 复制一行，列位置不变
+command! DuplicateLine call DuplicateLine()
+" 删除一行, 列位置不变
+command! DeleteLine call DeleteLine()
+
 
 "=====================================================================
 " Compatible 兼容相关                                                =
@@ -1324,12 +1356,4 @@ else
     augroup END
 endif
 
-" 如果 Vim 版本高于 901, 加载 vim9 相关配置
-if v:version >= 901
-    if filereadable(g:my_vimrc . '9')
-        exe 'source' g:my_vimrc . '9'
-    elseif filereadable($HOME . '/.vimrc9')
-        exe 'source' $HOME . '/.vimrc9'
-    endif
-endif
 

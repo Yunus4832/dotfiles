@@ -62,13 +62,6 @@ if command -v vim &> /dev/null; then
     echo "Copy vim config to $HOME..."
     cp $DOTFILES_DIR/vim/.vimrc $HOME/
 
-    # 如果 Vim 的版本大于 9, 将 Vim9 的配置复制到 HOME 目录
-    vim_version=$(vim --version | sed -n "1{s/.* \([0-9]\+\.[0-9]\+\).*/\1/p;q}")
-    if [[ $vim_version > "9.0" || $vim_version == "9.0" ]]; 
-    then
-        cp $DOTFILES_DIR/vim/.vimrc9 $HOME/
-    fi
-
     # 复制 vim 本地配置到用户目录
     echo "Copy .vim dirctory to $HOME..."
     cp -r $DOTFILES_DIR/vim/.vim $HOME
