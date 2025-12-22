@@ -118,6 +118,10 @@ xnoremap * y/<C-R>0<CR>
 xnoremap / y/<C-R>0<CR>
 xnoremap # y?<C-R>0<CR>
 
+" 复制一行，但是光标不变
+nnoremap <C-j> maYp`a:delm a<CR>j 
+nnoremap <C-k> kmajdd`a:delm a<CR>
+
 " idea 和 vim 的按键绑定
 sethandler <C-S-2> a:vim
 sethandler <C-S-6> a:vim

@@ -902,10 +902,10 @@ xmap / :<C-u>call VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
 xmap # :<C-u>call VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
 
 " 复制一行，但是光标不变
-nnoremap <C-j> :DuplicateLine<CR>
+nnoremap <C-j> maYp`a:delm a<CR>j
 
 " 删除一行，但是光标不变
-nnoremap <C-k> :DeleteLine<CR>
+nnoremap <C-k> kmajdd`a:delm a<CR>
 
 
 "=====================================================================
@@ -1285,25 +1285,6 @@ function! MakeWrapper()
     endtry
 endfunction
 
-" 复制一行, 列位置不变
-function! DuplicateLine()
-    let l:col = col('.')
-    normal! Yp
-    call cursor(line('.'), l:col)
-endfunction
-
-" 删除一行, 列位置不变
-function! DeleteLine()
-    let l:cur_line = line('.')
-    let l:col = col('.')
-    if l:cur_line == 1
-        normal! dd
-    else
-        normal! dd
-        call cursor(l:cur_line - 1, l:col)
-    endif
-endfunction
-
 
 "=====================================================================
 " Custom Command 自定义命令                                          =
@@ -1330,11 +1311,6 @@ endif
 
 " 设置终端的默认背景色
 command! -bang Black call Black(<bang>0)
-
-" 复制一行，列位置不变
-command! DuplicateLine call DuplicateLine()
-" 删除一行, 列位置不变
-command! DeleteLine call DeleteLine()
 
 
 "=====================================================================
