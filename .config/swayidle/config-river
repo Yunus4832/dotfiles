@@ -1,0 +1,2 @@
+timeout 1800 swaylock
+timeout 2100 'wlopm --off eDP-1;wlopm --off DP-2' resume 'wlopm --on eDP-1;wlopm --on DP-2'

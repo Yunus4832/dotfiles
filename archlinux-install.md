@@ -92,7 +92,7 @@ sudo pacman -Syuu
    mako -- wayland 协议的桌面通知组件
 
    swayidle -- 空闲管理器
-   swaylock | swaylock-effects -- 锁屏, effects 带特殊效果
+   swaylock -- 锁屏
    wlopm -- wayland 环境通用的系统工具, river 依赖其进行熄屏
    wlr-randr -- waylany 环境中的显示器管理工具, river 依赖其设置显示器参数
    xorg-xrandr -- X11 环境中设置显示器参数工具，sddm 依赖其设置多显示器的布局

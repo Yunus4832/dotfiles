@@ -1,0 +1,2 @@
+timeout 1800 swaylock
+timeout 2100 'niri msg action power-off-monitors' resume 'niri msg action power-on-monitors'
