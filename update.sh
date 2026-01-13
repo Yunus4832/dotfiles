@@ -83,19 +83,6 @@ if command -v vim &> /dev/null; then
 fi
 
 #-----------------------------------------------------
-# sway 配置                                          -
-#-----------------------------------------------------
-
-if command -v sway &> /dev/null; then
-    echo "Copy sway config to $HOME/.config/sway..."
-    cp -r $DOTFILES_DIR/.config/sway $HOME/.config
-    if [ -e $HOME/.config/sway/config.patch ]; then
-        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/sway/config.patch
-    fi
-    echo done
-fi
-
-#-----------------------------------------------------
 # river 配置                                         -
 #-----------------------------------------------------
 
@@ -104,24 +91,6 @@ if command -v river &> /dev/null; then
     cp -r $DOTFILES_DIR/.config/river $HOME/.config
     if [ -e $HOME/.config/river/init.patch ]; then
         patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/river/init.patch
-    fi
-    echo done
-fi
-
-#-----------------------------------------------------
-# hyprland 配置                                      -
-#-----------------------------------------------------
-
-if command -v hyprland &> /dev/null || command -v hyprlock &> /dev/null || command -v hypridle &> /dev/null; then
-    echo "Copy hyprland config to $HOME/.config/hypr..."
-    cp -r $DOTFILES_DIR/.config/hypr $HOME/.config
-    if [ -e $HOME/.config/hypr/hyprland.conf.patch ]; then
-        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/hypr/hyprland.conf.patch
-    fi
-    echo "Copy hypridle config to $HOME/.config/hypridle..."
-    cp -r $DOTFILES_DIR/.config/hypridle $HOME/.config
-    if [ -e $HOME/.config/hypridle/custom.patch ]; then
-        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/hypridle/custom.patch
     fi
     echo done
 fi
@@ -207,6 +176,26 @@ if command -v mihomo &> /dev/null; then
     cp -r $DOTFILES_DIR/.config/mihomo $HOME/.config
     if [ -e $HOME/.config/mihomo/config.yaml.patch ]; then
         patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/mihomo/config.yaml.patch
+    fi
+fi
+
+#-----------------------------------------------------
+# swayidle / swaylock 配置                           -
+#-----------------------------------------------------
+
+if command -v swayidle &> /dev/null; then
+    echo "Copy swayidle config to $HOME/.config/swayidle..."
+    cp -r $DOTFILES_DIR/.config/swayidle $HOME/.config
+    if [ -e $HOME/.config/swayidle/config.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/swayidle/config.patch
+    fi
+fi
+
+if command -v swaylock &> /dev/null; then
+    echo "Copy swaylock config to $HOME/.config/swaylock..."
+    cp -r $DOTFILES_DIR/.config/swaylock $HOME/.config
+    if [ -e $HOME/.config/swaylock/config.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/swaylock/config.patch
     fi
 fi
 

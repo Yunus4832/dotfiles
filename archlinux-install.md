@@ -84,19 +84,15 @@ sudo pacman -Syuu
    konsole -- KDE 环境终端模拟器
    flatpak -- 软件沙盒环境
 
-   sway -- 窗口管理器, 资源占用较小, 可用性不如 KDE, 存在许多 xwayland 应用难以解决的小问题，例如输入法配置, 字体模糊等
-   river -- 另一个轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口，问题同 Sway
-   hyprland -- 注重视觉效果的窗口管理噐，一定程度上解决了 xwayland 应用的模糊问题，视觉效果非常好～
-   niri -- 另一个卷轴式的平铺窗口管理器，高效易用，但是对部分应用，尤其是 Electron 应用的输入法支持不是很好
+   river -- 轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口
+   niri -- 卷轴式的平铺窗口管理器，高效易用
 
    xdg-desktop-protal-wlr -- wayland 环境默认的 xdg-desktop-portal 后端。
    xdg-desktop-portal-gtk -- 部分软件包依赖 xdg-desktop-portal 的 gtk 后端，例如文件选择噐等功能
    mako -- wayland 协议的桌面通知组件
 
-   hypridle -- hyprland 生态的空闲管理器
-   hyprlock -- hyprland 生态锁屏
-   swayidle -- sway 生态的空闲管理器，可选，优先 hypridle
-   swaylock | swaylock-effects -- sway 生态锁屏, effects 带特殊效果，可选，优先 hyprlock
+   swayidle -- 空闲管理器
+   swaylock | swaylock-effects -- 锁屏, effects 带特殊效果
    wlopm -- wayland 环境通用的系统工具, river 依赖其进行熄屏
    wlr-randr -- waylany 环境中的显示器管理工具, river 依赖其设置显示器参数
    xorg-xrandr -- X11 环境中设置显示器参数工具，sddm 依赖其设置多显示器的布局
