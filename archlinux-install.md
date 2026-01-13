@@ -1,10 +1,4 @@
-# ArchLinux 安装文档
-
-## 安装 ArchLinux
-
-### VirtualBox 虚拟机安装
-
-### 物理机安装
+# ArchLinux 配置文档
 
 ## 创建新用户
 
