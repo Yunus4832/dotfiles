@@ -121,7 +121,8 @@ sudo pacman -Syuu
 
    mihomo -- 代理工具内核
 
-   yay -- AUR 用户软件仓库包管理器
+   paru -- AUR 用户软件仓库包管理器, rust 实现
+   yay -- AUR 用户软件仓库包管理器, go 实现, 可选，优先 paru
 
    sc-im -- 终端表格处理工具，交互类似 vim
    mdp -- 终端文稿演示工具，类似 PPT
