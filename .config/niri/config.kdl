@@ -4,6 +4,9 @@ spawn-at-startup "swaybg" "-i" "/home/yunus/.config/wallpapers/wallpaper.png" "-
 spawn-at-startup "fcitx5" "--replace" "-d"
 spawn-at-startup "mako"
 
+spawn-at-startup "systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP=river"
+
 spawn-at-startup "swayidle" "-w" "-C" "/home/yunus/.config/swayidle/config-niri"
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
