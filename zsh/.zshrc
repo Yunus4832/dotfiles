@@ -118,7 +118,7 @@ if command -v fzf >/dev/null; then
         grep -REIHns --exclude-dir=.git "$1" . | \
             fzf --delimiter : \
             --preview "bat --color=always --style=numbers -r {2}: {1}" \
-            --bind "enter:become(vim {1} +{2})" \
+            --bind "enter:execute(vim {1} +{2} < /dev/tty > /dev/tty)" \
             --bind "j:down" \
             --bind "k:up" \
             --layout=reverse
@@ -131,7 +131,7 @@ rgf() {
     rg -F --no-heading --line-number --color=never --follow "$1" . | \
         fzf --delimiter : \
         --preview "bat --color=always --style=numbers -r {2}: {1}" \
-        --bind "enter:become(vim {1} +{2})" \
+        --bind "enter:execute(vim {1} +{2} < /dev/tty > /dev/tty)" \
         --bind "j:down" \
         --bind "k:up" \
         --layout=reverse
@@ -144,7 +144,7 @@ agf() {
     ag --literal --nobreak --noheading --numbers --ignore-dir=.git "$1" . | \
         fzf --delimiter : \
         --preview "bat --color=always --style=numbers -r {2}: {1}" \
-        --bind "enter:become(vim {1} +{2})" \
+        --bind "enter:execute(vim {1} +{2} < /dev/tty > /dev/tty)" \
         --bind "j:down" \
         --bind "k:up" \
         --layout=reverse
@@ -157,7 +157,7 @@ if command -v fzf >/dev/null; then
         git diff --name-only | \
             fzf \
             --preview "git diff {1} | bat --style=numbers --color=always" \
-            --bind "enter:become(vim {1})" \
+            --bind "enter:execute(vim {1} < /dev/tty > /dev/tty)" \
             --bind "j:down" \
             --bind "k:up" \
             --layout=reverse
@@ -170,7 +170,7 @@ if command -v fzf >/dev/null && command -v fd>/dev/null; then
         fd -H "$1" | \
             fzf \
             --preview "bat --color=always --style=numbers {1}" \
-            --bind "enter:become(vim {1})" \
+            --bind "enter:execute(vim {1} < /dev/tty > /dev/tty)" \
             --bind "j:down" \
             --bind "k:up" \
             --layout=reverse
