@@ -17,7 +17,7 @@ riverctl map normal Super+Shift Q spawn "swaylock"
 riverctl map normal Super C close
 
 # 文件管理器
-riverctl map normal Super E spawn "foot ranger"
+riverctl map normal Super E spawn "foot yazi"
 
 # 屏幕截图
 riverctl map normal None F1 spawn "grim -g \"\$(slurp)\" /home/yunus/Desktop/screenshot_\$(date +%Y%m%d%H%M%S).png"

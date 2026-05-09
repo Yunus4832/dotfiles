@@ -46,7 +46,7 @@ sudo pacman -Syuu
    ctags -- 用于生成 tags 文件
    astyle -- 格式化代码
    jq -- json 格式化工具
-   ranger -- 文件管理器
+   yazi -- 文件管理器
    vifm -- 另一个简单的文件管理器
    nnn -- 另一个极简的文件管理器
    more/less -- 分页查看文本文档，类似 cat
@@ -160,7 +160,7 @@ sudo pacman -Syuu
 
    ```bash
    # 使用 AUR 软件包
-   yay -S google-chrome
+   paru -S google-chrome
    # 使用 flatpak 软件包
    flatpak install com.google.Chrome
    ```
