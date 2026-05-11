@@ -118,6 +118,7 @@ sudo pacman -Syuu
 
    chrome -- chrome 浏览器
    firefox -- firefox 浏览器，比 chrome 占用的资源更少
+   Zed -- Rust 实现的全能轻量的编辑器
 
    mihomo -- 代理工具内核
 
