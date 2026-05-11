@@ -39,6 +39,10 @@ sudo pacman -Syuu
    vim -- 通用编辑器
    gvim -- Vim 的 GUI 版本，可选
    emacs -- 另一个强大的通用编辑器，本人比较依赖其 Org-Mode, 可选
+   helix -- rust 编写的终端轻量级编辑器
+   nano -- 轻量简单的非模式终端编辑器
+   ed -- 另外一个比较原始的编辑器
+
    git -- 版本管理工具
    fzf -- 模糊搜索工具
    curl -- 终端 http 客户端
@@ -62,7 +66,6 @@ sudo pacman -Syuu
    net-tools -- 网络工具
    fastfetch -- 展示系统相关信息
    bc -- 基础的计算器
-   ed -- 基础的编辑器
    openbsd-netcat -- nc 网络工具
    autossh -- 自动 ssh 端口转发实现内网穿透的工具
    lftp -- ftp 文件服务器客户端，虽然 dolphin 内置 ftp 支持，但是如果没有 dolphin 仍然需要一个通用的 ftp 客户端
@@ -128,9 +131,9 @@ sudo pacman -Syuu
    sc-im -- 终端表格处理工具，交互类似 vim
    mdp -- 终端文稿演示工具，类似 PPT
 
-   docker -- 容器引擎
    podman -- 容器引擎, 个人偏好 podman, 优先选择 podman
    fuse-overlayfs -- podman 依赖该软件包，不使用 podman 可选
+   docker -- 容器引擎
    qemu -- 虚拟机软件
    qemu-ui-curses -- qemu 终端模式下的 UI
 
