@@ -246,3 +246,9 @@ sudo pacman -Syuu
 
     podman 依赖 fuse-overlayfs，安装对应软件包即可
 
+
+13. **Electron** 应用设置使用 Wayland 并开启输入法支持
+
+    启动时追加参数 `--ozone-platform-hint=auto --enable-wayland-ime`，使 Electron 应用以原生 Wayland 模式运行并支持输入法（要求 Electron >= 28）。
+
+
