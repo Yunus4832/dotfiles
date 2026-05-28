@@ -55,6 +55,7 @@ sudo pacman -Syuu
 | `nano` | 轻量非模式终端编辑器 |
 | `ed` | 原始的行编辑器 |
 | `Zed` | Rust 实现的全能轻量编辑器 |
+| `typora` | Markdown 编辑器（AUR `typora-free`） |
 
 ### Shell & 终端工具
 
@@ -223,6 +224,16 @@ _JAVA_AWT_WM_NONREPARENTING=1    # Java 应用配置
 paru -S google-chrome              # AUR
 flatpak install com.google.Chrome  # Flatpak
 ```
+
+### Typora 安装与主题配置
+
+Typora 可通过 AUR 安装：
+
+```bash
+paru -S typora-free
+```
+
+`update.sh` 会自动将 `typora/theme/opencode.css` 复制到 `~/.config/Typora/themes/`，启动 Typora 后可在菜单 `主题 → opencode` 中切换。
 
 ### 安装 Mihomo 网络代理服务
 
