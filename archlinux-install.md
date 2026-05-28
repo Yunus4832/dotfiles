@@ -2,253 +2,308 @@
 
 ## 创建新用户
 
-1. 创建新用户
+### 创建用户
 
-   ```bash
-   # 新增用户
-   useradd -m yunus
+```bash
+useradd -m yunus    # 新增用户
+passwd yunus        # 设置用户密码
+```
 
-   # 设置用户密码
-   passwd yunus
-   ```
+###  授予 sudo 权限
 
-2. 赋予用户 sudo 权限, 使用 `EDITOR=nano visudo` 命令，并在打开的文件末尾增加如下行
+使用 `EDITOR=nano visudo` 命令，在文件末尾增加如下行：
 
-   ```sudoers
-   yunus ALL=(ALL:ALL) ALL
-   ```
+```sudoers
+yunus ALL=(ALL:ALL) ALL
+```
 
-3. 切换用户, 使用 `su - yunus` 切换用户，或者 `logout` 登出，然后使用新用户登录
+### 切换用户
+
+使用 `su - yunus` 切换用户，或 `logout` 登出后使用新用户登录。
+
+---
 
 ## 更新系统
-
-执行如下命令：
 
 ```bash
 sudo pacman -Syuu
 ```
 
+---
+
 ## 安装基础工具
 
-1. 常用的终端和 GUI 程序列表如下
+### 网络
 
-   ```plain-text
-   iwd -- 连接无线网络 wifi
-   dhcpcd -- 自动获取 ip 地址
+| 软件包 | 说明 |
+|--------|------|
+| `iwd` | 无线网络连接 (WiFi) |
+| `dhcpcd` | 自动获取 IP 地址 |
+| `net-tools` | 网络工具集 |
+| `openbsd-netcat` | `nc` 网络工具 |
+| `autossh` | 自动 SSH 端口转发、内网穿透 |
+| `lftp` | FTP 客户端（Dolphin 内置 FTP 但无 Dolphin 时仍需通用客户端） |
 
-   vim -- 通用编辑器
-   gvim -- Vim 的 GUI 版本，可选
-   emacs -- 另一个强大的通用编辑器，本人比较依赖其 Org-Mode, 可选
-   helix -- rust 编写的终端轻量级编辑器
-   nano -- 轻量简单的非模式终端编辑器
-   ed -- 另外一个比较原始的编辑器
+### 编辑器
 
-   git -- 版本管理工具
-   fzf -- 模糊搜索工具
-   curl -- 终端 http 客户端
-   xh -- Rust 编写的 http 客户端，比 curl 更加友好, 兼容 httpie 但是不依赖 python
-   ctags -- 用于生成 tags 文件
-   astyle -- 格式化代码
-   jq -- json 格式化工具
-   yazi -- 文件管理器
-   vifm -- 另一个简单的文件管理器
-   nnn -- 另一个极简的文件管理器
-   more/less -- 分页查看文本文档，类似 cat
-   bat -- cat 的上位替代
-   zsh -- 更好用的 shell
-   tmux -- 终端复用工具
-   dtash -- 另一个更轻量级的终端复用工具
-   dvtm -- 另一个轻量级的终端平铺窗口工具
-   polkit -- 现代化的特权授权工具
-   ripgrep -- rg 文本搜索工具，rust 语言实现，对于代码库中的搜索，优于 grep
-   the_silver_searcher -- ag 另一个文本搜索工具，优于 grep
-   fd -- 文件搜索工具，比 find 更加友好
-   net-tools -- 网络工具
-   fastfetch -- 展示系统相关信息
-   bc -- 基础的计算器
-   openbsd-netcat -- nc 网络工具
-   autossh -- 自动 ssh 端口转发实现内网穿透的工具
-   lftp -- ftp 文件服务器客户端，虽然 dolphin 内置 ftp 支持，但是如果没有 dolphin 仍然需要一个通用的 ftp 客户端
-   bottom -- 任务管理器，top 的替代，比 top 更加友好直观
+| 软件包 | 说明 |
+|--------|------|
+| `vim` | 通用终端编辑器（可从源码编译） |
+| `gvim` | Vim 的 GUI 版本（可选） |
+| `emacs` | 强大编辑器，依赖其 Org-Mode（可选） |
+| `helix` | Rust 编写的轻量终端编辑器 |
+| `nano` | 轻量非模式终端编辑器 |
+| `ed` | 原始的行编辑器 |
+| `Zed` | Rust 实现的全能轻量编辑器 |
 
-   font -- 中文字体
+### Shell & 终端工具
 
-   sddm -- 登录管理器，可选，可以直接在 tty 中输入命令启动窗口管理器后 DE
+| 软件包 | 说明 |
+|--------|------|
+| `zsh` | 功能更丰富的 Shell |
+| `tmux` | 终端复用工具 |
+| `dtash` / `dvtm` | 更轻量的终端复用/平铺窗口工具 |
+| `foot` | 终端模拟器（资源占用低，可选） |
+| `konsole` | KDE 环境终端模拟器 |
+| `rofi` | 程序启动器（已支持 Wayland） |
 
-   plasma -- KDE 桌面环境，可选，也可使用窗口管理器
-   ark -- KDE 环境解压缩工具
-   dolphin -- KDE 环境文件管理器
-   konsole -- KDE 环境终端模拟器
-   flatpak -- 软件沙盒环境
+### 文件管理
 
-   river -- 轻量级窗口管理噐，使用 tag 而不是 workspace 组织窗口
-   niri -- 卷轴式的平铺窗口管理器，高效易用
+| 软件包 | 说明 |
+|--------|------|
+| `yazi` | 终端文件管理器 |
+| `vifm` | Vim 风格文件管理器 |
+| `nnn` | 极简文件管理器 |
+| `dolphin` | KDE 环境文件管理器 |
 
-   xdg-desktop-protal-wlr -- wayland 环境默认的 xdg-desktop-portal 后端。
-   xdg-desktop-portal-gtk -- 部分软件包依赖 xdg-desktop-portal 的 gtk 后端，例如文件选择噐等功能
-   mako -- wayland 协议的桌面通知组件
+### 搜索与文本处理
 
-   swayidle -- 空闲管理器
-   swaylock -- 锁屏
-   wlopm -- wayland 环境通用的系统工具, river 依赖其进行熄屏
-   wlr-randr -- waylany 环境中的显示器管理工具, river 依赖其设置显示器参数
-   xorg-xrandr -- X11 环境中设置显示器参数工具，sddm 依赖其设置多显示器的布局
-   xwayland-satellite -- niri 依赖该软件包支持 xwayland 应用
+| 软件包 | 说明 |
+|--------|------|
+| `ripgrep` (`rg`) | 代码库文本搜索（Rust 实现，优于 grep） |
+| `the_silver_searcher` (`ag`) | 文本搜索工具（优于 grep） |
+| `fd` | 文件搜索（比 find 更友好） |
+| `fzf` | 模糊搜索工具 |
+| `bat` | `cat` 的上位替代（语法高亮等） |
+| `jq` | JSON 格式化工具 |
+| `ctags` | 生成 tags 文件 |
+| `astyle` | 代码格式化 |
+| `more`/`less` | 分页查看文本文档 |
 
-   swaybg -- 窗口管理器背景图
-   swayimg -- 查看图片
-   foot -- 终端模拟器, 可选，konsole 也能用，但是 foot 资源占用更低
-   rofi -- 程序启动器 rofi, 现在已支持 Wayland
-   waybar -- 状态栏显示
+### 开发工具
 
-   wl-clipboard -- wayland 协议的剪切板
-   wtype -- wayland 环境中的键盘模拟器
+| 软件包 | 说明 |
+|--------|------|
+| `git` | 版本管理 |
+| `curl` / `xh` | HTTP 客户端（`xh` 兼容 httpie 语法，Rust 实现） |
+| `python` | 通用脚本语言 |
+| `nodejs` | Node 环境，用于运行语言服务器 |
+| `sbcl` | Steel Bank Common Lisp 解释器 |
+| `rlwrap` | REPL 包装器 |
+| `binsider` | 二进制分析工具 |
 
-   grim -- 截图工具
-   slurp -- 配合 grim 实现区域截图
+### 系统工具
 
-   fcitx5 -- 输入法
-   fcitx5-chinese-addons -- 输入法中文扩展
-   fcitx5-cn-meta
-   fcitx5-qt
-   fcitx5-gtk
-   fcitx5-configtool -- 输入法配置工具，如果使用 KDE 可不安装
+| 软件包 | 说明 |
+|--------|------|
+| `polkit` | 现代化特权授权工具 |
+| `fastfetch` | 展示系统信息 |
+| `bc` | 基础计算器 |
+| `bottom` | 任务管理器（top 的替代，更友好直观） |
+| `sc-im` | 终端表格处理工具（Vim 风格交互） |
+| `mdp` | 终端文稿演示工具（类似 PPT） |
 
-   python -- 通用脚本语言
-   nodejs -- node 环境，用于运行语言服务器
-   sbcl -- Steel Bank Common Lisp，一个通用的 lisp 解释器
-   rlwrap -- repl 包装器
+### 字体
 
-   chrome -- chrome 浏览器
-   firefox -- firefox 浏览器，比 chrome 占用的资源更少
-   Zed -- Rust 实现的全能轻量的编辑器
+| 软件包 | 说明 |
+|--------|------|
+| `font` | 中文字体包 |
 
-   mihomo -- 代理工具内核
+### 容器与虚拟化
 
-   paru -- AUR 用户软件仓库包管理器, rust 实现
-   yay -- AUR 用户软件仓库包管理器, go 实现, 可选，优先 paru
+| 软件包 | 说明 |
+|--------|------|
+| `podman` | 容器引擎（优先选择） |
+| `fuse-overlayfs` | Podman 依赖（不使用 Podman 可跳过） |
+| `docker` | 容器引擎（备选） |
+| `qemu` | 虚拟机 |
+| `qemu-ui-curses` | QEMU 终端模式 UI |
 
-   sc-im -- 终端表格处理工具，交互类似 vim
-   mdp -- 终端文稿演示工具，类似 PPT
+### 桌面环境 (KDE)
 
-   podman -- 容器引擎, 个人偏好 podman, 优先选择 podman
-   fuse-overlayfs -- podman 依赖该软件包，不使用 podman 可选
-   docker -- 容器引擎
-   qemu -- 虚拟机软件
-   qemu-ui-curses -- qemu 终端模式下的 UI
+| 软件包 | 说明 |
+|--------|------|
+| `plasma` | KDE 桌面环境（可选，也可用窗口管理器） |
+| `sddm` | 登录管理器（可选，可直接在 tty 启动 WM/DE） |
+| `ark` | KDE 解压缩工具 |
+| `konsole` | KDE 终端模拟器 |
+| `flatpak` | 软件沙盒环境 |
 
-   binsider -- 二进制分析工具
-   ```
+### 窗口管理器 (Wayland)
+
+| 软件包 | 说明 |
+|--------|------|
+| `river` | 轻量窗口管理器（Tag 组织窗口） |
+| `niri` | 卷轴式平铺窗口管理器 |
+
+### Wayland 组件
+
+| 软件包 | 说明 |
+|--------|------|
+| `xdg-desktop-portal-wlr` | Wayland 默认 xdg-desktop-portal 后端 |
+| `xdg-desktop-portal-gtk` | GTK 后端（文件选择器等功能依赖） |
+| `gnome-keyring` | Niri 依赖的密钥环 |
+| `mako` | Wayland 桌面通知组件 |
+| `swayidle` | 空闲管理器 |
+| `swaylock` | 锁屏 |
+| `wlopm` | Wayland 通用系统工具（River 依赖其熄屏） |
+| `wlr-randr` | Wayland 显示器管理（River 依赖） |
+| `xorg-xrandr` | X11 显示器管理（SDDM 依赖） |
+| `xwayland-satellite` | Niri 依赖的 XWayland 支持 |
+| `swaybg` | 窗口管理器背景图 |
+| `swayimg` | 图片查看器 |
+| `waybar` | 状态栏 |
+| `wl-clipboard` | Wayland 剪切板 |
+| `wtype` | Wayland 键盘模拟器 |
+| `grim` | 截图工具 |
+| `slurp` | 配合 grim 区域截图 |
+
+### 输入法
+
+| 软件包 | 说明 |
+|--------|------|
+| `fcitx5` | 输入法框架 |
+| `fcitx5-chinese-addons` | 中文扩展 |
+| `fcitx5-cn-meta` | 中文元包 |
+| `fcitx5-qt` | Qt 支持 |
+| `fcitx5-gtk` | GTK 支持 |
+| `fcitx5-configtool` | 输入法配置工具 |
+
+### 浏览器
+
+| 软件包 | 说明 |
+|--------|------|
+| `firefox` | 浏览器（资源占用较 Chrome 低） |
+| `google-chrome` | Chrome 浏览器（AUR） |
+
+### 代理工具
+
+| 软件包 | 说明 |
+|--------|------|
+| `mihomo` | 代理工具内核 |
+| `mihomo-party` | Mihomo GUI 管理器 |
+
+### AUR 包管理器
+
+| 软件包 | 说明 |
+|--------|------|
+| `paru` | AUR 包管理器（Rust 实现，优先使用） |
+| `yay` | AUR 包管理器（Go 实现，可选备选） |
+
+---
 
 ## 其他注意事项
 
-1. **XWayland 以及 Java 程序对于 Wayland 环境需要设置特殊的环境变量运行**
+### XWayland 及 Java 程序的环境变量
 
-   ```environment
-   # 启动时程序时携带环境变量，或者写入到 /etc/environment, 不建议直接写到该文件中，因为它是全局的环境变量，可能会污染其他应用程序
-   # 缩放
-   GDK_SCALE=1
-   # 光标大小
-   XCURSOR_SIZE=24
-   # 输入法
-   GTK_IM_MODULE=fcitx
-   # 输入法
-   QT_IM_MODULE=fcitx
-   # 输入法
-   XMODIFIERS=@im=fcitx
-   # Java 应用配置环境变量
-   _JAVA_AWT_WM_NONREPARENTING=1
-   ```
+启动程序时携带环境变量，或写入 `/etc/environment`（不建议直接写入，会污染全局环境）：
 
-2. **安装 chrome 浏览器**
+```ini
+GDK_SCALE=1                      # 缩放
+XCURSOR_SIZE=24                  # 光标大小
+GTK_IM_MODULE=fcitx              # 输入法 (GTK)
+QT_IM_MODULE=fcitx               # 输入法 (Qt)
+XMODIFIERS=@im=fcitx             # 输入法
+_JAVA_AWT_WM_NONREPARENTING=1    # Java 应用配置
+```
 
-   ```bash
-   # 使用 AUR 软件包
-   paru -S google-chrome
-   # 使用 flatpak 软件包
-   flatpak install com.google.Chrome
-   ```
+### 安装 Chrome 浏览器
 
-3. **安装 mihomo 网络代理服务**
+```bash
+paru -S google-chrome              # AUR
+flatpak install com.google.Chrome  # Flatpak
+```
 
-   在 `~/.config/mihomo` 目录下有一个可执行的 shell 脚本 `install-mihomo-service.sh` 能够安装和启动 mihomo 代理服务, 修改 `config.yaml` 将订阅填入，安装服务即可启动代理。
+### 安装 Mihomo 网络代理服务
 
-4. **解决 Chrome 在 wayland 会话下显示模糊的问题**
+`~/.config/mihomo` 目录下有一个 `install-mihomo-service.sh` 脚本，执行即可安装并启动代理服务。修改 `config.yaml` 填入订阅链接，安装服务后启动代理。
 
-   打开 Chrome, 地址栏输入 `chrome://flags` 进入 Chrome 的实验室功能，搜索 `Preferred Ozone platform` 选择 `Auto` 即可
+### XWayland 应用在高分屏下模糊
 
-5. **GRUB 识别 window 系统**
+XWayland 仅在整数倍缩放下才能清晰显示。两种方案：
 
-   略
+- **方案一**：设置整数倍缩放，但字体会非常小。
+- **方案二**：使用多显示器，XWayland 应用运行在普通分辨率显示器上（缩放 = 1）。但可能导致光标偏移（显示位置与实际位置不符），大多数 WM 有此问题，KDE 不受影响。
 
-6. **GRUB 美化**
+### XWayland 应用中 Fcitx5 候选框大小异常
 
-   略
+编辑 `~/.Xresources`，新增以下行后重启（或用 `xrdb -merge ~/.Xresources` 重新加载）：
 
-7. **xwayland 应用在高分屏模糊问题**
+```Xresources
+Xft.dpi=192
+```
 
-   原因是高分屏对 xwayland 只有在整数倍的缩放下才能够清晰，因此可以选择设置显示器整数倍缩放，但是这样字体会十分小，另一个解决方案是多显示器方案，xwayland 应用运行在普通分辨率的显示器上，并且该显示器的缩放设置为 1，这样会带来另一个问题，即鼠标位置偏移，具体现象是光标显示位置和实际位置部分，体感上表现为无响应，大多数 WM 都有这个问题，KDE 可以正常使用。
+### 非 KDE 环境中 File Picker 无法使用
 
-8. **xwayland 应用中 fcitx5 候选框大小异常**
+Wayland 默认 xdg-desktop-portal 后端 (`xdg-desktop-portal-wlr`) 不支持 file-picker。GTK 应用需额外安装 GTK 后端：
 
-   编辑 `~/.Xresources` 文件，新增下列行，然后重启即可（或者使用 `xrdb -merge ~/.Xresources` 重新加载配置)
+```bash
+sudo pacman -S xdg-desktop-portal-gtk
+systemctl --user restart xdg-desktop-portal.service
+```
 
-   ```.Xresources
-   Xft.dpi=192
-   ```
+### 桌面用户 DBus 使用 Polkit 认证
 
-9. **非 KDE 环境中部分应用无法使用 xdg-desktop-portal 选取文件 file-picker**
+在 `/etc/polkit-1/rules.d/49-nopasswd-global.rules` 中添加（将 `yunus` 替换为实际用户名）：
 
-    原因是 wayland 环境的默认 xdg-desktop-portal 后端 xdg-desktop-portal-wlr 在这些环境中还不支持 file-picker， 对于 gtk 的应用，需要额外安装并启用 gtk 的后端，具体命令如下：
+```javascript
+polkit.addRule(function(action, subject) {
+    if (subject.isInGroup("yunus")) {
+        return polkit.Result.YES;
+    }
+});
+```
 
-    ```bash
-    # 安装 gtk 的后端以支持选取文件
-    sudo pacman -S xdg-desktop-portal-gtk
-    # 重启主服务
-    systemctl --user restart xdg-desktop-portal.service
-    ```
+### SDDM 多显示器配置
 
-10. **桌面用户 DBus 使用 polkit 进行认证**
+**开启 HiDPI** — `/etc/sddm.conf.d/hidpi.conf`：
 
-    使用 polkit 进行认证，使用窗口管理器的用户如果需要静默授权需要使用增加如下规则到 `/etc/polkit-1/rules.d/49-nopasswd-global.rules` 中，用户修改成登陆用户：
+```ini
+[Wayland]
+EnableHiDPI=true
 
-    ```javascript
-    polkit.addRule(function(action, subject){
-        if(subject.isInGroup("yunus")){
-            return polkit.Result.YES;
-        }
-    })
-    ```
+[X11]
+EnableHiDPI=true
 
-11. **SDDM 多显示器自定义配置，配置只使用主显示器登录，并且开启 HiDPI 支持**
+[General]
+GreeterEnvironment=QT_SCREEN_SCALE_FACTORS=2,QT_FONT_DPI=192
+```
 
-    - `/etc/sddm.conf.d/hidpi.conf` 写入如下内容开启 HiDPI 支持
+**单显示器登录** — `/usr/share/sddm/scripts/Xsetup`（根据实际调整）：
 
-      ```conf
-      [Wayland]
-      EnableHiDPI=true
+```bash
+xrandr --output eDP-1 --mode 2880x1800 --output DP-2 --off
+```
 
-      [X11]
-      EnableHiDPI=true
+### Podman 报错 "kernel does not support overlay fs"
 
-      [General]
-      GreeterEnvironment=QT_SCREEN_SCALE_FACTORS=2,QT_FONT_DPI=192
-      ```
+安装 `fuse-overlayfs` 即可。
 
-    - `/usr/share/sddm/scripts/Xsetup` 添加如下内容设置 sddm 只使用一个显示器，需要根据实际情况调整
+### Electron 应用启用 Wayland 及输入法
 
-      ```conf
-      xrandr --output eDP-1 --mode 2880x1800 --output DP-2 --off
-      
-      ```
+启动时追加参数：
 
-12. **podman 相关命令提示 "kernel does not support overlay fs:'overlay'"**
+```
+--ozone-platform-hint=auto --enable-wayland-ime
+```
 
-    podman 依赖 fuse-overlayfs，安装对应软件包即可
+要求 Electron >= 28。
 
+### Mihomo Party 启用 Wayland
 
-13. **Electron** 应用设置使用 Wayland 并开启输入法支持
+将 `mihomo-party-flags.conf` 写入 `~/.config/mihomo-party`：
 
-    启动时追加参数 `--ozone-platform-hint=auto --enable-wayland-ime`，使 Electron 应用以原生 Wayland 模式运行并支持输入法（要求 Electron >= 28）。
-
-
+```conf
+--ozone-platform-hint=auto
+--enable-wayland-ime
+```
