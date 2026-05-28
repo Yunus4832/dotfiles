@@ -162,7 +162,7 @@ sudo pacman -Syuu
 | `xorg-xrandr` | X11 显示器管理（SDDM 依赖） |
 | `xwayland-satellite` | Niri 依赖的 XWayland 支持 |
 | `swaybg` | 窗口管理器背景图 |
-| `swayimg` | 图片查看器 |
+| `chafa` | 终端图片查看器 |
 | `waybar` | 状态栏 |
 | `wl-clipboard` | Wayland 剪切板 |
 | `wtype` | Wayland 键盘模拟器 |
