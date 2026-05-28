@@ -199,3 +199,14 @@ if command -v swaylock &> /dev/null; then
     fi
 fi
 
+#-----------------------------------------------------
+# Typora 主题配置                                     -
+#-----------------------------------------------------
+
+if command -v typora &> /dev/null; then
+    echo "Copy typora theme to $HOME/.config/Typora/themes..."
+    mkdir -p $HOME/.config/Typora/themes
+    cp -r $DOTFILES_DIR/typora/theme/* $HOME/.config/Typora/themes/
+    echo done
+fi
+

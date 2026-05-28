@@ -28,6 +28,7 @@ cd ~/dotfiles
 | 锁屏 | `swaylock` | 锁屏工具 |
 | 空闲 | `swayidle` | 空闲管理器 |
 | 代理 | `mihomo` | 网络代理 |
+| 笔记 | `typora` | Markdown 编辑器主题 |
 | 其他 | `xdg-desktop-portal` | 桌面门户配置 |
 
 ## 软件安装参考
