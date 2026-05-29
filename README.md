@@ -18,6 +18,7 @@ cd ~/dotfiles
 |------|------|------|
 | Shell | `zsh` | oh-my-zsh 配置 |
 | 编辑器 | `vim` | 插件化配置 |
+| 编辑器 | `zed` | 键位与编辑器配置 |
 | 终端复用 | `tmux` | 终端会话管理 |
 | 版本管理 | `git` | 全局 Git 配置 |
 | WM | `river` | Wayland 动态平铺窗口管理器 |

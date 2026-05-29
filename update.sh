@@ -200,7 +200,7 @@ if command -v swaylock &> /dev/null; then
 fi
 
 #-----------------------------------------------------
-# Typora 主题配置                                     -
+# Typora 主题配置                                    -
 #-----------------------------------------------------
 
 if command -v typora &> /dev/null; then
@@ -210,3 +210,13 @@ if command -v typora &> /dev/null; then
     echo done
 fi
 
+#-----------------------------------------------------
+# Zed 配置                                           -
+#-----------------------------------------------------
+
+if command -v zed &> /dev/null; then
+    echo "Copy zed config to $HOME/.config/zed..."
+    mkdir -p $HOME/.config/zed/
+    cp -r $DOTFILES_DIR/zed/* $HOME/.config/zed/
+    echo done
+fi
