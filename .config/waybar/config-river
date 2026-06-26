@@ -3,84 +3,48 @@
 {
    "layer": "top",
    "position": "top",
+   "height": 30,
+   "spacing": 6,
 
    "modules-left": [
-      "river/tags",
-      "custom/right-arrow-dark"
+      "river/tags"
    ],
    "modules-center": [
-      "custom/left-arrow-dark",
-      "clock#1",
-      "custom/left-arrow-light",
-      "custom/left-arrow-dark",
-      "clock#2",
-      "custom/right-arrow-dark",
-      "custom/right-arrow-light",
-      "clock#3",
-      "custom/right-arrow-dark"
+      "clock"
    ],
    "modules-right": [
-      "custom/left-arrow-dark",
       "pulseaudio",
-      "custom/left-arrow-light",
-      "custom/left-arrow-dark",
+      "custom/wifi",
       "memory",
-      "custom/left-arrow-light",
-      "custom/left-arrow-dark",
       "cpu",
       "battery",
-      "custom/left-arrow-light",
-      "custom/left-arrow-dark",
       "tray"
    ],
 
-   "custom/left-arrow-dark": {
-      "format": "",
-      "tooltip": false
-   },
-   "custom/left-arrow-light": {
-      "format": "",
-      "tooltip": false
-   },
-   "custom/right-arrow-dark": {
-      "format": "",
-      "tooltip": false
-   },
-   "custom/right-arrow-light": {
-      "format": "",
-      "tooltip": false
-   },
-
    "river/tags": {
-       "num-tags": 5,
-       "set-tags": [
-           2147483649,
-       2147483650,
-       2147483652,
-       2147483656,
-       2147483664
-       ]
+      "num-tags": 5,
+      "set-tags": [
+         2147483649,
+         2147483650,
+         2147483652,
+         2147483656,
+         2147483664
+      ]
    },
 
-   "clock#1": {
-      "format": "{:%a}",
-      "tooltip": false
+   "clock": {
+      "format": "󰥔 {:%H:%M  %m-%d %a}",
+      "tooltip-format": "{:%Y-%m-%d %A}"
    },
-   "clock#2": {
-      "format": "{:%H:%M}",
-      "tooltip": false
-   },
-   "clock#3": {
-      "format": "{:%m-%d}",
-      "tooltip": false
-   },
+
    "pulseaudio": {
-      "format": "{icon} {volume:2}%",
-      "format-bluetooth": "{icon}  {volume}%",
-      "format-muted": "MUTE",
+      "format": "{icon} {volume}%",
+      "format-bluetooth": "{icon} {volume}% ",
+      "format-muted": "󰝟 muted",
       "format-icons": {
          "headphones": "",
          "default": [
+            "",
             "",
             ""
          ]
@@ -89,32 +53,52 @@
       "on-click": "pamixer -t",
       "on-click-right": "pavucontrol"
    },
+
+   "custom/wifi": {
+      "exec": "~/.config/waybar/wifi-menu.sh status",
+      "return-type": "json",
+      "interval": 10,
+      "on-click": "~/.config/waybar/wifi-menu.sh menu",
+      "on-click-right": "~/.config/waybar/wifi-menu.sh menu"
+   },
+
    "memory": {
       "interval": 5,
-      "format": "Mem {}%"
+      "format": "󰍛 {}%"
    },
+
    "cpu": {
       "interval": 5,
-      "format": "CPU {usage:2}%"
+      "format": " {usage}%"
    },
-    "battery": {
-        "interval": 60,
-        "states": {
-            "good": 80,
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}% {icon}",
-        "format-icons": ["◼◻◻◻◻", "◼◼◻◻◻", "◼◼◼◻◻", "◼◼◼◼◻", "◼◼◼◼◼"]
-        /*"format-icons": ["", "", "", "", ""]*/
-    },
-   "disk": {
-      "interval": 5,
-      "format": "Disk {percentage_used:2}%",
-      "path": "/"
+
+   "battery": {
+      "interval": 60,
+      "states": {
+         "good": 80,
+         "warning": 30,
+         "critical": 15
+      },
+      "format": "{icon} {capacity}%",
+      "format-charging": "󰂄 {capacity}%",
+      "format-plugged": "󰚥 {capacity}%",
+      "format-icons": [
+         "󰂎",
+         "󰁺",
+         "󰁻",
+         "󰁼",
+         "󰁽",
+         "󰁾",
+         "󰁿",
+         "󰂀",
+         "󰂁",
+         "󰂂",
+         "󰁹"
+      ]
    },
-    "tray": {
-        "icon-size": 18,
-        "spacing": 10
+
+   "tray": {
+      "icon-size": 16,
+      "spacing": 8
    }
 }

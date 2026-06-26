@@ -1,86 +1,112 @@
 * {
-    font-size: 14px;
+    border: none;
+    border-radius: 0;
     font-family: "Consolas 7NF";
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 0;
 }
 
 window#waybar {
-    background: #292b2e;
-    color: #fdf6e3;
+    background: rgba(19, 21, 26, 0.78);
+    color: #d8dee9;
 }
 
-#custom-right-arrow-dark,
-#custom-left-arrow-dark {
-    color: #1a1a1a;
-    background: #292b2e;
-    font-size: 22px;
-}
-#custom-right-arrow-light,
-#custom-left-arrow-light {
-    color: #292b2e;
-    background: #1a1a1a;
-    font-size: 22px;
+.modules-left,
+.modules-center,
+.modules-right {
+    margin: 4px 8px;
 }
 
-#tags,
 #workspaces,
-#clock.1,
-#clock.2,
-#clock.3,
-#pulseaudio,
-#memory,
-#cpu,
-#battery,
-#disk,
-#tray {
-    background: #1a1a1a;
-}
-
-#tags button,
-#workspaces button
- {
-    padding: 0 2px;
-    color: #fdf6e3;
-}
-
-#tags button.focused,
-#workspaces button.focused {
-    color: #268bd2;
-}
-#workspaces button:hover {
-    box-shadow: inherit;
-    text-shadow: inherit;
-}
-#workspaces button:hover {
-    background: #1a1a1a;
-    border: #1a1a1a;
-    padding: 0 3px;
-}
-
-#pulseaudio {
-    color: #268bd2;
-}
-#memory {
-    color: #2aa198;
-}
-#cpu {
-    color: #6c71c4;
-}
-#battery {
-    color: #859900;
-}
-#disk {
-    color: #b58900;
-}
-
+#tags,
 #clock,
 #pulseaudio,
+#custom-wifi,
 #memory,
 #cpu,
 #battery,
-#disk {
+#tray {
+    background: rgba(36, 41, 51, 0.86);
+    border: 1px solid rgba(126, 143, 166, 0.18);
+    border-radius: 8px;
+    color: #d8dee9;
     padding: 0 10px;
 }
 
+#workspaces,
+#tags {
+    padding: 0 4px;
+}
+
+#workspaces button,
+#tags button {
+    background: transparent;
+    border-radius: 7px;
+    color: #7e8fa6;
+    margin: 2px 1px;
+    padding: 0 6px;
+}
+
+#workspaces button.active,
+#workspaces button.focused,
+#workspaces button:hover,
+#tags button.focused,
+#tags button.occupied,
+#tags button:hover {
+    background: rgba(94, 129, 172, 0.22);
+    color: #eceff4;
+}
+
+#clock {
+    color: #e5e9f0;
+    padding: 0 14px;
+}
+
+#pulseaudio {
+    color: #88c0d0;
+}
+
+#custom-wifi {
+    color: #8fbcbb;
+}
+
+#custom-wifi.disabled,
+#custom-wifi.disconnected,
+#custom-wifi.missing {
+    color: #ebcb8b;
+}
+
+#memory {
+    color: #a3be8c;
+}
+
+#cpu {
+    color: #b48ead;
+}
+
+#battery {
+    color: #a3be8c;
+}
+
+#battery.warning {
+    color: #ebcb8b;
+}
+
+#battery.critical {
+    color: #bf616a;
+}
+
 #tray {
-    padding: 0 5px;
+    padding: 0 8px;
+}
+
+tooltip {
+    background: rgba(36, 41, 51, 0.96);
+    border: 1px solid rgba(126, 143, 166, 0.22);
+    border-radius: 8px;
+}
+
+tooltip label {
+    color: #eceff4;
 }

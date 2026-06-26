@@ -31,6 +31,9 @@
       "battery",
       "custom/left-arrow-light",
       "custom/left-arrow-dark",
+      "custom/wifi",
+      "custom/left-arrow-light",
+      "custom/left-arrow-dark",
       "tray"
    ],
 
@@ -90,6 +93,13 @@
    "cpu": {
       "interval": 5,
       "format": "CPU {usage:2}%"
+   },
+   "custom/wifi": {
+      "exec": "~/.config/waybar/wifi-menu.sh status",
+      "return-type": "json",
+      "interval": 10,
+      "on-click": "~/.config/waybar/wifi-menu.sh menu",
+      "on-click-right": "~/.config/waybar/wifi-menu.sh menu"
    },
     "battery": {
         "interval": 60,
