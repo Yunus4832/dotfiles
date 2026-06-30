@@ -23,6 +23,10 @@ hotkey-overlay {
     skip-at-startup
 }
 
+clipboard {
+    disable-primary
+}
+
 layout {
     gaps 8
     center-focused-column "always"
