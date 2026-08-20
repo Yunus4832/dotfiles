@@ -84,29 +84,18 @@ proxy-providers:
 proxy-groups:
   - name: "节点选择"
     type: select
-    proxies: ["主用自动", "备用自动", "主用手动", "备用手动", DIRECT]
+    proxies: ["自动选择", "手动选择", DIRECT]
 
-  - name: "主用自动"
+  - name: "自动选择"
     type: url-test
-    use: [main]
+    use: [main, backup]
     url: "https://www.gstatic.com/generate_204"
     interval: 300
     tolerance: 50
 
-  - name: "备用自动"
-    type: url-test
-    use: [backup]
-    url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
-
-  - name: "主用手动"
+  - name: "手动选择"
     type: select
-    use: [main]
-
-  - name: "备用手动"
-    type: select
-    use: [backup]
+    use: [main, backup]
 
   # AIGC 按地区筛选节点，并在各地区内自动选择低延迟节点。
   - name: "AIGC"
