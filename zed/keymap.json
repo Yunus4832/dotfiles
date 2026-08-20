@@ -1,0 +1,40 @@
+[
+  {
+    "context": "Editor && vim_mode == normal",
+    "bindings": {
+      "space w": ["workspace::SendKeystrokes", "ctrl-w"],
+
+      "space b b": "tab_switcher::Toggle",
+      "space b n": "pane::ActivateNextItem",
+      "space b p": "pane::ActivatePreviousItem",
+      "space b d": "pane::CloseActiveItem",
+
+      "space f": "project_panel::ToggleFocus",
+      "space ; a": "editor::ToggleGitBlameInline",
+      "space ; c": "editor::ToggleComments",
+      "space ; s": "file_finder::Toggle",
+      "space ; S": "project_search::ToggleFocus",
+      "space ; e": "projects::OpenRecent",
+
+      "space , ,": "zed::OpenSettingsFile",
+      "space , w": "editor::ToggleSoftWrap",
+      "space , l": "editor::ToggleIndentGuides",
+      "space , n": "editor::ToggleLineNumbers",
+    },
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      "j j": "vim::NormalBefore",
+      "k k": "vim::NormalBefore",
+    },
+  },
+  {
+    "context": "Editor && vim_mode == visual",
+    "bindings": {
+      "space ; c": "editor::ToggleComments",
+      "*": "editor::SelectNext",
+      "#": "editor::SelectPrevious",
+    },
+  },
+]

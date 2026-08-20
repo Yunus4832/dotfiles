@@ -1,0 +1,4 @@
+# Web UI is generated locally from the tracked archive.
+/ui/
+/ui.previous/
+/.ui-install.*

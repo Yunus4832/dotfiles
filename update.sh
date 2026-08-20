@@ -1,0 +1,393 @@
+#!/bin/bash
+
+DOTFILES_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+PACKAGE_CACHE_FILE="$DOTFILES_DIR/.update-package-cache"
+PACKAGE_LIST=(
+    networkmanager
+    iwd
+    dhcpcd
+    net-tools
+    openbsd-netcat
+    autossh
+    lftp
+    vim
+    gvim
+    emacs
+    helix
+    nano
+    ed
+    zsh
+    tmux
+    dtach
+    dvtm
+    foot
+    rofi
+    yazi
+    ripgrep
+    the_silver_searcher
+    fd
+    fzf
+    bat
+    jq
+    ctags
+    astyle
+    less
+    git
+    curl
+    age
+    xh
+    python
+    nodejs
+    sbcl
+    rlwrap
+    binsider
+    polkit
+    fastfetch
+    bc
+    bottom
+    sc-im
+    mdp
+    noto-fonts-cjk
+    podman
+    fuse-overlayfs
+    qemu
+    qemu-ui-curses
+    flatpak
+    niri
+    xdg-desktop-portal
+    xdg-desktop-portal-wlr
+    xdg-desktop-portal-gtk
+    gnome-keyring
+    mako
+    swayidle
+    swaylock
+    wlopm
+    wlr-randr
+    xorg-xrandr
+    xwayland-satellite
+    swaybg
+    chafa
+    waybar
+    wl-clipboard
+    wtype
+    grim
+    slurp
+    fcitx5
+    fcitx5-chinese-addons
+    fcitx5-cn-meta
+    fcitx5-qt
+    fcitx5-gtk
+    fcitx5-configtool
+    mihomo
+    paru
+)
+
+get_cached_package_decision() {
+    local package_name=$1
+
+    if [ ! -f "$PACKAGE_CACHE_FILE" ]; then
+        return
+    fi
+
+    awk -F= -v package_name="$package_name" '
+        $1 == package_name { decision = $2 }
+        END {
+            if (decision != "") {
+                print decision
+            }
+        }
+    ' "$PACKAGE_CACHE_FILE"
+}
+
+cache_package_decision() {
+    local package_name=$1
+    local decision=$2
+
+    printf "%s=%s\n" "$package_name" "$decision" >> "$PACKAGE_CACHE_FILE"
+}
+
+is_arch_linux() {
+    if [ ! -r /etc/os-release ]; then
+        return 1
+    fi
+
+    # shellcheck source=/dev/null
+    . /etc/os-release
+
+    if [ "$ID" = "arch" ]; then
+        return 0
+    fi
+
+    case " ${ID_LIKE:-} " in
+        *" arch "*) return 0 ;;
+    esac
+
+    return 1
+}
+
+install_package() {
+    local package_name=$1
+
+    if command -v paru &> /dev/null; then
+        paru -S --needed "$package_name"
+    else
+        sudo pacman -S --needed "$package_name"
+    fi
+}
+
+prompt_missing_packages() {
+    if ! is_arch_linux; then
+        echo "Skip package check: not running on Arch Linux."
+        return
+    fi
+
+    echo "Check predefined package list..."
+
+    for package_name in "${PACKAGE_LIST[@]}"; do
+        if pacman -Q "$package_name" &> /dev/null; then
+            continue
+        fi
+
+        local cached_decision
+        cached_decision=$(get_cached_package_decision "$package_name")
+        if [ "$cached_decision" = "skip" ]; then
+            echo "Skip $package_name (cached)."
+            continue
+        fi
+
+        if [ "$cached_decision" = "install" ]; then
+            echo "Install $package_name (cached)."
+            install_package "$package_name"
+            continue
+        fi
+
+        read -r -p "Package '$package_name' is not installed. Install it now? (y/N): " install_answer
+        if [[ "$install_answer" == [yY] ]]; then
+            cache_package_decision "$package_name" "install"
+            install_package "$package_name"
+        else
+            cache_package_decision "$package_name" "skip"
+            echo "Skip $package_name."
+        fi
+    done
+
+    echo package check done
+}
+
+prompt_missing_packages
+
+#-----------------------------------------------------
+# Tmux 配置                                          -
+#-----------------------------------------------------
+
+# 复制 tmux 的配置文件到用户目录
+if command -v tmux &> /dev/null; then
+    echo "Copy tmux config to $HOME..."
+    cp $DOTFILES_DIR/tmux/.tmux.conf*  $HOME/
+    if [ -e $HOME/.tmux.conf.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.tmux.conf.patch
+    fi
+    echo done
+fi
+
+#-----------------------------------------------------
+# zsh  配置                                          -
+#-----------------------------------------------------
+
+# 复制 oh-my-zsh 的配置文件到用户目录
+if command -v zsh &> /dev/null; then
+    echo "Copy zsh config to $HOME..."
+    cp $DOTFILES_DIR/zsh/.zshrc $HOME/
+    if [ -e $HOME/.zshrc.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.zshrc.patch
+    fi
+    echo done
+fi
+
+#-----------------------------------------------------
+# Git 配置                                           -
+#-----------------------------------------------------
+
+# 复制 git 的全局配置文件到用户目录
+if command -v git &> /dev/null; then 
+    echo "Copy git global config to $HOME..."
+    cp $DOTFILES_DIR/git/.gitconfig $HOME/
+
+    read -p"Disable autocrlf (Y/n):" system_type
+
+    if [[ $system_type == [nN] ]];
+    then
+        sed -i 's!\(autocrlf\s\?=\s\?\).*!\1true!g' $HOME/.gitconfig
+    fi
+
+    if [ -e $HOME/.gitconfig.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.gitconfig.patch
+    fi
+
+    echo done
+fi
+
+#-----------------------------------------------------
+# vim 配置                                           -
+#-----------------------------------------------------
+
+# 复制 vim 的配置文件到用户目录或者自定义目录
+if command -v vim &> /dev/null; then
+    echo "Copy vim config to $HOME..."
+    cp $DOTFILES_DIR/vim/.vimrc $HOME/
+
+    # 复制 vim 本地配置到用户目录
+    echo "Copy .vim dirctory to $HOME..."
+    cp -r $DOTFILES_DIR/vim/.vim $HOME
+
+    # 配置插件目录
+    read -p"Input the Plug dir(default user home):" plug_dir
+    if [[ -z $plug_dir ]];
+    then
+        plug_dir=$DOTFILES_DIR/vim/vim-plug
+    fi
+
+    echo "Edit plug_dir in .vimrc"
+    echo "Config plug_dir to $plug_dir..."
+    sed -i 's!^let g:my_plug_dir = \".*\"$!let g:my_plug_dir = \"'$plug_dir'\"!g' $HOME/.vimrc
+    if [ -e $HOME/.vimrc.patch ]; then
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.virmc.patch
+    fi
+    echo done
+fi
+
+#-----------------------------------------------------
+# niri 配置                                      -
+#-----------------------------------------------------
+
+if command -v niri &> /dev/null; then
+    echo "Copy niri config to $HOME/.config/niri..."
+    cp -r $DOTFILES_DIR/.config/niri $HOME/.config
+    if [ -e $HOME/.config/niri/config.kdl.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/niri/config.kdl.patch
+    fi
+    echo done
+fi
+
+#-----------------------------------------------------
+# waybar 配置                                        -
+#-----------------------------------------------------
+
+if command -v waybar &> /dev/null; then
+    echo "Copy waybar config to $HOME/.config/waybar..."
+    cp -r $DOTFILES_DIR/.config/waybar $HOME/.config
+    if [ -e $HOME/.config/waybar/custom.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/waybar/custom.patch
+    fi
+    echo done
+fi
+
+#-----------------------------------------------------
+# wallpaper 配置                                     -
+#-----------------------------------------------------
+
+if command -v swaybg &> /dev/null; then
+    echo "Copy wallpapers config to $HOME/.config/wallpapers..."
+    cp -r $DOTFILES_DIR/.config/wallpapers $HOME/.config
+    echo done
+fi
+
+#-----------------------------------------------------
+# rofi 配置                                          -
+#-----------------------------------------------------
+
+if command -v rofi &> /dev/null; then
+    echo "Copy rofi config to $HOME/.config/rofi..."
+    cp -r $DOTFILES_DIR/.config/rofi $HOME/.config
+    echo done
+fi
+
+#-----------------------------------------------------
+# xdg-desktop-portal 配置                            -
+#-----------------------------------------------------
+
+if pacman -Q xdg-desktop-portal &> /dev/null; then
+    echo "Copy xdg-desktop-portal config to $HOME/.config/xdg-desktop-portal..."
+    cp -r $DOTFILES_DIR/.config/xdg-desktop-portal $HOME/.config
+    if [ -e $HOME/.config/xdg-desktop-portal/custom.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/xdg-desktop-portal/custom.patch
+    fi
+fi
+
+echo config done
+
+#-----------------------------------------------------
+# foot 终端模拟器配置                                -
+#-----------------------------------------------------
+
+if command -v foot &> /dev/null; then
+    echo "Copy foot config to $HOME/.config/foot..."
+    cp -r $DOTFILES_DIR/.config/foot $HOME/.config
+    if [ -e $HOME/.config/foot/foot.ini.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/foot/foot.ini.patch
+    fi
+fi
+
+#-----------------------------------------------------
+# mihomo 代理模拟器配置                              -
+#-----------------------------------------------------
+
+if command -v mihomo &> /dev/null; then
+    echo "Copy mihomo config to $HOME/.config/mihomo..."
+    cp -r $DOTFILES_DIR/.config/mihomo $HOME/.config
+
+    echo "Extract mihomo Web UI..."
+    mkdir -p "$HOME/.config/mihomo/ui"
+    tar -xzf "$HOME/.config/mihomo/ui.tar.gz" -C "$HOME/.config/mihomo/ui"
+    if [ ! -f "$HOME/.config/mihomo/ui/index.html" ]; then
+        echo "Failed to extract mihomo Web UI: index.html is missing." >&2
+        exit 1
+    fi
+
+    if [ -e $HOME/.config/mihomo/config.yaml.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/mihomo/config.yaml.patch
+    fi
+    echo done
+fi
+
+#-----------------------------------------------------
+# swayidle / swaylock 配置                           -
+#-----------------------------------------------------
+
+if command -v swayidle &> /dev/null; then
+    echo "Copy swayidle config to $HOME/.config/swayidle..."
+    cp -r $DOTFILES_DIR/.config/swayidle $HOME/.config
+    if [ -e $HOME/.config/swayidle/config.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/swayidle/config.patch
+    fi
+fi
+
+if command -v swaylock &> /dev/null; then
+    echo "Copy swaylock config to $HOME/.config/swaylock..."
+    cp -r $DOTFILES_DIR/.config/swaylock $HOME/.config
+    if [ -e $HOME/.config/swaylock/config.patch ]; then
+        patch -d $HOME/.config --no-backup-if-mismatch -p0 < $HOME/.config/swaylock/config.patch
+    fi
+fi
+
+#-----------------------------------------------------
+# Typora 主题配置                                    -
+#-----------------------------------------------------
+
+if command -v typora &> /dev/null; then
+    echo "Copy typora theme to $HOME/.config/Typora/themes..."
+    mkdir -p $HOME/.config/Typora/themes
+    cp -r $DOTFILES_DIR/typora/theme/* $HOME/.config/Typora/themes/
+    echo done
+fi
+
+#-----------------------------------------------------
+# Zed 配置                                           -
+#-----------------------------------------------------
+
+if command -v zed &> /dev/null; then
+    echo "Copy zed config to $HOME/.config/zed..."
+    mkdir -p $HOME/.config/zed/
+    cp -r $DOTFILES_DIR/zed/* $HOME/.config/zed/
+    echo done
+fi

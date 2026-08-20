@@ -1,0 +1,13 @@
+[user]
+	name = yunus0712
+	email = 2794914797@qq.com
+[core]
+	pager = more
+	autocrlf = input
+[pull]
+	rebase = true
+[diff]
+	tool = vimdiff
+
+[credential]
+	helper = store

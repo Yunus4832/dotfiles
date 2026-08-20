@@ -1,0 +1,5 @@
+@theme "~/.config/rofi/themes/rounded-gray-dark.rasi"
+
+configuration {
+    terminal: "foot";
+}
