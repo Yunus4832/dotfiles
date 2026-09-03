@@ -251,7 +251,7 @@ if command -v vim &> /dev/null; then
     echo "Config plug_dir to $plug_dir..."
     sed -i 's!^let g:my_plug_dir = \".*\"$!let g:my_plug_dir = \"'$plug_dir'\"!g' $HOME/.vimrc
     if [ -e $HOME/.vimrc.patch ]; then
-        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.virmc.patch
+        patch -d $HOME --no-backup-if-mismatch -p0 < $HOME/.vimrc.patch
     fi
     echo done
 fi
