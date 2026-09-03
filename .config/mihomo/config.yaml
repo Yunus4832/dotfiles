@@ -97,6 +97,24 @@ proxy-groups:
     type: select
     use: [main, backup]
 
+  # GitHub 的 Release、源码包和 Git LFS 共用同一策略组。
+  # 默认按 GitHub 本身测速；可切换到 GitHub 手动或通用节点选择。
+  - name: "GitHub"
+    type: select
+    proxies: ["GitHub 自动", "GitHub 手动", "节点选择"]
+
+  - name: "GitHub 手动"
+    type: select
+    use: [main, backup]
+
+  - name: "GitHub 自动"
+    type: url-test
+    use: [main, backup]
+    filter: "(?i)香港|Hong Kong|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|🇯🇵|美国西|洛杉矶|旧金山|US West"
+    url: "https://github.com"
+    interval: 300
+    tolerance: 50
+
   # AIGC 按地区筛选节点，并在各地区内自动选择低延迟节点。
   - name: "AIGC"
     type: select
@@ -191,6 +209,12 @@ rule-providers:
 # ── 路由规则
 rules:
   - DOMAIN,localhost,DIRECT
+  # 必须位于中国直连规则之前，覆盖网页、API、源码下载、Release CDN、LFS 和 Actions。
+  - DOMAIN-SUFFIX,github.com,GitHub
+  - DOMAIN-SUFFIX,githubusercontent.com,GitHub
+  - DOMAIN-SUFFIX,githubassets.com,GitHub
+  - DOMAIN-SUFFIX,githubapp.com,GitHub
+  - DOMAIN-SUFFIX,githubstatus.com,GitHub
   - DOMAIN-KEYWORD,opencode,AIGC
   - RULE-SET,bing,AIGC
   - RULE-SET,copilot,AIGC
