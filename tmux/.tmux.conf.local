@@ -343,6 +343,11 @@ tmux_conf_copy_to_os_clipboard=true
 # -- user customizations -------------------------------------------------------
 # this is the place to override or undo settings
 
+# Allow applications inside tmux to pass OSC sequences (including OSC 52)
+# through to the outer terminal, and allow them to set the terminal clipboard.
+set -g allow-passthrough on
+set -g set-clipboard external
+
 # increase history size
 #set -g history-limit 10000
 
