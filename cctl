@@ -1,0 +1,441 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_SOURCE=${BASH_SOURCE[0]}
+if command -v readlink >/dev/null 2>&1; then
+    SCRIPT_REAL=$(readlink -f -- "$SCRIPT_SOURCE" 2>/dev/null || printf '%s' "$SCRIPT_SOURCE")
+else
+    SCRIPT_REAL=$SCRIPT_SOURCE
+fi
+ROOT=$(cd -- "$(dirname -- "$SCRIPT_REAL")" && pwd)
+REGISTRY="$ROOT/.configctl/entries"
+BASE_PACKAGES="$ROOT/.configctl/packages/base"
+
+fail() { printf 'cctl: %s\n' "$*" >&2; exit 1; }
+note() { printf 'cctl: %s\n' "$*" >&2; }
+usage() {
+    cat <<'HELP'
+Usage: cctl list
+       cctl add NAME SOURCE TARGET [PACKAGE...]
+       cctl remove NAME
+       cctl apply NAME... | --all
+       cctl update NAME... | --all
+       cctl vim apply
+       cctl push [MESSAGE]
+       cctl pull
+       cctl compact
+       cctl install [--user|--system] [--copy] [--force]
+       cctl uninstall [--user|--system] [--force]
+       cctl complete zsh
+
+TARGET may start with ~/; SOURCE may be a file or directory.
+Edit repository files to change a configuration, then run apply again.
+HELP
+}
+arch_only() {
+    [ -r /etc/os-release ] || fail 'Arch Linux is required (cannot read /etc/os-release)'
+    local ID= ID_LIKE=
+    # shellcheck source=/dev/null
+    . /etc/os-release
+    [[ $ID == arch || " $ID_LIKE " == *' arch '* ]] || fail 'configuration application is supported only on Arch Linux and Arch-based distributions'
+}
+valid_name() { [[ $1 =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; }
+expand_target() {
+    case $1 in
+        '~') printf '%s' "$HOME" ;;
+        '~/'*) printf '%s/%s' "$HOME" "${1#\~/}" ;;
+        /*) printf '%s' "$1" ;;
+        *) fail "target must be absolute or start with ~/: $1" ;;
+    esac
+}
+find_entry() {
+    local wanted=$1
+    awk -F '|' -v wanted="$wanted" '$1 == wanted { print; found=1; exit } END { if (!found) exit 1 }' "$REGISTRY"
+}
+package_missing() {
+    local package=$1
+    pacman -Q -- "$package" >/dev/null 2>&1
+}
+check_dependencies() {
+    local names=$1 package missing=()
+    [ -n "$names" ] || return 0
+    command -v pacman >/dev/null || fail 'pacman is required on Arch Linux'
+    IFS=, read -r -a packages <<< "$names"
+    for package in "${packages[@]}"; do
+        [ -n "$package" ] || continue
+        package_missing "$package" || missing+=("$package")
+    done
+    if [ "${#missing[@]}" -gt 0 ]; then
+        note "missing packages: ${missing[*]}"
+        note "install with: sudo pacman -S -- ${missing[*]} (or paru -S -- ${missing[*]} for AUR packages)"
+        return 1
+    fi
+}
+install_base() {
+    local missing=() official=() aur=() package
+    command -v pacman >/dev/null || fail 'pacman is required on Arch Linux'
+    while IFS= read -r package || [ -n "$package" ]; do
+        [[ -z $package || $package == \#* ]] && continue
+        package_missing "$package" || missing+=("$package")
+    done < "$BASE_PACKAGES"
+    if [ "${#missing[@]}" -eq 0 ]; then note 'base packages already installed'; return; fi
+    note "installing base packages: ${missing[*]}"
+    if command -v paru >/dev/null; then
+        paru -S --needed -- "${missing[@]}"
+    else
+        for package in "${missing[@]}"; do
+            if pacman -Si -- "$package" >/dev/null 2>&1; then
+                official+=("$package")
+            else
+                aur+=("$package")
+            fi
+        done
+        if [ "${#official[@]}" -gt 0 ]; then sudo pacman -S --needed -- "${official[@]}"; fi
+        if [ "${#aur[@]}" -gt 0 ]; then
+            note "AUR packages require paru: ${aur[*]}"
+            return 1
+        fi
+    fi
+}
+apply_patch_file() {
+    local patchfile=$1 patchroot=$2
+    patch --batch --forward --dry-run -d "$patchroot" -p0 < "$patchfile" >/dev/null || return 1
+    patch --batch --forward -d "$patchroot" -p0 < "$patchfile" >/dev/null
+}
+directory_patch_root() {
+    local patchfile=$1 dest=$2 first_path
+    first_path=$(sed -n '/^--- / { s/^--- //; s/[[:space:]].*$//; p; q; }' "$patchfile")
+    case $first_path in
+        "$(basename -- "$dest")"/*) dirname -- "$dest" ;;
+        *) printf '%s\n' "$dest" ;;
+    esac
+}
+apply_entry() {
+    local name=$1 row source target packages hook secret extra dest backup patchroot patchfile rc=0
+    if [ "$name" = base ]; then install_base; return; fi
+    row=$(find_entry "$name") || fail "unknown configuration: $name"
+    IFS='|' read -r name source target packages hook secret extra <<< "$row"
+    [ -z "${extra:-}" ] || fail "invalid registry entry: $name"
+    source="$ROOT/$source"
+    [ -e "$source" ] || fail "source missing: $source"
+    check_dependencies "$packages" || return 1
+    dest=$(expand_target "$target")
+    patchroot=$(dirname -- "$dest")
+    mkdir -p -- "$patchroot"
+    backup=$(mktemp -d)
+    if [ -e "$dest" ]; then cp -a -- "$dest" "$backup/original"; fi
+    # Keep user patches outside the source repository and reapply them after replacement.
+    if [ -d "$dest" ]; then
+        mkdir -p "$backup/patches"
+        find "$dest" -maxdepth 1 -type f -name '*.patch' -exec cp -a -- '{}' "$backup/patches/" \;
+    elif [ -f "$dest.patch" ]; then
+        mkdir -p "$backup/patches"
+        cp -a -- "$dest.patch" "$backup/patches/"
+    fi
+    if [ -d "$source" ]; then
+        rm -rf -- "$dest" || rc=1
+        if [ "$rc" -eq 0 ]; then cp -a -- "$source" "$dest" || rc=1; fi
+        if [ "$rc" -eq 0 ] && [ -d "$backup/patches" ]; then
+            cp -a -- "$backup/patches/." "$dest/" || rc=1
+        fi
+    else
+        rm -rf -- "$dest" || rc=1
+        if [ "$rc" -eq 0 ]; then cp -a -- "$source" "$dest" || rc=1; fi
+    fi
+    if [ "$rc" -eq 0 ]; then
+        case $hook in
+            mihomo)
+                mkdir -p "$dest/ui"
+                tar -xzf "$dest/ui.tar.gz" -C "$dest/ui" || rc=1
+                [ -f "$dest/ui/index.html" ] || rc=1
+                ;;
+            '') ;;
+            *) note "unknown deploy hook: $hook"; rc=1 ;;
+        esac
+    fi
+    if [ "$rc" -eq 0 ] && [ -d "$backup/patches" ]; then
+        while IFS= read -r -d '' patchfile; do
+            if [ -d "$source" ]; then patchroot=$(directory_patch_root "$patchfile" "$dest"); fi
+            apply_patch_file "$patchfile" "$patchroot" || { rc=1; break; }
+        done < <(find "$backup/patches" -maxdepth 1 -type f -name '*.patch' -print0 | sort -z)
+    fi
+    if [ "$rc" -eq 0 ] && [ -n "$secret" ]; then
+        command -v sctl >/dev/null || { note "sctl is required for $name"; rc=1; }
+        patchfile="$backup/secret.patch"
+        if [ "$rc" -eq 0 ]; then sctl get --output "$patchfile" "$secret" || rc=1; fi
+        if [ "$rc" -eq 0 ]; then
+            if [ -d "$source" ]; then patchroot=$(directory_patch_root "$patchfile" "$dest"); fi
+            apply_patch_file "$patchfile" "$patchroot" || rc=1
+        fi
+    fi
+    if [ "$rc" -ne 0 ]; then
+        rm -rf -- "$dest"
+        if [ -e "$backup/original" ]; then cp -a -- "$backup/original" "$dest"; fi
+        rm -rf -- "$backup"
+        note "failed to apply $name; previous configuration restored"
+        return 1
+    fi
+    rm -rf -- "$backup"
+    note "applied $name -> $dest"
+}
+vim_apply() {
+    arch_only
+    check_dependencies vim || return 1
+    local backup plug_dir rc=0
+    backup=$(mktemp -d)
+    if [ -e "$HOME/.vimrc" ]; then cp -a -- "$HOME/.vimrc" "$backup/vimrc"; fi
+    if [ -e "$HOME/.vim" ]; then cp -a -- "$HOME/.vim" "$backup/vim"; fi
+
+    rm -rf -- "$HOME/.vimrc" "$HOME/.vim" || rc=1
+    if [ "$rc" -eq 0 ]; then cp -a -- "$ROOT/vim/.vimrc" "$HOME/.vimrc" || rc=1; fi
+    if [ "$rc" -eq 0 ]; then cp -a -- "$ROOT/vim/.vim" "$HOME/.vim" || rc=1; fi
+    if [ "$rc" -eq 0 ]; then
+        plug_dir=${CONFIGCTL_VIM_PLUG_DIR:-$ROOT/vim/vim-plug}
+        plug_dir=${plug_dir//&/\\&}
+        plug_dir=${plug_dir//|/\\|}
+        sed -i "s|^let g:my_plug_dir = \".*\"$|let g:my_plug_dir = \"$plug_dir\"|" "$HOME/.vimrc" || rc=1
+    fi
+    if [ "$rc" -eq 0 ] && [ -f "$HOME/.vimrc.patch" ]; then
+        apply_patch_file "$HOME/.vimrc.patch" "$HOME" || rc=1
+    fi
+    if [ "$rc" -ne 0 ]; then
+        rm -rf -- "$HOME/.vimrc" "$HOME/.vim"
+        if [ -e "$backup/vimrc" ]; then cp -a -- "$backup/vimrc" "$HOME/.vimrc"; fi
+        if [ -e "$backup/vim" ]; then cp -a -- "$backup/vim" "$HOME/.vim"; fi
+        rm -rf -- "$backup"
+        note 'failed to apply vim; previous configuration restored'
+        return 1
+    fi
+    rm -rf -- "$backup"
+    note "applied vim -> $HOME/.vimrc and $HOME/.vim"
+}
+cmd_add() {
+    [ "$#" -ge 3 ] || fail 'add needs NAME SOURCE TARGET [PACKAGE...]'
+    local name=$1 input=$2 target=$3 package rel
+    shift 3
+    valid_name "$name" || fail 'invalid configuration name'
+    [[ $name != base && $name != vim ]] || fail 'base and vim are reserved configurations'
+    [ -e "$input" ] || fail "source not found: $input"
+    find_entry "$name" >/dev/null 2>&1 && fail "configuration already exists: $name"
+    expand_target "$target" >/dev/null
+    for package in "$@"; do valid_name "$package" || fail "invalid package name: $package"; done
+    rel=".configctl/files/$name"
+    mkdir -p "$ROOT/.configctl/files"
+    cp -a -- "$input" "$ROOT/$rel"
+    local joined=
+    if [ "$#" -gt 0 ]; then joined=$(IFS=,; printf '%s' "$*"); fi
+    printf '%s|%s|%s|%s||\n' "$name" "$rel" "$target" "$joined" >> "$REGISTRY"
+    note "added $name; review and commit repository changes"
+}
+cmd_remove() {
+    [ "$#" -eq 1 ] || fail 'remove needs NAME'
+    local name=$1 row source target packages hook secret extra tmp
+    [[ $name != base && $name != vim ]] || fail 'base and vim are built-in configurations'
+    row=$(find_entry "$name") || fail "unknown configuration: $name"
+    IFS='|' read -r name source target packages hook secret extra <<< "$row"
+    case $source in
+        ''|'.'|/*|*'..'*) fail "unsafe source path in registry: $source" ;;
+    esac
+    if awk -F '|' -v name="$name" -v source="$source" '$1 != name && $2 == source { found=1 } END { exit !found }' "$REGISTRY"; then
+        fail "source is shared by another configuration: $source"
+    fi
+    tmp=$(mktemp "$ROOT/.configctl/entries.XXXXXX")
+    awk -F '|' -v name="$name" '$1 != name' "$REGISTRY" > "$tmp"
+    mv -- "$tmp" "$REGISTRY"
+    rm -rf -- "$ROOT/$source"
+    note "removed $name from registry; deployed files were left in place"
+}
+require_clean_git() {
+    git -C "$ROOT" diff --quiet && git -C "$ROOT" diff --cached --quiet && [ -z "$(git -C "$ROOT" ls-files --others --exclude-standard)" ] || fail 'working tree is not clean'
+}
+cmd_push() {
+    git -C "$ROOT" add -A
+    if ! git -C "$ROOT" diff --cached --quiet; then
+        git -C "$ROOT" commit -m "${1:-Update configurations}"
+    fi
+    git -C "$ROOT" push origin "$(git -C "$ROOT" branch --show-current)"
+}
+cmd_pull() {
+    require_clean_git
+    local branch remote backup
+    branch=$(git -C "$ROOT" branch --show-current)
+    [ -n "$branch" ] || fail 'pull requires a branch'
+    git -C "$ROOT" fetch origin "$branch"
+    remote=FETCH_HEAD
+    if git -C "$ROOT" merge-base --is-ancestor HEAD "$remote"; then
+        git -C "$ROOT" merge --ff-only "$remote"
+    elif git -C "$ROOT" merge-base --is-ancestor "$remote" HEAD; then
+        note 'local branch is ahead of remote; nothing to pull'
+    else
+        backup="cctl-backup-$(date +%Y%m%d%H%M%S)"
+        git -C "$ROOT" branch "$backup"
+        git -C "$ROOT" reset --hard "$remote"
+        note "remote history changed; previous local branch saved as $backup"
+    fi
+}
+cmd_compact() {
+    require_clean_git
+    local branch old remote new
+    branch=$(git -C "$ROOT" branch --show-current)
+    [ -n "$branch" ] || fail 'compact requires a branch'
+    git -C "$ROOT" fetch origin "$branch"
+    remote=$(git -C "$ROOT" rev-parse FETCH_HEAD)
+    old=$(git -C "$ROOT" rev-parse HEAD)
+    [ "$old" = "$remote" ] || fail 'local and remote differ; pull or push first'
+    new=$(git -C "$ROOT" commit-tree "$(git -C "$ROOT" rev-parse HEAD^{tree})" -m 'Compact configuration history')
+    git -C "$ROOT" update-ref "refs/heads/$branch" "$new" "$old"
+    git -C "$ROOT" reset --hard "$new" >/dev/null
+    git -C "$ROOT" push --force-with-lease origin "$branch"
+    note "compacted $branch to one commit"
+}
+cmd_install() {
+    local scope=user copy=0 force=0 parent destination quoted_root
+    local -a run=()
+    while [ "$#" -gt 0 ]; do
+        case $1 in
+            --user) scope=user ;;
+            --system) scope=system ;;
+            --copy) copy=1 ;;
+            --force) force=1 ;;
+            *) fail "unknown install option: $1" ;;
+        esac
+        shift
+    done
+    if [ "$scope" = user ]; then parent="$HOME/.local/bin"; else parent=/usr/local/bin; fi
+    destination="$parent/cctl"
+    if [ "$scope" = system ] && [ ! -w "$parent" ]; then run=(sudo); fi
+    "${run[@]}" mkdir -p -- "$parent"
+    if [ -e "$destination" ] || [ -L "$destination" ]; then
+        [ "$force" = 1 ] || fail "destination exists (use --force): $destination"
+        "${run[@]}" rm -f -- "$destination"
+    fi
+    if [ "$copy" = 1 ]; then
+        printf -v quoted_root '%q' "$ROOT"
+        printf '#!/usr/bin/env bash\nCCTL_REPO=%s\n# cctl launcher for this repository\nexec "$CCTL_REPO/cctl" "$@"\n' "$quoted_root" | "${run[@]}" tee "$destination" >/dev/null
+        "${run[@]}" chmod 755 "$destination"
+    else
+        "${run[@]}" ln -s -- "$SCRIPT_REAL" "$destination"
+    fi
+    note "installed $destination"
+    if [ "$scope" = user ] && [[ :$PATH: != *":$parent:"* ]]; then
+        note "add $parent to PATH to invoke cctl directly"
+    fi
+}
+cmd_uninstall() {
+    local scope=user force=0 parent destination actual owned=0 quoted_root
+    local -a run=()
+    while [ "$#" -gt 0 ]; do
+        case $1 in
+            --user) scope=user ;;
+            --system) scope=system ;;
+            --force) force=1 ;;
+            *) fail "unknown uninstall option: $1" ;;
+        esac
+        shift
+    done
+    if [ "$scope" = user ]; then parent="$HOME/.local/bin"; else parent=/usr/local/bin; fi
+    destination="$parent/cctl"
+    [ -e "$destination" ] || [ -L "$destination" ] || { note "not installed: $destination"; return; }
+    if [ -L "$destination" ]; then
+        actual=$(readlink -f -- "$destination" 2>/dev/null || true)
+        [ "$actual" = "$SCRIPT_REAL" ] && owned=1
+    else
+        printf -v quoted_root '%q' "$ROOT"
+    fi
+    if [ -f "$destination" ] && [ ! -L "$destination" ] \
+        && grep -Fqx '# cctl launcher for this repository' "$destination" 2>/dev/null \
+        && grep -Fqx "CCTL_REPO=$quoted_root" "$destination" 2>/dev/null \
+        && grep -Fqx 'exec "$CCTL_REPO/cctl" "$@"' "$destination" 2>/dev/null; then
+        owned=1
+    fi
+    [ "$owned" = 1 ] || [ "$force" = 1 ] || fail "refusing to remove an unrecognized launcher (use --force): $destination"
+    if [ "$scope" = system ] && [ ! -w "$parent" ]; then run=(sudo); fi
+    "${run[@]}" rm -f -- "$destination"
+    note "removed $destination; repository files were kept"
+}
+cmd_complete() {
+    [ "$#" -eq 1 ] && [ "$1" = zsh ] || fail 'only zsh completion is supported'
+    cat <<'ZSH'
+#compdef cctl
+if ! (( $+functions[compdef] )); then
+  autoload -Uz compinit
+  compinit -i
+fi
+_cctl_names() {
+  local -a names
+  names=(${(f)"$(cctl list 2>/dev/null | cut -f1)"})
+  _describe -t names 'configuration' names
+}
+_cctl() {
+  local -a commands
+  commands=(
+    'list:list configurations'
+    'add:add a configuration'
+    'remove:remove a configuration'
+    'apply:deploy configurations'
+    'update:deploy configurations'
+    'vim:manage Vim configuration'
+    'push:commit and push changes'
+    'pull:fetch repository changes'
+    'compact:squash history and force push'
+    'install:install cctl on PATH'
+    'uninstall:remove installed launcher'
+    'complete:print shell completion code'
+  )
+  if (( CURRENT == 2 )); then
+    _describe -t commands 'cctl command' commands
+    return
+  fi
+  case $words[2] in
+    apply|update) _alternative 'configs:configuration:_cctl_names' 'all:all configurations:(--all)' ;;
+    remove) _cctl_names ;;
+    add) _arguments '1:name:' '2:source:_files' '3:target:_files' '*:package:' ;;
+    vim) _values 'Vim command' apply ;;
+    push) _message 'commit message' ;;
+    install) _arguments '--user[install to ~/.local/bin]' '--system[install to /usr/local/bin]' '--copy[install a launcher copy]' '--force[replace existing launcher]' ;;
+    uninstall) _arguments '--user[remove user launcher]' '--system[remove system launcher]' '--force[remove unrecognized launcher]' ;;
+    complete) _values 'shell' zsh ;;
+  esac
+}
+compdef _cctl cctl
+ZSH
+}
+
+[ -f "$REGISTRY" ] || fail "registry missing: $REGISTRY"
+command=${1:-help}; shift || true
+case $command in
+    help|-h|--help) usage ;;
+    list) [ "$#" -eq 0 ] || fail 'list takes no arguments'; printf 'base\tpackages\nvim\t~/.vimrc, ~/.vim\n'; awk -F '|' '{ printf "%s\t%s\n", $1, $3 }' "$REGISTRY" ;;
+    add) cmd_add "$@" ;;
+    remove) cmd_remove "$@" ;;
+    vim) [ "$#" -eq 1 ] && [ "$1" = apply ] || fail 'usage: cctl vim apply'; vim_apply ;;
+    apply|update)
+        arch_only
+        [ "$#" -gt 0 ] || fail 'apply needs NAME or --all'
+        if [ "$1" = --all ]; then
+            [ "$#" -eq 1 ] || fail '--all cannot be combined with names'
+            result=0
+            apply_entry base || result=1
+            vim_apply || result=1
+            while IFS='|' read -r name _; do
+                [ -n "$name" ] || continue
+                apply_entry "$name" || result=1
+            done < "$REGISTRY"
+            exit "$result"
+        else
+            result=0
+            for name in "$@"; do
+                [ "$name" != vim ] || fail 'use cctl vim apply for Vim'
+                apply_entry "$name" || result=1
+            done
+            exit "$result"
+        fi
+        ;;
+    push) [ "$#" -le 1 ] || fail 'push accepts one message'; cmd_push "${1:-}" ;;
+    pull) [ "$#" -eq 0 ] || fail 'pull takes no arguments'; cmd_pull ;;
+    compact) [ "$#" -eq 0 ] || fail 'compact takes no arguments'; cmd_compact ;;
+    install) cmd_install "$@" ;;
+    uninstall) cmd_uninstall "$@" ;;
+    complete) cmd_complete "$@" ;;
+    *) fail "unknown command: $command" ;;
+esac
