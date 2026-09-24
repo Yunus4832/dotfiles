@@ -1,5 +1,5 @@
 tmux|tmux/.tmux.conf|~/.tmux.conf|tmux||
-tmux-local|tmux/.tmux.conf.local|~/.tmux.conf.local|tmux||
+tmux-local|tmux-local/.tmux.conf.local|~/.tmux.conf.local|tmux||
 zsh|zsh/.zshrc|~/.zshrc|zsh||
 git|git/.gitconfig|~/.gitconfig|git||
 niri|.config/niri|~/.config/niri|niri||
@@ -7,9 +7,10 @@ waybar|.config/waybar|~/.config/waybar|waybar||
 wallpapers|.config/wallpapers|~/.config/wallpapers|swaybg||
 rofi|.config/rofi|~/.config/rofi|rofi||
 xdg-desktop-portal|.config/xdg-desktop-portal|~/.config/xdg-desktop-portal|xdg-desktop-portal||
+user-dirs|.config/user-dirs.dirs|~/.config/user-dirs.dirs|xdg-user-dirs||
 foot|.config/foot|~/.config/foot|foot||
 mihomo|.config/mihomo|~/.config/mihomo|mihomo|mihomo|
 swayidle|.config/swayidle|~/.config/swayidle|swayidle||
 swaylock|.config/swaylock|~/.config/swaylock|swaylock||
-typora|typora/theme|~/.config/Typora/themes|typora||
-zed|zed|~/.config/zed|zed||
+typora|.config/Typora/themes|~/.config/Typora/themes|typora||
+zed|.config/zed|~/.config/zed|zed||

@@ -16,7 +16,7 @@ note() { printf 'cctl: %s\n' "$*" >&2; }
 usage() {
     cat <<'HELP'
 Usage: cctl list
-       cctl add NAME SOURCE TARGET [PACKAGE...]
+       cctl add NAME SOURCE [TARGET] [PACKAGE...]
        cctl remove NAME
        cctl apply NAME... | --all
        cctl update NAME... | --all
@@ -28,7 +28,7 @@ Usage: cctl list
        cctl uninstall [--user|--system] [--force]
        cctl complete zsh
 
-TARGET may start with ~/; SOURCE may be a file or directory.
+TARGET defaults to SOURCE and may start with ~/; SOURCE may be a file or directory.
 Edit repository files to change a configuration, then run apply again.
 HELP
 }
@@ -72,30 +72,49 @@ check_dependencies() {
     fi
 }
 install_base() {
-    local missing=() official=() aur=() package
+    local missing=() official=() aur=() package result=0
     command -v pacman >/dev/null || fail 'pacman is required on Arch Linux'
     while IFS= read -r package || [ -n "$package" ]; do
         [[ -z $package || $package == \#* ]] && continue
         package_missing "$package" || missing+=("$package")
     done < "$BASE_PACKAGES"
-    if [ "${#missing[@]}" -eq 0 ]; then note 'base packages already installed'; return; fi
-    note "installing base packages: ${missing[*]}"
-    if command -v paru >/dev/null; then
-        paru -S --needed -- "${missing[@]}"
+    if [ "${#missing[@]}" -eq 0 ]; then
+        note 'base packages already installed'
     else
-        for package in "${missing[@]}"; do
-            if pacman -Si -- "$package" >/dev/null 2>&1; then
-                official+=("$package")
-            else
-                aur+=("$package")
+        note "installing base packages: ${missing[*]}"
+        if command -v paru >/dev/null; then
+            paru -S --needed -- "${missing[@]}" || result=1
+        else
+            for package in "${missing[@]}"; do
+                if pacman -Si -- "$package" >/dev/null 2>&1; then
+                    official+=("$package")
+                else
+                    aur+=("$package")
+                fi
+            done
+            if [ "${#official[@]}" -gt 0 ]; then sudo pacman -S --needed -- "${official[@]}" || result=1; fi
+            if [ "${#aur[@]}" -gt 0 ]; then
+                note "AUR packages require paru: ${aur[*]}"
+                result=1
             fi
-        done
-        if [ "${#official[@]}" -gt 0 ]; then sudo pacman -S --needed -- "${official[@]}"; fi
-        if [ "${#aur[@]}" -gt 0 ]; then
-            note "AUR packages require paru: ${aur[*]}"
-            return 1
         fi
     fi
+    if [ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+        note 'Oh My Zsh already installed'
+    elif [ -e "$HOME/.oh-my-zsh" ]; then
+        note 'Oh My Zsh directory exists but is incomplete; resolve it before installing'
+        result=1
+    elif ! command -v zsh >/dev/null; then
+        note 'zsh is required to install Oh My Zsh'
+        result=1
+    elif ! command -v git >/dev/null; then
+        note 'git is required to install Oh My Zsh'
+        result=1
+    else
+        note 'installing Oh My Zsh from the bundled installer'
+        CHSH=no RUNZSH=no KEEP_ZSHRC=yes sh "$ROOT/assets/oh-my-zsh-install.sh" --unattended --keep-zshrc || result=1
+    fi
+    return "$result"
 }
 apply_patch_file() {
     local patchfile=$1 patchroot=$2
@@ -210,19 +229,49 @@ vim_apply() {
     note "applied vim -> $HOME/.vimrc and $HOME/.vim"
 }
 cmd_add() {
-    [ "$#" -ge 3 ] || fail 'add needs NAME SOURCE TARGET [PACKAGE...]'
-    local name=$1 input=$2 target=$3 package rel
-    shift 3
+    [ "$#" -ge 2 ] || fail 'add needs NAME SOURCE [TARGET] [PACKAGE...]'
+    local name=$1 input=$2 target= package rel source_abs target_abs home_abs joined= existing_name existing_source existing_target rest
+    shift 2
     valid_name "$name" || fail 'invalid configuration name'
     [[ $name != base && $name != vim ]] || fail 'base and vim are reserved configurations'
     [ -e "$input" ] || fail "source not found: $input"
     find_entry "$name" >/dev/null 2>&1 && fail "configuration already exists: $name"
+    source_abs="$(cd -- "$(dirname -- "$input")" && pwd -P)/$(basename -- "$input")"
+    case ${1:-} in
+        /*|'~/'*) target=$1; shift ;;
+        *)
+            case $source_abs in
+                "$ROOT"|"$ROOT"/*) fail 'source is in this repository; specify TARGET explicitly' ;;
+            esac
+            case $source_abs in
+                "$HOME") target='~' ;;
+                "$HOME"/*) target="~/${source_abs#"$HOME"/}" ;;
+                *) target=$source_abs ;;
+            esac
+            ;;
+    esac
     expand_target "$target" >/dev/null
     for package in "$@"; do valid_name "$package" || fail "invalid package name: $package"; done
-    rel=".configctl/files/$name"
-    mkdir -p "$ROOT/.configctl/files"
+    home_abs=$(realpath -m -- "$HOME")
+    target_abs=$(realpath -m -- "$(expand_target "$target")")
+    while IFS='|' read -r existing_name existing_source existing_target rest; do
+        [ -n "$existing_name" ] || continue
+        if [ "$(realpath -m -- "$(expand_target "$existing_target")")" = "$target_abs" ]; then
+            fail "target already registered by $existing_name: $target"
+        fi
+    done < "$REGISTRY"
+    case $target_abs in
+        "$home_abs"/*)
+            rel=${target_abs#"$home_abs"/}
+            case $rel in */*) ;; *) rel="$name/$rel" ;; esac
+            ;;
+        /*) rel="$name/$(basename -- "$target_abs")" ;;
+        *) fail "invalid target: $target" ;;
+    esac
+    [ "$target_abs" != "$home_abs" ] || fail 'refusing to register an entire HOME directory'
+    [ ! -e "$ROOT/$rel" ] && [ ! -L "$ROOT/$rel" ] || fail "repository path already exists: $rel"
+    mkdir -p -- "$(dirname -- "$ROOT/$rel")"
     cp -a -- "$input" "$ROOT/$rel"
-    local joined=
     if [ "$#" -gt 0 ]; then joined=$(IFS=,; printf '%s' "$*"); fi
     printf '%s|%s|%s|%s||\n' "$name" "$rel" "$target" "$joined" >> "$REGISTRY"
     note "added $name; review and commit repository changes"
@@ -389,7 +438,7 @@ _cctl() {
   case $words[2] in
     apply|update) _alternative 'configs:configuration:_cctl_names' 'all:all configurations:(--all)' ;;
     remove) _cctl_names ;;
-    add) _arguments '1:name:' '2:source:_files' '3:target:_files' '*:package:' ;;
+    add) _arguments '1:name:' '2:source:_files' '3:optional target or package:_files' '*:package:' ;;
     vim) _values 'Vim command' apply ;;
     push) _message 'commit message' ;;
     install) _arguments '--user[install to ~/.local/bin]' '--system[install to /usr/local/bin]' '--copy[install a launcher copy]' '--force[replace existing launcher]' ;;

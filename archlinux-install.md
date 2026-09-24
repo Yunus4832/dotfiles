@@ -305,7 +305,7 @@ Typora 可通过 AUR 安装：
 paru -S typora-free
 ```
 
-`cctl apply typora` 会将 `typora/theme/opencode.css` 复制到 `~/.config/Typora/themes/`，启动 Typora 后可在菜单 `主题 → opencode` 中切换。
+`cctl apply typora` 会将 `.config/Typora/themes/opencode.css` 复制到 `~/.config/Typora/themes/`，启动 Typora 后可在菜单 `主题 → opencode` 中切换。
 
 ### 安装 Mihomo 网络代理服务
 

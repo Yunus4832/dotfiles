@@ -50,6 +50,7 @@ qemu-ui-curses
 flatpak
 niri
 xdg-desktop-portal
+xdg-user-dirs
 xdg-desktop-portal-wlr
 xdg-desktop-portal-gtk
 gnome-keyring
