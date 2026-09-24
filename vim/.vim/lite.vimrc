@@ -391,6 +391,34 @@ function! DiffToPatch(append, patchfile)
     endif
 endfunction
 
+" 将另一文件更新为当前缓冲区内容的补丁保存到当前目录
+function! DiffFileToPatch(otherfile)
+    if empty(expand('%')) || !filereadable(a:otherfile)
+        echohl ErrorMsg | echo 'DiffFileToPatch: current file or comparison file is unavailable' | echohl NONE
+        return
+    endif
+
+    let l:temp = tempname()
+    let l:patchfile = getcwd() . '/' . expand('%:t') . '.patch'
+    try
+        execute 'silent keepalt write! ' . fnameescape(l:temp)
+        let l:name = expand('%:t')
+        let l:cmd = 'diff -u --label ' . shellescape(l:name) . ' --label ' . shellescape(l:name)
+                    \ . ' ' . shellescape(a:otherfile) . ' ' . shellescape(l:temp)
+        let l:lines = systemlist(l:cmd)
+        if v:shell_error == 1
+            call writefile(l:lines, l:patchfile)
+            echo 'Patch saved to: ' . l:patchfile
+        elseif v:shell_error == 0
+            echo 'Files are identical; no patch created.'
+        else
+            echohl ErrorMsg | echo 'DiffFileToPatch: diff failed' | echohl NONE
+        endif
+    finally
+        call delete(l:temp)
+    endtry
+endfunction
+
 " 可视模式下支持使用 * # / 搜索选中的内容
 function! VSetSearch(cmdtype)
   let temp = @s
@@ -442,10 +470,10 @@ command! DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis | wincm
 " 将变更保存到补丁
 command! -nargs=? -complete=file DiffToPatch silent call DiffToPatch(0, <q-args>)
 command! -nargs=? -complete=file DiffToPatchAppend silent call DiffToPatch(1, <q-args>)
+command! -nargs=1 -complete=file DiffFileToPatch call DiffFileToPatch(<q-args>)
 
 " 分割窗口比较当前文件 Diff 的命令
 command! -nargs=1 -complete=file Vds exec 'vertical diffsplit ' . <q-args>
 
 " 设置终端的默认背景色
 command! -bang Black call Black(<bang>0)
-
