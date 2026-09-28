@@ -144,6 +144,41 @@ directory_patch_root() {
         *) printf '%s\n' "$dest" ;;
     esac
 }
+apply_directory() {
+    local name=$1 source=$2 dest=$3 hook=$4 secret=$5 patchfile patchroot secret_patch rc=0
+    mkdir -p -- "$dest"
+    cp -a -- "$source/." "$dest/" || return 1
+    case $hook in
+        mihomo)
+            mkdir -p -- "$dest/ui"
+            tar -xzf "$dest/ui.tar.gz" -C "$dest/ui" && [ -f "$dest/ui/index.html" ] || rc=1
+            ;;
+        '') ;;
+        *) note "unknown deploy hook: $hook"; rc=1 ;;
+    esac
+    if [ "$rc" -eq 0 ]; then
+        while IFS= read -r -d '' patchfile; do
+            [ "$rc" -eq 0 ] || break
+            patchroot=$(directory_patch_root "$patchfile" "$dest")
+            apply_patch_file "$patchfile" "$patchroot" || rc=1
+        done < <(find "$dest" -maxdepth 1 -type f -name '*.patch' -print0 | sort -z)
+    fi
+    if [ "$rc" -eq 0 ] && [ -n "$secret" ]; then
+        if ! command -v sctl >/dev/null; then note "sctl is required for $name"; rc=1; fi
+        secret_patch=$(mktemp)
+        if [ "$rc" -eq 0 ]; then sctl get --output "$secret_patch" "$secret" || rc=1; fi
+        if [ "$rc" -eq 0 ]; then
+            patchroot=$(directory_patch_root "$secret_patch" "$dest")
+            apply_patch_file "$secret_patch" "$patchroot" || rc=1
+        fi
+        rm -f -- "$secret_patch"
+    fi
+    if [ "$rc" -ne 0 ]; then
+        note "failed to apply $name"
+        return 1
+    fi
+    note "applied $name -> $dest"
+}
 apply_entry() {
     local name=$1 row source target packages hook secret extra dest backup patchroot patchfile rc=0
     if [ "$name" = base ]; then install_base; return; fi
@@ -156,6 +191,10 @@ apply_entry() {
     dest=$(expand_target "$target")
     patchroot=$(dirname -- "$dest")
     mkdir -p -- "$patchroot"
+    if [ -d "$source" ]; then
+        apply_directory "$name" "$source" "$dest" "$hook" "$secret"
+        return
+    fi
     backup=$(mktemp -d)
     if [ -e "$dest" ]; then cp -a -- "$dest" "$backup/original"; fi
     # Keep user patches outside the source repository and reapply them after replacement.
@@ -166,23 +205,10 @@ apply_entry() {
         mkdir -p "$backup/patches"
         cp -a -- "$dest.patch" "$backup/patches/"
     fi
-    if [ -d "$source" ]; then
-        rm -rf -- "$dest" || rc=1
-        if [ "$rc" -eq 0 ]; then cp -a -- "$source" "$dest" || rc=1; fi
-        if [ "$rc" -eq 0 ] && [ -d "$backup/patches" ]; then
-            cp -a -- "$backup/patches/." "$dest/" || rc=1
-        fi
-    else
-        rm -rf -- "$dest" || rc=1
-        if [ "$rc" -eq 0 ]; then cp -a -- "$source" "$dest" || rc=1; fi
-    fi
+    rm -rf -- "$dest" || rc=1
+    if [ "$rc" -eq 0 ]; then cp -a -- "$source" "$dest" || rc=1; fi
     if [ "$rc" -eq 0 ]; then
         case $hook in
-            mihomo)
-                mkdir -p "$dest/ui"
-                tar -xzf "$dest/ui.tar.gz" -C "$dest/ui" || rc=1
-                [ -f "$dest/ui/index.html" ] || rc=1
-                ;;
             '') ;;
             *) note "unknown deploy hook: $hook"; rc=1 ;;
         esac

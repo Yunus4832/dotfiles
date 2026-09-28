@@ -47,7 +47,7 @@ cctl uninstall                            # 删除安装的入口，保留配置
 
 `cctl apply base` 仅在 Arch Linux 及 Arch 系发行版上安装 `.configctl/packages/base` 中的软件包；在各发行版上，缺少 Oh My Zsh 时都会运行 `assets/oh-my-zsh-install.sh`。安装过程保留现有 `.zshrc`，也不会切换默认 shell；之后可用 `cctl apply zsh` 部署仓库的 `.zshrc`。
 
-部署会替换目标文件或目录。如果目标目录里有 `*.patch`，或目标文件旁有同名的 `.patch`，会在覆盖后应用补丁；失败时恢复原配置。可选的 `sctl` ID 会调用 `sctl get` 解密补丁并应用。目录补丁可使用相对于配置目录的路径（如 `config`），也可带目录名前缀（如 `waybar/config`）；文件补丁使用文件名。
+目录配置部署会覆盖仓库管理的文件，保留目标目录中的其他文件，包括 `*.patch`；复制后应用补丁。单个文件配置会替换目标文件，失败时恢复原文件。可选的 `sctl` ID 会调用 `sctl get` 解密补丁并应用。目录补丁可使用相对于配置目录的路径（如 `config`），也可带目录名前缀（如 `waybar/config`）；文件补丁使用文件名。
 
 `pull` 发现远端历史被压缩时，会在重置前创建 `cctl-backup-*` 分支保存本地提交；要求工作区干净。`compact` 要求本地与远端提交一致，并用 `--force-with-lease` 推送改写后的历史。
 
