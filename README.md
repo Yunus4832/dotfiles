@@ -1,6 +1,6 @@
 # dotfiles
 
-Arch Linux 系统的配置文件仓库。仓库是配置的唯一来源：修改仓库中的文件，再部署到程序配置目录。部署后的手工修改是临时的，下次部署会被覆盖。
+配置文件仓库。仓库是配置的唯一来源：修改仓库中的文件，再部署到程序配置目录。部署后的手工修改是临时的，下次部署会被覆盖。
 
 ## 快速开始
 
@@ -11,7 +11,7 @@ cd ~/dotfiles
 ./cctl vim apply
 ```
 
-`cctl` 是配置管理脚本。配置部署仅支持 Arch Linux 及 Arch 系发行版。缺少某项依赖时，会显示包名及安装命令，并跳过该项。
+`cctl` 是配置管理脚本。配置部署可在不同发行版上运行。Arch Linux 及 Arch 系发行版会通过 pacman 检查配置项的依赖包；缺少依赖时显示包名及安装命令，并跳过该项。其他发行版不检查这些 Arch 包名。
 
 ## 命令
 
@@ -20,8 +20,8 @@ cd ~/dotfiles
 ./cctl apply foot                        # 部署指定的通用配置项
 ./cctl update foot                       # apply 的别名；仓库 → 配置目录
 ./cctl vim apply                         # 部署 Vim 的 .vimrc 和 .vim
-./cctl apply --all                       # 安装基础软件包，再部署全部配置
-./cctl apply base                        # 只安装基础包与 Oh My Zsh
+./cctl apply --all                       # Arch 系安装基础软件包，再部署全部配置
+./cctl apply base                        # Arch 系安装基础包；各发行版安装 Oh My Zsh
 ./cctl add NAME SOURCE [TARGET] [PACKAGE...]
 ./cctl remove NAME                       # 从仓库移除配置项及其源文件，不删除已部署文件
 ./cctl push 'Update configurations'      # 提交并推送
@@ -45,7 +45,7 @@ cctl uninstall                            # 删除安装的入口，保留配置
 
 `cctl vim apply` 会同时替换 `~/.vimrc` 和 `~/.vim`，并将 `.vimrc` 中的 `g:my_plug_dir` 指向仓库中的 `vim/vim-plug`。可用 `CONFIGCTL_VIM_PLUG_DIR` 覆盖插件目录路径。
 
-`cctl apply base` 除了安装 `.configctl/packages/base` 中的软件包，还会在缺少 Oh My Zsh 时运行 `assets/oh-my-zsh-install.sh`。安装过程保留现有 `.zshrc`，也不会切换默认 shell；之后可用 `cctl apply zsh` 部署仓库的 `.zshrc`。
+`cctl apply base` 仅在 Arch Linux 及 Arch 系发行版上安装 `.configctl/packages/base` 中的软件包；在各发行版上，缺少 Oh My Zsh 时都会运行 `assets/oh-my-zsh-install.sh`。安装过程保留现有 `.zshrc`，也不会切换默认 shell；之后可用 `cctl apply zsh` 部署仓库的 `.zshrc`。
 
 部署会替换目标文件或目录。如果目标目录里有 `*.patch`，或目标文件旁有同名的 `.patch`，会在覆盖后应用补丁；失败时恢复原配置。可选的 `sctl` ID 会调用 `sctl get` 解密补丁并应用。目录补丁可使用相对于配置目录的路径（如 `config`），也可带目录名前缀（如 `waybar/config`）；文件补丁使用文件名。
 

@@ -32,12 +32,12 @@ TARGET defaults to SOURCE and may start with ~/; SOURCE may be a file or directo
 Edit repository files to change a configuration, then run apply again.
 HELP
 }
-arch_only() {
-    [ -r /etc/os-release ] || fail 'Arch Linux is required (cannot read /etc/os-release)'
+is_arch() {
+    [ -r /etc/os-release ] || return 1
     local ID= ID_LIKE=
     # shellcheck source=/dev/null
     . /etc/os-release
-    [[ $ID == arch || " $ID_LIKE " == *' arch '* ]] || fail 'configuration application is supported only on Arch Linux and Arch-based distributions'
+    [[ $ID == arch || " $ID_LIKE " == *' arch '* ]]
 }
 valid_name() { [[ $1 =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; }
 expand_target() {
@@ -59,6 +59,7 @@ package_missing() {
 check_dependencies() {
     local names=$1 package missing=()
     [ -n "$names" ] || return 0
+    is_arch || return 0
     command -v pacman >/dev/null || fail 'pacman is required on Arch Linux'
     IFS=, read -r -a packages <<< "$names"
     for package in "${packages[@]}"; do
@@ -71,8 +72,12 @@ check_dependencies() {
         return 1
     fi
 }
-install_base() {
+install_base_packages() {
     local missing=() official=() aur=() package result=0
+    if ! is_arch; then
+        note 'skipping Arch Linux base packages on this system'
+        return 0
+    fi
     command -v pacman >/dev/null || fail 'pacman is required on Arch Linux'
     while IFS= read -r package || [ -n "$package" ]; do
         [[ -z $package || $package == \#* ]] && continue
@@ -99,6 +104,10 @@ install_base() {
             fi
         fi
     fi
+    return "$result"
+}
+install_oh_my_zsh() {
+    local result=0
     if [ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
         note 'Oh My Zsh already installed'
     elif [ -e "$HOME/.oh-my-zsh" ]; then
@@ -114,6 +123,12 @@ install_base() {
         note 'installing Oh My Zsh from the bundled installer'
         CHSH=no RUNZSH=no KEEP_ZSHRC=yes sh "$ROOT/assets/oh-my-zsh-install.sh" --unattended --keep-zshrc || result=1
     fi
+    return "$result"
+}
+install_base() {
+    local result=0
+    install_base_packages || result=1
+    install_oh_my_zsh || result=1
     return "$result"
 }
 apply_patch_file() {
@@ -198,7 +213,6 @@ apply_entry() {
     note "applied $name -> $dest"
 }
 vim_apply() {
-    arch_only
     check_dependencies vim || return 1
     local backup plug_dir rc=0
     backup=$(mktemp -d)
@@ -459,7 +473,6 @@ case $command in
     remove) cmd_remove "$@" ;;
     vim) [ "$#" -eq 1 ] && [ "$1" = apply ] || fail 'usage: cctl vim apply'; vim_apply ;;
     apply|update)
-        arch_only
         [ "$#" -gt 0 ] || fail 'apply needs NAME or --all'
         if [ "$1" = --all ]; then
             [ "$#" -eq 1 ] || fail '--all cannot be combined with names'
