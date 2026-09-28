@@ -150,8 +150,10 @@ apply_directory() {
     cp -a -- "$source/." "$dest/" || return 1
     case $hook in
         mihomo)
-            mkdir -p -- "$dest/ui"
-            tar -xzf "$dest/ui.tar.gz" -C "$dest/ui" && [ -f "$dest/ui/index.html" ] || rc=1
+            if [ ! -f "$dest/ui/index.html" ]; then
+                mkdir -p -- "$dest/ui"
+                tar -xzf "$dest/ui.tar.gz" -C "$dest/ui" && [ -f "$dest/ui/index.html" ] || rc=1
+            fi
             ;;
         '') ;;
         *) note "unknown deploy hook: $hook"; rc=1 ;;
