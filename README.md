@@ -2,6 +2,8 @@
 
 配置文件仓库。仓库是配置的唯一来源：修改仓库中的文件，再部署到程序配置目录。部署后的手工修改是临时的，下次部署会被覆盖。
 
+Vim 配置以近期 Vim 9.2 为维护基线，要求包含 `+terminal`；完整配置还需要原生补全与菜单边框功能，并在启动入口统一检查。`lvim` 是无插件的轻量配置，不作为旧版本兼容配置。非滚动发行版建议编译安装近期版本及配套 runtime。完整配置保留 coc／原生补全、fzf／原生选择器及 Python、剪贴板等环境适配，不再维护 ctrlp、AutoComplPop 等旧版回退。
+
 ## 快速开始
 
 ```bash
@@ -35,7 +37,7 @@ cd ~/dotfiles
 ## 安装命令与补全
 
 ```bash
-./bin/cctl install                            # 建立 ~/.local/bin/cctl 软链接
+./bin/cctl install                        # 建立 ~/.local/bin/cctl 软链接
 source <(cctl cmp zsh)                    # 在当前 zsh 会话启用补全
 cctl uninstall                            # 删除安装的入口，保留配置仓库
 ```
@@ -58,23 +60,23 @@ cctl uninstall                            # 删除安装的入口，保留配置
 
 ## 包含的配置
 
-| 类别 | 软件 | 说明 |
-|------|------|------|
-| Shell | `zsh` | oh-my-zsh 配置 |
-| 编辑器 | `vim` | 插件化配置 |
-| 编辑器 | `zed` | 键位与编辑器配置 |
-| 终端复用 | `tmux` | 终端会话管理 |
-| 版本管理 | `git` | 全局 Git 配置 |
-| WM | `niri` | Wayland 卷轴式平铺窗口管理器 |
-| 面板 | `waybar` | 状态栏 |
-| 启动器 | `rofi` | 程序启动器 |
-| 终端 | `foot` | 轻量终端模拟器 |
-| 锁屏 | `swaylock` | 锁屏工具 |
-| 空闲 | `swayidle` | 空闲管理器 |
-| 代理 | `mihomo` | 网络代理 |
-| 笔记 | `typora` | Markdown 编辑器主题 |
-| 其他 | `xdg-desktop-portal` | 桌面门户配置 |
-| 其他 | `user-dirs` | XDG 用户目录配置 |
+| 类别     | 软件                 | 说明                         |
+|----------|----------------------|------------------------------|
+| Shell    | `zsh`                | oh-my-zsh 配置               |
+| 编辑器   | `vim`                | 插件化配置                   |
+| 编辑器   | `zed`                | 键位与编辑器配置             |
+| 终端复用 | `tmux`               | 终端会话管理                 |
+| 版本管理 | `git`                | 全局 Git 配置                |
+| WM       | `niri`               | Wayland 卷轴式平铺窗口管理器 |
+| 面板     | `waybar`             | 状态栏                       |
+| 启动器   | `rofi`               | 程序启动器                   |
+| 终端     | `foot`               | 轻量终端模拟器               |
+| 锁屏     | `swaylock`           | 锁屏工具                     |
+| 空闲     | `swayidle`           | 空闲管理器                   |
+| 代理     | `mihomo`             | 网络代理                     |
+| 笔记     | `typora`             | Markdown 编辑器主题          |
+| 其他     | `xdg-desktop-portal` | 桌面门户配置                 |
+| 其他     | `user-dirs`          | XDG 用户目录配置             |
 
 ## 软件安装参考
 

@@ -1,5 +1,19 @@
 "=====================================================================
-" Common Global Variable 通用全局变量                                =
+" Requirements 运行要求
+"=====================================================================
+
+" 维护基线：Vim 9.2，需包含终端与原生补全能力；旧环境请升级或编译安装。
+if v:version < 902 || !has('terminal')
+    echoerr '此配置需要 Vim 9.2+（包含 +terminal），请升级或编译安装。'
+    finish
+endif
+if !exists('*wildtrigger') || !exists('*matchfuzzy') || !exists('*cmdcomplete_info') || !exists('##CmdlineLeavePre') || !exists('+autocomplete') || !exists('+pumborder') || !has('clipboard_provider')
+    echoerr '当前 Vim 缺少原生补全能力，请升级到近期 Vim 9.2 并安装配套 runtime。'
+    finish
+endif
+
+"=====================================================================
+" Environment and Feature Flags 环境检测与功能开关
 "=====================================================================
 
 " 操作系统类型
@@ -16,12 +30,6 @@ let g:my_vimrc = substitute(expand('<sfile>'), '\\', '/', 'g')
 
 " 插件存储目录
 let g:my_plug_dir = ""
-
-" 版本是否大于 901
-let g:my_version_901 = 0
-if v:version >= 901
-    let g:my_version_901 = 1
-endif
 
 " vim 版本是否支持 python3
 let g:my_has_python3 = 0
@@ -64,21 +72,18 @@ if executable('git')
     let g:my_git_extension_enable = 1
 endif
 
-" 是否启用了 fzf, 依赖 fzf
-let g:my_fzf_enable = 0
-" 是否启用了 scope
-let g:my_scope_enable = 0
-" 是否启用了 ctrlp
-let g:ctrlp_enable = 0
+" 优先使用 fzf，未安装时使用原生模糊选择器。
+let g:my_fzf_enable = executable('fzf')
+let g:my_native_picker_enable = !g:my_fzf_enable
 
-" 默认使用 fzf，如果 fzf 不可用，并且版本大于 901 则使用 scope，否则使用 ctrlp
-if executable('fzf')
-    let g:my_fzf_enable = 1
-elseif g:my_version_901
-    let g:my_scope_enable = 1
-else
-    let g:ctrlp_enable = 1
-endif
+" 原生补全选择器：每次打开重新收集文件，输入时只过滤缓存。
+let s:picker_kind = ''
+let s:picker_items = []
+let s:picker_buffers = {}
+let s:picker_grep_format = '%f:%l:%c:%m'
+
+" Git 变更列表的数据源
+let s:git_changed_files = '(git -c core.quotepath=false diff --relative --name-only; git -c core.quotepath=false diff --relative --cached --name-only; git -c core.quotepath=false ls-files --others --exclude-standard) | sort -u'
 
 " 是否启用了 neoformat, 依赖 astyle
 let g:my_neoformat_enable = 0
@@ -98,33 +103,35 @@ if executable('javap')
     let g:my_javap_extension_enable = 1
 endif
 
-" 是否启用了 vimsuggest
-let g:my_vimsuggest_enable = 0
-if g:my_version_901
-    let g:my_vimsuggest_enable = 1
-endif
+" 是否启用 OSC52 剪贴板读取：foot 默认开启，其他终端默认仅复制。
+let g:my_osc52_paste_enable = get(g:, 'my_osc52_paste_enable', $TERM =~# '^foot')
 
-" 是否启用了 vimcomplete
-let g:my_vimcomplete_enable = 0
-" 是否启用了 AutoComplPop
-let g:my_auto_compl_pop_enable = 0
+" 剪贴板 provider：本地 Wayland 双向读写，SSH / 无本地后端时使用 OSC52。
+let g:osc52_disable_paste = !g:my_osc52_paste_enable
+let g:osc52_force_avail = v:true
+let v:clipproviders['wl-clipboard'] = {
+    \ 'available': {-> !has('gui_running') && empty($SSH_CONNECTION) && !empty($WAYLAND_DISPLAY) && executable('wl-copy') && executable('wl-paste')},
+    \ 'copy': {'+': 'WaylandClipboardCopy', '*': 'WaylandClipboardCopy'},
+    \ 'paste': {'+': 'WaylandClipboardPaste', '*': 'WaylandClipboardPaste'},
+    \ }
+
+" 是否启用了原生插入模式自动补全
+let g:my_insert_autocomplete_enable = 0
 " 是否启用了 coc.nvim
 " Msys2 或 Cygwin 上使用 coc.nvim 性能太差, 所以关闭了，
 " 可以设置 OSTYPE=linux-gun 环境变量启用 coc.nvim，依赖 node
 let g:my_coc_enable = 0
 
-" 优先使用 coc 如果 coc 不可用，则使用 vim9 的补全插件，最后使用低版本兼容插件
+" 优先使用 coc，未启用时使用原生自动补全
 if executable('node') && !(g:os_type ==# "msys") && !(g:os_type ==# "cygwin")
     let g:my_coc_enable = 1
-elseif g:my_version_901
-    let g:my_vimcomplete_enable = 1
 else
-    let g:my_auto_compl_pop_enable = 1
+    let g:my_insert_autocomplete_enable = 1
 endif
 
 
 "=====================================================================
-" Plugin List 插件列表                                               =
+" Plugin List 插件列表
 "=====================================================================
 
 " 注册插件
@@ -178,11 +185,6 @@ if g:my_coc_enable
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
 endif
 
-" AutoComplPop 自动补全
-if g:my_auto_compl_pop_enable
-    Plug 'vim-scripts/AutoComplPop'
-endif
-
 " 异步任务系统
 Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/asyncrun.vim'
@@ -222,12 +224,6 @@ if g:my_fzf_enable
     Plug 'junegunn/fzf.vim'
 endif
 
-" ctrlp 模糊搜索
-if g:ctrlp_enable
-    Plug 'ctrlpvim/ctrlp.vim'
-    let g:ctrlp_enable = 1
-endif
-
 " 图标美化, 忽略终端环境
 Plug 'ryanoasis/vim-devicons'
 
@@ -261,33 +257,14 @@ if g:my_vim_snipmate_enable
     Plug 'honza/vim-snippets'
 endif
 
-" OSC52 终端扩展
-Plug 'fcpg/vim-osc52'
-
-" vim9script 插件
-if g:my_version_901
-
-    " 命令模式自动补全
-    if g:my_vimsuggest_enable
-        Plug 'girishji/vimsuggest'
-    endif
-
-    " 文本自动补全
-    if g:my_vimcomplete_enable
-        Plug 'girishji/vimcomplete'
-    endif
-
-    if g:my_scope_enable
-        Plug 'girishji/scope.vim'
-    endif
-
-endif
-
 call plug#end()
+
+" Vim 官方 OSC52 可选插件包
+packadd osc52
 
 
 "=====================================================================
-" Common Setting 通用设置                                            =
+" Common Setting 通用设置
 "=====================================================================
 
 " 设置 leader 键
@@ -368,8 +345,11 @@ set showmatch
 " 设置开启隐藏未保存的 buffer
 set hidden
 
-" Vim 与系统剪切板共享
-set clipboard=unnamed
+" Vim 与系统剪贴板共享
+set clipboard=unnamedplus
+if !has('gui_running')
+    set clipmethod=wl-clipboard,osc52
+endif
 
 " 取消菜单栏和导航栏
 set guioptions-=m
@@ -430,6 +410,21 @@ set list lcs=lead:.,tab:-->,trail:.
 " 补全菜单配置
 set completeopt=menuone,noinsert
 
+" 原生命令行补全菜单（按需触发）。
+set wildmode=noselect:lastused,full
+set wildoptions=pum
+set pumheight=20
+set pumborder=single
+set wildcharm=<C-Z>
+
+" 原生插入模式自动补全；仅在未启用 coc 时使用。
+if g:my_insert_autocomplete_enable
+    set autocomplete
+    set complete=.,w,b,u
+    set completeopt=menuone,noselect,popup
+    set autocompletedelay=100
+endif
+
 " 关闭自动换行
 set tw=0
 
@@ -442,11 +437,8 @@ else
     set grepprg=grep\ -REIHns\ --exclude-dir=.git
 endif
 
-" vim 9 相关设置
-if g:my_version_901
-    " 设置跳转列表行为方式
-    set jumpoptions=stack
-endif
+" 设置跳转列表行为方式
+set jumpoptions=stack
 
 " 初始化插件系统
 " 自适应不同语言的智能缩进
@@ -463,7 +455,7 @@ colorscheme Monokai
 
 
 "=====================================================================
-" Plugin Settings 插件设置                                           =
+" Plugin Settings 插件设置
 "=====================================================================
 
 " 加强版状态栏
@@ -592,22 +584,6 @@ if g:my_fzf_enable
     let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.8, 'relative': v:true } }
 endif
 
-" ctrlp 配置
-if g:ctrlp_enable
-    " 显示隐藏文件
-    let g:ctrlp_show_hidden = 1
-    " 最大搜索深度
-    let g:ctrlp_max_depth = 5
-    " 扫描文件的最大数量
-    let g:ctrlp_max_files = 300
-    " 延迟更新
-    let g:ctrlp_lazy_update = 1
-    " 没有内容时 <BS> 退出
-    let g:ctrlp_brief_prompt = 1
-    " 固定窗口大小，从上到下排序
-    let g:ctrlp_match_window = 'bottom,order:ttb,min:10,max:10,results:10'
-endif
-
 " Http 客户端配置
 if g:my_http_extionsion_enable
     " 设置响应显示位置
@@ -621,62 +597,14 @@ if g:my_coc_enable
     " 设置配置目录和数据目录
     let g:coc_config_home = '~/.config/coc-config'
     let g:coc_data_home = '~/.config/coc'
-    " 关闭启动时vim 或 node 版本低的警告
-    let g:coc_disable_startup_warning = 1
+    " 显示 Vim / Node.js 版本不满足要求的警告
+    let g:coc_disable_startup_warning = 0
     " snippet 跳转键映射
     let g:coc_snippet_next = '<tab>'
     let g:coc_snippet_prev = '<s-tab>'
     " 退出时自动关闭 lsp
     autocmd VimLeavePre * :call coc#rpc#kill()
     autocmd VimLeave * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -' . g:coc_process_pid) | endif
-endif
-
-" vim9script 插件配置
-" VimSuggest 配置
-if g:my_vimsuggest_enable
-    let s:vim_suggest = {}
-    let s:vim_suggest.cmd = {
-        \ 'enable': v:true,
-        \ 'pum': v:true,
-        \ 'exclude': [],
-        \ 'onspace': ['b\%[uffer]','colo\%[rscheme]'],
-        \ 'alwayson': v:false,
-        \ 'popupattrs': {},
-        \ 'wildignore': v:true,
-        \ 'addons': v:true,
-        \ 'trigger': 'tn',
-        \ 'reverse': v:false,
-        \ 'prefixlen': 1,
-    \ }
-
-    " 配置弹窗外观
-    let s:vim_suggest.cmd.popupattrs = {
-        \ 'borderchars': ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
-        \ 'borderhighlight': ['Normal'],
-        \ 'highlight': 'Normal',
-        \ 'border': [1, 1, 1, 1],
-        \ 'maxheight': 20,
-        \ }
-
-    " 应用配置
-    autocmd VimEnter * call g:VimSuggestSetOptions(s:vim_suggest)
-
-    " 自定义配色
-    hi VimSuggestMatch ctermfg=Green guifg=#00FF00
-    hi VimSuggestMatchSel cterm=bold gui=bold ctermfg=Green guifg=#00FF00
-    hi VimSuggestMute ctermfg=Gray guifg=#808080
-
-endif
-
-" vimcomplete 配置
-if g:my_vimcomplete_enable
-
-    let s:vcoptions = {
-        \ 'completor': {'triggerWordLen': 2, 'noNewlineInCompletionEver': v:true, 'setCompleteOpt': v:false }
-        \ }
-
-    autocmd VimEnter * call g:VimCompleteOptionsSet(s:vcoptions)
-
 endif
 
 " ultisnips 配置
@@ -707,8 +635,19 @@ endif
 
 
 "=====================================================================
-" Mapping 按键映射                                                   =
+" Mapping 按键映射
 "=====================================================================
+
+" 原生命令行补全：Ctrl-N / Ctrl-P 打开菜单，上下键保留历史导航。
+cnoremap <expr> <C-N> wildmenumode() ? "\<C-N>" : "\<C-Z>"
+cnoremap <expr> <C-P> wildmenumode() ? "\<C-P>" : "\<C-Z>"
+cnoremap <expr> <Up> wildmenumode() ? "\<C-E>\<Up>" : "\<Up>"
+cnoremap <expr> <Down> wildmenumode() ? "\<C-E>\<Down>" : "\<Down>"
+
+" 原生插入补全：菜单打开时回车不插入换行。
+if g:my_insert_autocomplete_enable
+    inoremap <silent><expr> <CR> pumvisible() ? (complete_info().selected >= 0 ? "\<C-Y>" : "\<C-E>") : "\<CR>"
+endif
 
 " 跳转窗口
 nmap <leader>w <C-w>
@@ -725,10 +664,8 @@ nmap <leader>bd :silent bd<CR>
 " 缓冲区列表
 if g:my_fzf_enable
     nmap <leader>bl :Buffers<CR>
-elseif g:my_scope_enable
-    nmap <leader>bl :call g:scope#fuzzy#Buffer()<CR>
 else
-    nmap <leader>bl :ls!<CR>
+    nmap <leader>bl :call NativePickerStart('buffers')<CR>
 endif
 
 " quickfix 相关
@@ -753,11 +690,8 @@ nmap <leader>f :call NERDTreeVcsOrFind()<CR>
 " 最近打开的文件
 if g:my_fzf_enable
     nmap <leader>;e :History<CR>
-elseif g:my_scope_enable
-    nmap <leader>;e :call g:scope#fuzzy#MRU()<CR>
 else
-    " 否则使用 Startify
-    nmap <leader>;e :silent Startify<CR>
+    nmap <leader>;e :call NativePickerStart('recent')<CR>
 endif
 
 " Git Blame
@@ -766,15 +700,13 @@ nmap <leader>;a :call OpenGitBlame()<CR>
 " 模糊搜索文件
 if g:my_fzf_enable
     nmap <leader>;s :Files<CR>
-elseif g:my_scope_enable
-    nmap <leader>;s :call g:scope#fuzzy#File()<CR>
 else
-    nmap <leader>;s <Plug>(ctrlp)
+    nmap <leader>;s :call NativePickerStart('files')<CR>
 endif
 
 " 模糊搜索文件内容
 " 如果启用 fzf.vim，并且 rg，ag 可用，则搜索文件内容，否则使用 grep 进行搜索
-" 如果启用 scope，并且 rg，ag 可用，使用 rg ag 进行搜索，否则使用 grep 进行搜索
+" 原生选择器同样优先使用 rg、ag，否则使用 grep
 if g:my_fzf_enable
     if g:my_has_rg
         nmap <leader>;S :Rg<CR>
@@ -789,20 +721,10 @@ if g:my_fzf_enable
         xmap <leader>;s y:exec 'Grep '.@"<CR>
         xmap <leader>;S y:exec 'Grep '.@"<CR>
     endif
-elseif g:my_scope_enable
-    if g:my_has_rg
-        nmap <leader>;S :call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F')<CR>
-        xmap <leader>;s y:call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F', 1, @")<CR>
-        xmap <leader>;S y:call g:scope#fuzzy#Grep('rg --vimgrep --smart-case -F', 1, @")<CR>
-    elseif g:my_has_ag
-        nmap <leader>;S :call g:scope#fuzzy#Grep('ag --vimgrep')<CR>
-        xmap <leader>;s y:call g:scope#fuzzy#Grep('ag --vimgrep', 1, @")<CR>
-        xmap <leader>;S y:call g:scope#fuzzy#Grep('ag --vimgrep', 1, @")<CR>
-    else
-        nmap <leader>;S :call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git')<CR>
-        xmap <leader>;s y:call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git', 1, @")<CR>
-        xmap <leader>;S y:call g:scope#fuzzy#Grep('grep -REIHns --exclude-dir=.git', 1, @")<CR>
-    endif
+else
+    nmap <leader>;S :call NativePickerStart('grep')<CR>
+    xmap <leader>;s y:call NativePickerStart('grep', @")<CR>
+    xmap <leader>;S y:call NativePickerStart('grep', @")<CR>
 endif
 
 " Git 仓库变更文件列表
@@ -909,7 +831,7 @@ nnoremap <C-k> kmajdd`a:delm a<CR>
 
 
 "=====================================================================
-" Coc Mapping Coc 相关映射                                           =
+" Coc Mapping Coc 相关映射
 "=====================================================================
 
 " 如果 coc 可用，并且它有更好的实现，上面的映射会被覆盖
@@ -969,10 +891,25 @@ endif
 
 
 "=====================================================================
-" Independent Autocmd 独立的自动命令                                 =
+" Independent Autocmd 独立的自动命令
 "=====================================================================
 
 " 自动补全
+" 配色方案切换后恢复原生补全菜单样式。
+augroup MyCmdlineAutocomplete
+    autocmd!
+    autocmd ColorScheme * call MyCmdlineMenuStyle()
+augroup END
+
+" 原生选择器在输入时刷新候选，回车时接受选中项。
+if g:my_native_picker_enable
+    augroup MyNativePicker
+        autocmd!
+        autocmd CmdlineChanged : if getcmdline() =~# '^NativePick ' | call wildtrigger() | endif
+        autocmd CmdlineLeavePre : call NativePickerAccept()
+    augroup END
+endif
+
 " 补全完成时预览窗口自动消失
 augroup complete
   autocmd!
@@ -1042,8 +979,14 @@ augroup end
 
 
 "=====================================================================
-" Highlight 高亮相关                                                 =
+" Highlight 高亮相关
 "=====================================================================
+
+" 原生补全菜单样式
+highlight! link Pmenu Normal
+highlight! link PmenuBorder Normal
+highlight PmenuMatch ctermfg=Green guifg=#00FF00
+highlight PmenuMatchSel cterm=bold gui=bold ctermfg=Green guifg=#00FF00
 
 " 主题颜色自定义配置
 hi Error ctermbg=NONE guibg=#000000
@@ -1069,8 +1012,126 @@ hi CocHintVirtualText ctermfg=12 ctermbg=NONE guifg=#15aabf guibg=#000000
 
 
 "=====================================================================
-" Custom Functions 自定义函数                                        =
+" Custom Functions 自定义函数
 "=====================================================================
+
+" 写入本地 Wayland 剪贴板，保持原始换行并区分 clipboard / primary selection。
+function! WaylandClipboardCopy(reg, type, lines) abort
+    let text = join(a:lines, "\n") . (a:type ==# 'V' ? "\n" : '')
+    let cmd = 'wl-copy --type text/plain;charset=utf-8' . (a:reg ==# '*' ? ' --primary' : '')
+    silent call system(cmd, text)
+    if v:shell_error
+        echoerr 'wl-copy 复制失败'
+    endif
+endfunction
+
+" 读取本地 Wayland 剪贴板，根据末尾换行恢复寄存器类型。
+function! WaylandClipboardPaste(reg) abort
+    let cmd = 'wl-paste --no-newline' . (a:reg ==# '*' ? ' --primary' : '')
+    silent let text = system(cmd)
+    if v:shell_error
+        return v:null
+    endif
+    let linewise = text =~# "\n$"
+    let lines = split(text, "\n", 1)
+    if linewise
+        call remove(lines, -1)
+    endif
+    return [linewise ? 'V' : 'v', lines]
+endfunction
+
+" 配色切换时恢复原生补全菜单高亮
+function! MyCmdlineMenuStyle() abort
+    highlight! link Pmenu Normal
+    highlight! link PmenuBorder Normal
+    highlight PmenuMatch ctermfg=Green guifg=#00FF00
+    highlight PmenuMatchSel cterm=bold gui=bold ctermfg=Green guifg=#00FF00
+endfunction
+
+" 原生模糊选择器
+function! NativePickerStart(kind, ...) abort
+    let s:picker_kind = a:kind
+    let s:picker_items = []
+    let s:picker_buffers = {}
+    if a:kind ==# 'files'
+        if executable('rg')
+            let s:picker_items = systemlist('rg --files --hidden -g !.git')
+        elseif executable('git') && system('git rev-parse --is-inside-work-tree 2>/dev/null') =~# 'true'
+            let s:picker_items = systemlist('git -c core.quotepath=false ls-files --cached --others --exclude-standard')
+        else
+            let s:picker_items = glob('**/*', 0, 1)
+        endif
+        call filter(s:picker_items, 'filereadable(v:val)')
+        let s:picker_items = uniq(sort(s:picker_items))
+    elseif a:kind ==# 'git'
+        let s:picker_items = systemlist(a:2)
+    elseif a:kind ==# 'buffers'
+        for buf in getbufinfo({'buflisted': 1})
+            let label = printf('%d: %s', buf.bufnr, empty(buf.name) ? '[No Name]' : fnamemodify(buf.name, ':~:.'))
+            let s:picker_buffers[label] = buf.bufnr
+            call add(s:picker_items, label)
+        endfor
+    elseif a:kind ==# 'recent'
+        let s:picker_items = filter(copy(v:oldfiles), 'filereadable(v:val)')
+    endif
+    " wildcharm 用于映射中触发原生菜单；文件名中的按键字符不作特殊解释。
+    call feedkeys(':NativePick ' . substitute(get(a:000, 0, ''), '[\r\n]', ' ', 'g'), 'nt')
+    call feedkeys("\<C-Z>", 'mt')
+endfunction
+
+function! NativePickerComplete(lead, line, pos) abort
+    let query = substitute(strpart(a:line, 0, a:pos), '^NativePick\s\+', '', '')
+    if s:picker_kind ==# 'grep'
+        if strchars(query) < 2
+            return []
+        endif
+        if executable('rg')
+            let cmd = 'rg --vimgrep --smart-case -F -- ' . shellescape(query)
+            let s:picker_grep_format = '%f:%l:%c:%m'
+        elseif executable('ag')
+            let cmd = 'ag --vimgrep --literal -- ' . shellescape(query)
+            let s:picker_grep_format = '%f:%l:%c:%m'
+        else
+            let cmd = 'grep -rIHnF --exclude-dir=.git -- ' . shellescape(query) . ' .'
+            let s:picker_grep_format = '%f:%l:%m'
+        endif
+        return systemlist(cmd)
+    endif
+    return empty(query) ? copy(s:picker_items) : matchfuzzy(s:picker_items, query)
+endfunction
+
+function! NativePickerAccept() abort
+    if getcmdline() !~# '^NativePick ' || v:char !=# "\<CR>"
+        return
+    endif
+    let info = cmdcomplete_info()
+    if !empty(get(info, 'matches', []))
+        let index = get(info, 'selected', -1)
+        call setcmdline('NativePick ' . info.matches[index < 0 ? 0 : index])
+    endif
+endfunction
+
+function! NativePickerOpen(item) abort
+    if s:picker_kind ==# 'grep'
+        let entries = getqflist({'lines': [a:item], 'efm': s:picker_grep_format}).items
+        if empty(entries) || !entries[0].valid
+            echo '请选择一条搜索结果（输入至少两个字符）'
+            return
+        endif
+        let item = entries[0]
+        execute 'buffer' item.bufnr
+        call cursor(item.lnum, max([1, item.col]))
+        normal! zz
+    elseif s:picker_kind ==# 'buffers'
+        if has_key(s:picker_buffers, a:item)
+            execute 'buffer' s:picker_buffers[a:item]
+        endif
+    else
+        if index(s:picker_items, a:item) >= 0
+            execute 'edit' fnameescape(a:item)
+        endif
+    endif
+endfunction
 
 " 关闭编辑器时自动退出终端
 function! WipeoutTerminals()
@@ -1315,7 +1376,7 @@ endfunction
 
 
 "=====================================================================
-" Custom Command 自定义命令                                          =
+" Custom Command 自定义命令
 "=====================================================================
 
 " 查看编辑前的改动
@@ -1330,36 +1391,14 @@ command! -nargs=1 -complete=file DiffFileToPatch call DiffFileToPatch(<q-args>)
 command! -nargs=1 -complete=file Vds exec 'vertical diffsplit ' . <q-args>
 
 " Git 仓库中已修改、已暂存和未追踪的文件（遵循忽略规则并去重）
-let s:git_changed_files = '(git -c core.quotepath=false diff --relative --name-only; git -c core.quotepath=false diff --relative --cached --name-only; git -c core.quotepath=false ls-files --others --exclude-standard) | sort -u'
 if g:my_fzf_enable
     command! -bang -nargs=* Grep call fzf#vim#grep("grep -REIHns --exclude-dir=.git ".fzf#shellescape(<q-args>), fzf#vim#with_preview(), <bang>0)
     command GitDiff call fzf#run(fzf#wrap({'source': s:git_changed_files}))
 endif
-if g:my_scope_enable
-    " scope 使用 job_start 直接启动进程，需显式通过 shell 执行管道。
-    command GitDiff call g:scope#fuzzy#File('sh -c "' . escape(s:git_changed_files, '\"') . '"')
+if g:my_native_picker_enable
+    command! GitDiff call NativePickerStart('git', '', s:git_changed_files)
+    command! -nargs=+ -complete=customlist,NativePickerComplete NativePick call NativePickerOpen(<q-args>)
 endif
 
 " 设置终端的默认背景色
 command! -bang Black call Black(<bang>0)
-
-
-"=====================================================================
-" Compatible 兼容相关                                                =
-"=====================================================================
-
-" 如果是在 ssh 会话中，或者 wl-copy 相关工具不可用，尝试使用 OSC52 进行复制
-if g:ssh_session || !executable('wl-copy')
-    augroup osc-clipboard
-        autocmd!
-        autocmd TextYankPost * silent! call SendViaOSC52(getreg('"'))
-    augroup END
-" 否则使用 wl-copy 相关工具进行复制和粘贴
-else
-    augroup wl-clipboard
-        autocmd!
-        autocmd TextYankPost * silent! call system('wl-copy --trim-newline', @")
-        autocmd FocusGained * :let @" = system('wl-paste -n')
-    augroup END
-endif
-

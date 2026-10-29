@@ -1,5 +1,15 @@
 "=====================================================================
-" Common Global Variable 通用全局变量                                =
+" Requirements 运行要求
+"=====================================================================
+
+" 轻量配置与完整配置使用相同维护基线，不承担旧版 Vim 兼容职责。
+if v:version < 902 || !has('terminal')
+    echoerr '此配置需要 Vim 9.2+（包含 +terminal），请升级或编译安装。'
+    finish
+endif
+
+"=====================================================================
+" Environment and Feature Flags 环境检测与功能开关
 "=====================================================================
 
 " 操作系统类型
@@ -24,7 +34,7 @@ if executable('ag')
 endif
 
 "=====================================================================
-" Common Setting 通用设置                                            =
+" Common Setting 通用设置
 "=====================================================================
 
 " 设置 leader 键
@@ -179,11 +189,8 @@ else
     set grepprg=grep\ -REIHns\ --exclude-dir=.git
 endif
 
-" vim 9 相关设置
-if v:version >= 901
-    " 设置跳转列表行为方式
-    set jumpoptions=stack
-endif
+" 设置跳转列表行为方式
+set jumpoptions=stack
 
 " 初始化插件系统
 " 自适应不同语言的智能缩进
@@ -200,7 +207,7 @@ colorscheme unokai
 
 
 "=====================================================================
-" Mapping 按键映射                                                   =
+" Mapping 按键映射
 "=====================================================================
 
 " 跳转窗口
@@ -275,7 +282,7 @@ inoremap <C-k> <C-o>kmajdd`a:delm a<CR>
 
 
 "=====================================================================
-" Independent Autocmd 独立的自动命令                                 =
+" Independent Autocmd 独立的自动命令
 "=====================================================================
 
 " 自动补全
@@ -297,8 +304,11 @@ autocmd VimLeavePre * silent! wall
 " q 自动退出 quickfix 窗口
 autocmd FileType qf nmap <buffer> <silent> q :cclose<CR>
 
-" Q 自动 netrw 窗口
-autocmd FileType netrw nmap <buffer> <silent> Q :bd<CR>
+" 仅在 netrw 中用 q 关闭目录缓冲区；nowait 避免等待 qb、qf 等前缀。
+augroup MyNetrwMappings
+    autocmd!
+    autocmd FileType netrw nnoremap <buffer> <silent> <nowait> q :bd<CR>
+augroup END
 
 " 终端模式，如果任务已结束使用 q 退出终端
 augroup TerminalQMap
@@ -333,7 +343,7 @@ augroup end
 
 
 "=====================================================================
-" Highlight 高亮相关                                                 =
+" Highlight 高亮相关
 "=====================================================================
 
 " 主题颜色自定义配置
@@ -352,7 +362,7 @@ hi SpecialKey ctermbg=NONE ctermfg=59 guifg=#5f5f5f guibg=#000000
 
 
 "=====================================================================
-" Custom Functions 自定义函数                                        =
+" Custom Functions 自定义函数
 "=====================================================================
 
 " 将变更保存到补丁
@@ -461,7 +471,7 @@ endfunction
 
 
 "=====================================================================
-" Custom Command 自定义命令                                          =
+" Custom Command 自定义命令
 "=====================================================================
 
 " 查看编辑前的改动
