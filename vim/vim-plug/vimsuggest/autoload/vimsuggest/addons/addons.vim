@@ -185,7 +185,6 @@ def GlobalComplete(arglead: string, cmdline: string, cursorpos: number): list<an
             endif
             setpos('.', saved_cursor)
         endtry
-        return []
     })
     cmd.AddHighlightHook(cmd.CmdLead(), (_: string, itms: list<any>): list<any> => {
         cmd.DoHighlight(exec.ArgsStr())

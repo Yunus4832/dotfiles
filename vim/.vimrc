@@ -1329,13 +1329,15 @@ command! -nargs=1 -complete=file DiffFileToPatch call DiffFileToPatch(<q-args>)
 " 分割窗口比较当前文件 Diff 的命令
 command! -nargs=1 -complete=file Vds exec 'vertical diffsplit ' . <q-args>
 
-" 编辑过的 Git 仓库 文件列表
+" Git 仓库中已修改、已暂存和未追踪的文件（遵循忽略规则并去重）
+let s:git_changed_files = '(git -c core.quotepath=false diff --relative --name-only; git -c core.quotepath=false diff --relative --cached --name-only; git -c core.quotepath=false ls-files --others --exclude-standard) | sort -u'
 if g:my_fzf_enable
-    command! -bang -nargs=* Grep call fzf#vim#grep("grep -REIHns --exclude-dir=.git ".fzf#shellescape(<q-args>), fzf#vim#with_preview(), <bang>0)',
-    command GitDiff call fzf#run(fzf#wrap({'source': 'git diff --name-only'}))
+    command! -bang -nargs=* Grep call fzf#vim#grep("grep -REIHns --exclude-dir=.git ".fzf#shellescape(<q-args>), fzf#vim#with_preview(), <bang>0)
+    command GitDiff call fzf#run(fzf#wrap({'source': s:git_changed_files}))
 endif
 if g:my_scope_enable
-    command GitDiff call g:scope#fuzzy#File('git diff --name-only')
+    " scope 使用 job_start 直接启动进程，需显式通过 shell 执行管道。
+    command GitDiff call g:scope#fuzzy#File('sh -c "' . escape(s:git_changed_files, '\"') . '"')
 endif
 
 " 设置终端的默认背景色
