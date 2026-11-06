@@ -66,8 +66,8 @@ check_dependencies() {
 }
 apply_patch_file() {
     local patchfile=$1 patchroot=$2
-    patch --batch --forward --dry-run -d "$patchroot" -p0 < "$patchfile" >/dev/null || return 1
-    patch --batch --forward -d "$patchroot" -p0 < "$patchfile" >/dev/null
+    patch --batch --forward --no-backup-if-mismatch --dry-run -d "$patchroot" -p0 < "$patchfile" >/dev/null || return 1
+    patch --batch --forward --no-backup-if-mismatch -d "$patchroot" -p0 < "$patchfile" >/dev/null
 }
 directory_patch_root() {
     local patchfile=$1 dest=$2 first_path
