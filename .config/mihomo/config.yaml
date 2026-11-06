@@ -64,20 +64,13 @@ sniffer:
     QUIC:  { ports: [443, 8443] }
 
 # ── 机场订阅
-# 在每台设备部署后，将下面两个占位符替换为各自的私人订阅地址。
+# 示例保留一个提供商，私人订阅通过 sctl 补丁部署。
 proxy-providers:
-  main:
+  provider1:
     type: http
-    url: "<MAIN_SUBSCRIPTION_URL>"
+    url: "<SUBSCRIPTION_URL>"
     interval: 86400
-    path: ./proxy_providers/main.yaml
-    filter: "^(?!.*(剩余|到期|官网|免费|试用|套餐|重置|过期|流量|时间|邮箱|客服|订阅)).*$"
-    health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true }
-  backup:
-    type: http
-    url: "<BACKUP_SUBSCRIPTION_URL>"
-    interval: 86400
-    path: ./proxy_providers/backup.yaml
+    path: ./proxy_providers/provider1.yaml
     filter: "^(?!.*(剩余|到期|官网|免费|试用|套餐|重置|过期|流量|时间|邮箱|客服|订阅)).*$"
     health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true }
 
@@ -89,14 +82,14 @@ proxy-groups:
 
   - name: "自动选择"
     type: url-test
-    use: [main, backup]
+    include-all-providers: true
     url: "https://www.gstatic.com/generate_204"
     interval: 300
     tolerance: 50
 
   - name: "手动选择"
     type: select
-    use: [main, backup]
+    include-all-providers: true
 
   # GitHub 的 Release、源码包和 Git LFS 共用同一策略组。
   # 默认按 GitHub 本身测速；可切换到 GitHub 手动或通用节点选择。
@@ -106,11 +99,11 @@ proxy-groups:
 
   - name: "GitHub 手动"
     type: select
-    use: [main, backup]
+    include-all-providers: true
 
   - name: "GitHub 自动"
     type: url-test
-    use: [main, backup]
+    include-all-providers: true
     filter: "(?i)香港|Hong Kong|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|🇯🇵|美国西|洛杉矶|旧金山|US West"
     url: "https://github.com"
     interval: 300
@@ -123,7 +116,7 @@ proxy-groups:
 
   - name: "AI 节点自动"
     type: url-test
-    use: [main, backup]
+    include-all-providers: true
     filter: '(?i)ChatGPT|\bAI\b'
     url: "https://www.gstatic.com/generate_204"
     interval: 300
@@ -131,7 +124,7 @@ proxy-groups:
 
   - name: "新加坡自动"
     type: url-test
-    use: [main, backup]
+    include-all-providers: true
     filter: "(?i)新加坡|Singapore|🇸🇬"
     url: "https://www.gstatic.com/generate_204"
     interval: 300
@@ -139,7 +132,7 @@ proxy-groups:
 
   - name: "日本自动"
     type: url-test
-    use: [main, backup]
+    include-all-providers: true
     filter: "(?i)日本|Japan|🇯🇵"
     url: "https://www.gstatic.com/generate_204"
     interval: 300
@@ -147,7 +140,7 @@ proxy-groups:
 
   - name: "美国自动"
     type: url-test
-    use: [main, backup]
+    include-all-providers: true
     filter: "(?i)美国|United States|USA|🇺🇸"
     url: "https://www.gstatic.com/generate_204"
     interval: 300
@@ -155,7 +148,7 @@ proxy-groups:
 
   - name: "台湾自动"
     type: url-test
-    use: [main, backup]
+    include-all-providers: true
     filter: "(?i)台湾|Taiwan|TW|🇹🇼"
     url: "https://www.gstatic.com/generate_204"
     interval: 300
