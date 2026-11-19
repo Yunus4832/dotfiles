@@ -55,7 +55,6 @@ sudo pacman -Syuu
 | `helix` | Rust 编写的轻量终端编辑器 |
 | `nano` | 轻量非模式终端编辑器 |
 | `ed` | 原始的行编辑器 |
-| `zed` | Rust 实现的全能轻量编辑器 |
 | `typora-free` | Markdown 编辑器（AUR） |
 
 ### Shell & 终端工具
@@ -354,7 +353,7 @@ busctl --user call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DB
 
 ### Niri 会话中的 Secret Portal
 
-部分桌面应用会通过 xdg-desktop-portal 的 Secret 接口保存登录凭据，例如 Zed 的账户登录状态。如果 Niri 会话没有可用的 Secret portal，应用可能每次启动都要求重新登录。
+部分桌面应用会通过 xdg-desktop-portal 的 Secret 接口保存登录凭据。如果 Niri 会话没有可用的 Secret portal，应用可能每次启动都要求重新登录。
 
 安装 `gnome-keyring`，它同时提供 `org.freedesktop.secrets` 服务和 `gnome-keyring` Secret portal 后端：
 

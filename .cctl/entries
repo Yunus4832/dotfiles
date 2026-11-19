@@ -14,5 +14,4 @@ mihomo|.config/mihomo|~/.config/mihomo|mihomo||.cctl/hooks/mihomo-post.sh|
 swayidle|.config/swayidle|~/.config/swayidle|swayidle|||
 swaylock|.config/swaylock|~/.config/swaylock|swaylock|||
 typora|.config/Typora/themes|~/.config/Typora/themes|typora|||
-zed|.config/zed|~/.config/zed|zed|||
 gnome-keyring|.local/share/dbus-1/services/org.freedesktop.secrets.service|~/.local/share/dbus-1/services/org.freedesktop.secrets.service|gnome-keyring|||
