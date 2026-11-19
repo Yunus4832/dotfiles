@@ -599,7 +599,7 @@ if g:my_coc_enable
     let g:coc_data_home = '~/.config/coc'
     " 显示 Vim / Node.js 版本不满足要求的警告
     let g:coc_disable_startup_warning = 0
-    " snippet 跳转键映射
+    " Tab / Shift-Tab 跳转 Coc 占位符，Ctrl-N / Ctrl-P 切换补全候选。
     let g:coc_snippet_next = '<tab>'
     let g:coc_snippet_prev = '<s-tab>'
     " 退出时自动关闭 lsp
@@ -835,13 +835,6 @@ nnoremap <C-k> kmajdd`a:delm a<CR>
 
 " 如果 coc 可用，并且它有更好的实现，上面的映射会被覆盖
 if g:my_coc_enable
-    " 设置 Tab 切换补全列表
-    inoremap <silent><expr> <TAB>
-                \ coc#pum#visible() ? coc#pum#next(1) :
-                \ CheckBackspace() ? "\<Tab>" :
-                \ coc#refresh()
-    inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-
     " 映射 coc 的补全快捷键为 <CR>
     inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm(): "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
@@ -879,11 +872,6 @@ if g:my_coc_enable
         else
             call feedkeys("K", "in")
         endif
-    endfunction
-
-    function! CheckBackspace() abort
-        let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
 
 endif
