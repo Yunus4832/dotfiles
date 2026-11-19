@@ -410,7 +410,7 @@ set list lcs=lead:.,tab:-->,trail:.
 " 补全菜单配置
 set completeopt=menuone,noinsert
 
-" 原生命令行补全菜单（按需触发）。
+" 原生命令行补全菜单。
 set wildmode=noselect:lastused,full
 set wildoptions=pum
 set pumheight=20
@@ -638,9 +638,8 @@ endif
 " Mapping 按键映射
 "=====================================================================
 
-" 原生命令行补全：Ctrl-N / Ctrl-P 打开菜单，上下键保留历史导航。
-cnoremap <expr> <C-N> wildmenumode() ? "\<C-N>" : "\<C-Z>"
-cnoremap <expr> <C-P> wildmenumode() ? "\<C-P>" : "\<C-Z>"
+" Tab 打开补全菜单，Ctrl-N / Ctrl-P 使用 Vim 默认的候选与历史导航。
+" 上下键关闭补全菜单后继续浏览历史。
 cnoremap <expr> <Up> wildmenumode() ? "\<C-E>\<Up>" : "\<Up>"
 cnoremap <expr> <Down> wildmenumode() ? "\<C-E>\<Down>" : "\<Down>"
 
@@ -894,10 +893,18 @@ endif
 " Independent Autocmd 独立的自动命令
 "=====================================================================
 
-" 自动补全
-" 配色方案切换后恢复原生补全菜单样式。
+" 光标前至少四个字符时自动补全。低于阈值时重绘，清掉已关闭菜单的残影。
+" 原生选择器使用自己的补全事件。
 augroup MyCmdlineAutocomplete
     autocmd!
+    autocmd CmdlineChanged :
+        \ if getcmdline() !~# '^NativePick\>'
+        \ | if strchars(strpart(getcmdline(), 0, getcmdpos() - 1)) >= 4
+        \ |     call wildtrigger()
+        \ | elseif !wildmenumode()
+        \ |     redraw
+        \ | endif
+        \ | endif
     autocmd ColorScheme * call MyCmdlineMenuStyle()
 augroup END
 
