@@ -37,6 +37,7 @@ sbcl
 rlwrap
 binsider
 polkit
+polkit-gnome
 fastfetch
 bc
 bottom

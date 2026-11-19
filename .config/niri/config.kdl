@@ -3,6 +3,7 @@ spawn-at-startup "waybar" "-c" "/home/yunus/.config/waybar/config-niri"
 spawn-at-startup "swaybg" "-i" "/home/yunus/.config/wallpapers/wallpaper.png" "-m" "fill"
 spawn-at-startup "fcitx5" "--replace" "-d"
 spawn-at-startup "mako"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 
 spawn-at-startup "systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "LANG" "LANGUAGE"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP=niri" "LANG" "LANGUAGE"

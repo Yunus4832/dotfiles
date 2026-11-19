@@ -335,6 +335,23 @@ sudo pacman -S xdg-desktop-portal-gtk
 systemctl --user restart xdg-desktop-portal.service
 ```
 
+### Niri 会话的身份验证和密钥环
+
+安装 `polkit-gnome` 和 `gnome-keyring`。两者都已列入 Arch 软件包清单。运行 `cctl apply niri` 部署 Niri 配置，身份验证代理会在下次启动 Niri 时运行。
+
+使用 TTY 密码登录并希望自动解锁密钥环时，用 `sudoedit /etc/pam.d/login` 检查 PAM 配置。若尚无对应条目，在 `auth include system-local-login` 和 `session include system-local-login` 之后分别添加下面两行。Login 密钥环应使用与系统登录相同的密码。
+
+```text
+auth       optional    pam_gnome_keyring.so
+session    optional    pam_gnome_keyring.so auto_start
+```
+
+如果登录日志显示 PAM 已解锁，但会话中有两个 `gnome-keyring-daemon` 进程且应用仍无法使用密钥环，运行 `cctl apply gnome-keyring` 部署用户 D-Bus 配置，让 Secret Service 统一由 `gnome-keyring-daemon.service` 提供。部署后，在登录会话中执行下面的命令重新加载 D-Bus 配置，再完成一次完整注销和密码登录。若有其他会话让用户服务继续运行，可在保存工作后重启。
+
+```bash
+busctl --user call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus ReloadConfig
+```
+
 ### Niri 会话中的 Secret Portal
 
 部分桌面应用会通过 xdg-desktop-portal 的 Secret 接口保存登录凭据，例如 Zed 的账户登录状态。如果 Niri 会话没有可用的 Secret portal，应用可能每次启动都要求重新登录。
@@ -366,6 +383,29 @@ spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPL
 ```bash
 systemctl --user restart xdg-desktop-portal.service
 ```
+
+### 可选应用：Linux Passkey
+
+这套步骤适用于 Niri 下使用 Firefox 将 Linux Passkey 作为虚拟 USB 安全密钥。先完成上文的 Niri 身份验证和密钥环配置，并用 TTY 密码重新登录，使 Login 密钥环解锁。Linux Passkey 直接通过 Secret Service 读取加密主密钥，该用法无需浏览器扩展或 Secret Portal。
+
+从 AUR 安装 `linux-passkey`。安装方式见 [Linux Passkey 上游文档](https://github.com/HaythmKenway/Linux-Passkey#install)。
+
+```bash
+paru -S linux-passkey
+printf 'uhid\n' | sudo tee /etc/modules-load.d/linux-passkey.conf
+sudo modprobe uhid
+systemctl --user daemon-reload
+systemctl --user enable --now linux-passkey.service
+```
+
+安装后退出到 TTY，用密码重新登录并启动 Niri，让软件包的 udev 规则为本地会话授予设备权限。如果 `modprobe uhid` 提示找不到模块，并且系统刚更新过内核，先重启进入已安装的新内核。用以下命令检查设备权限和服务日志。
+
+```bash
+getfacl /dev/uhid
+journalctl --user -u linux-passkey.service -b --no-pager
+```
+
+当前用户应对 `/dev/uhid` 有读写权限，服务日志应显示虚拟 FIDO 设备已创建。在 Firefox 中打开 [WebAuthn 测试页](https://webauthn.io/)，选择「安全密钥」注册一个测试凭据，再用它登录一次。
 
 ### 桌面用户 DBus 使用 Polkit 认证
 
