@@ -45,9 +45,9 @@ if [ -d $TOOLS_DIR ]; then
     done
 fi
 
-# ssh flag
-if [ -n "$SSH_CONNECTION" ]; then
-    PS1="%F{red}<ssh>%f $PS1"
+# tmux shows the SSH host in its client status line.
+if [[ -z $TMUX && -n $SSH_TTY && $SSH_TTY == $TTY ]]; then
+    PS1=${PS1/\%n/%n%F{yellow}@%m}
 fi
 
 # load .profile
@@ -86,7 +86,8 @@ if command -v emacs > /dev/null; then
     # emacs editor
     alias emacs="emacs -nw"
     # todo list
-    alias todo="emacs -nw $HOME/.emacs.d/org/todo-list.org"
+    # Escape the command name so the `emacs` alias does not add a second -nw.
+    alias todo="\emacs -nw $HOME/.emacs.d/org/todo-list.org"
     # lite emacs
     alias lemacs="emacs -nw -q --load $HOME/.emacs.d/lite-emacs.el"
 fi

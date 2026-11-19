@@ -439,7 +439,8 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'
 # Connect Powerline segments with one arrow in the adjacent segment colours.
 set -gF @window_format_full "#{window-status-format}" #!important
 set -gF @window_current_format_full "#{window-status-current-format}" #!important
-set -g status-left "#[fg=#080808,bg=#ffff00,bold] ❐ #S#[fg=#ffff00,bg=#{=7:#{W:#{?window_active,#00afff,#{?window_last_flag,#303030,#{?#{e|%:#{window_index},2},#202020,#404040}}}}},none]" #!important
+# SSH_TTY must match this client's terminal. Panes can retain older SSH variables.
+set -g status-left "#[fg=#080808,bg=#ffff00,bold] ❐ #S#(grep -zFxq 'SSH_TTY=#{client_tty}' /proc/#{client_pid}/environ 2>/dev/null && uname -n | sed 's/[.].*//; s/^/ @/')#[fg=#ffff00,bg=#{=7:#{W:#{?window_active,#00afff,#{?window_last_flag,#303030,#{?#{e|%:#{window_index},2},#202020,#404040}}}}},none]" #!important
 set -g window-status-format "#[fg=#{?window_bell_flag,#ffff00,#{?window_last_flag,#00afff,#8a8a8a}},bg=#{?window_last_flag,#303030,#{?#{e|%:#{window_index},2},#202020,#404040}},none]#{?window_activity_flag,#[underscore],}#{?window_bell_flag,#[blink bold],} #I #W #[fg=#{?window_last_flag,#303030,#{?#{e|%:#{window_index},2},#202020,#404040}},bg=#{?next_window_index,#{?next_window_active,#00afff,#{?#{==:#{next_window_index},#{W:#{?window_last_flag,#{window_index},}}},#303030,#{?#{e|%:#{next_window_index},2},#202020,#404040}}},#080808},none]" #!important
 set -g window-status-current-format "#{E;s/^[^]*//;s/$//:@window_current_format_full}#[fg=#00afff,bg=#{?next_window_index,#{?next_window_active,#00afff,#{?#{==:#{next_window_index},#{W:#{?window_last_flag,#{window_index},}}},#303030,#{?#{e|%:#{next_window_index},2},#202020,#404040}}},#080808},none]" #!important
 
