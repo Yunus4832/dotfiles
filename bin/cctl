@@ -277,7 +277,7 @@ cmd_push() {
 }
 cmd_pull() {
     require_clean_git
-    local branch remote backup
+    local branch remote
     branch=$(git -C "$ROOT" branch --show-current)
     [ -n "$branch" ] || fail 'pull requires a branch'
     git -C "$ROOT" fetch origin "$branch"
@@ -287,10 +287,7 @@ cmd_pull() {
     elif git -C "$ROOT" merge-base --is-ancestor "$remote" HEAD; then
         note 'local branch is ahead of remote; nothing to pull'
     else
-        backup="cctl-backup-$(date +%Y%m%d%H%M%S)"
-        git -C "$ROOT" branch "$backup"
-        git -C "$ROOT" reset --hard "$remote"
-        note "remote history changed; previous local branch saved as $backup"
+        fail 'local and remote histories diverged (or the remote was rewritten). Inspect and reconcile them with Git.'
     fi
 }
 cmd_compact() {

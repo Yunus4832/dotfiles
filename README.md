@@ -56,7 +56,7 @@ cctl uninstall                            # 删除安装的入口，保留配置
 
 `mihomo` 的后置 hook 只在目标目录缺少 `ui/index.html` 时从 `ui.tar.gz` 解压；已有 UI 会保留，避免覆盖其运行时文件。
 
-`pull` 发现远端历史被压缩时，会在重置前创建 `cctl-backup-*` 分支保存本地提交；要求工作区干净。`compact` 要求本地与远端提交一致，并用 `--force-with-lease` 推送改写后的历史。
+`pull` 要求工作区干净，只执行快进更新。本地和远端历史分叉时会停止，请用 Git 检查并处理。`compact` 要求本地与远端提交一致，并用 `--force-with-lease` 推送改写后的历史。
 
 ## 包含的配置
 
