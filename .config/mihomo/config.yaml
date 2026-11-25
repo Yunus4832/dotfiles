@@ -112,7 +112,7 @@ proxy-groups:
   # AIGC 按地区筛选节点，并在各地区内自动选择低延迟节点。
   - name: "AIGC"
     type: select
-    proxies: ["AI 节点自动", "新加坡自动", "日本自动", "美国自动", "台湾自动"]
+    proxies: ["AI 节点自动", "新加坡自动", "日本自动", "美国自动", "台湾自动", "越南自动", "泰国自动", "菲律宾自动"]
 
   - name: "AI 节点自动"
     type: url-test
@@ -150,6 +150,30 @@ proxy-groups:
     type: url-test
     include-all-providers: true
     filter: "(?i)台湾|Taiwan|TW|🇹🇼"
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+
+  - name: "越南自动"
+    type: url-test
+    include-all-providers: true
+    filter: '(?i)越南|Vietnam|\bVN\b|🇻🇳'
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+
+  - name: "泰国自动"
+    type: url-test
+    include-all-providers: true
+    filter: '(?i)泰国|Thailand|\bTH\b|🇹🇭'
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+
+  - name: "菲律宾自动"
+    type: url-test
+    include-all-providers: true
+    filter: '(?i)菲律宾|Philippines|\bPH\b|🇵🇭'
     url: "https://www.gstatic.com/generate_204"
     interval: 300
     tolerance: 50
