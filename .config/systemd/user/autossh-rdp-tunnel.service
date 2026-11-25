@@ -1,0 +1,19 @@
+[Unit]
+Description=AutoSSH reverse tunnel for KDE Remote Desktop
+After=network.target app-org.kde.krdpserver.service
+
+[Service]
+Environment=AUTOSSH_GATETIME=0
+ExecStart=/usr/bin/autossh -M 0 \
+    -o BatchMode=yes \
+    -o StrictHostKeyChecking=yes \
+    -o ExitOnForwardFailure=yes \
+    -o ServerAliveInterval=30 \
+    -o ServerAliveCountMax=3 \
+    -N -R 0.0.0.0:3380:127.0.0.1:3389 \
+    root@yunus.top
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target
