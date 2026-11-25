@@ -104,8 +104,8 @@ proxy-groups:
   - name: "GitHub 自动"
     type: url-test
     include-all-providers: true
-    filter: "(?i)香港|Hong Kong|🇭🇰|台湾|Taiwan|TW|🇹🇼|日本|Japan|🇯🇵|美国西|洛杉矶|旧金山|US West"
     url: "https://github.com"
+    expected-status: 200
     interval: 300
     tolerance: 50
 
