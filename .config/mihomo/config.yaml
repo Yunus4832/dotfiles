@@ -72,7 +72,7 @@ proxy-providers:
     interval: 86400
     path: ./proxy_providers/provider1.yaml
     filter: "^(?!.*(剩余|到期|官网|免费|试用|套餐|重置|过期|流量|时间|邮箱|客服|订阅)).*$"
-    health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true }
+    health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 60, timeout: 4000, lazy: false, expected-status: 204 }
 
 # ── 代理组
 proxy-groups:
@@ -84,8 +84,9 @@ proxy-groups:
     type: url-test
     include-all-providers: true
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "手动选择"
     type: select
@@ -106,8 +107,9 @@ proxy-groups:
     include-all-providers: true
     url: "https://github.com"
     expected-status: 200
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   # AIGC 按地区筛选节点，并在各地区内自动选择低延迟节点。
   - name: "AIGC"
@@ -119,64 +121,72 @@ proxy-groups:
     include-all-providers: true
     filter: '(?i)ChatGPT|\bAI\b'
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "新加坡自动"
     type: url-test
     include-all-providers: true
     filter: "(?i)新加坡|Singapore|🇸🇬"
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "日本自动"
     type: url-test
     include-all-providers: true
     filter: "(?i)日本|Japan|🇯🇵"
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "美国自动"
     type: url-test
     include-all-providers: true
     filter: "(?i)美国|United States|USA|🇺🇸"
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "台湾自动"
     type: url-test
     include-all-providers: true
     filter: "(?i)台湾|Taiwan|TW|🇹🇼"
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "越南自动"
     type: url-test
     include-all-providers: true
     filter: '(?i)越南|Vietnam|\bVN\b|🇻🇳'
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "泰国自动"
     type: url-test
     include-all-providers: true
     filter: '(?i)泰国|Thailand|\bTH\b|🇹🇭'
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "菲律宾自动"
     type: url-test
     include-all-providers: true
     filter: '(?i)菲律宾|Philippines|\bPH\b|🇵🇭'
     url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    tolerance: 50
+    interval: 60
+    tolerance: 200
+    max-failed-times: 2
 
   - name: "兜底策略"
     type: select
